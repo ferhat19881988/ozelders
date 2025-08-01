@@ -4,7 +4,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Özel Ders Takip Sistemi</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
+<script>
+  // Firebase yapılandırman
+  const firebaseConfig = {
+    apiKey: "AIzaSyD4Ctf-F5BSU_4fHK2WgTQUj_okrzyI7OI",
+    authDomain: "birebir-1df98.firebaseapp.com",
+    databaseURL: "https://birebir-1df98-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "birebir-1df98",
+    storageBucket: "birebir-1df98.firebasestorage.app",
+    messagingSenderId: "145327250159",
+    appId: "1:145327250159:web:f4d8be51e312f5552f591a",
+    measurementId: "G-8CB54NS9QW"
+  };
+
+  // Firebase'i başlat
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+</script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -24,7 +43,7 @@
       margin-bottom: 20px;
     }
     .tabs button {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.2;
   white-space: normal; /* metin sarılabilir */
   width: 100px;
@@ -128,7 +147,6 @@
  <button class="tabBtn" onclick="switchTab('ogrenciKayit', this)">👤 Öğrenci Kaydı</button>
 <button class="tabBtn" onclick="switchTab('haftalikDegerlendirme', this)">📅 Haftalık Değerlendirme</button>
 <button class="tabBtn" onclick="switchTab('whatsappRapor', this)">📤 WhatsApp Rapor</button>
-<button class="tabBtn" onclick="switchTab('veriYonetimi', this)">💾 Veri Yedekleme</button>
   </div>  <section id="ogrenciKayit" class="active">
     <h2>👤 Öğrenci Kaydı</h2>
     <input type="text" id="ogrenciAd" placeholder="Öğrenci Adı">
@@ -161,16 +179,8 @@
 </div>
 
 <div id="odevListesi"></div>
-  </section>  <section id="veriYonetimi">
-    <h2>💾 Verileri Yedekle & Geri Yükle</h2>
-    <input type="text" id="dosyaAdi" placeholder="Dosya adı girin (örn: yedek-temmuz)">
-    <div>
-      <button onclick="verileriYedekle()">⬇️ Verileri Dışa Aktar</button>
-      <input type="file" id="yedekDosya" style="display:none" onchange="verileriYukle(event)">
-      <button onclick="document.getElementById('yedekDosya').click()">⬆️ Yedeği Geri Yükle</button>
-    </div>
-    <p id="yedekDurum"></p>
-  </section>  <div id="modalArkaPlan" onclick="modalKapat()"></div>
+  </section>  
+  <div id="modalArkaPlan" onclick="modalKapat()"></div>
   <div id="guncelleModal">
     <h3>✏️ Öğrenci Güncelle</h3>
     <input type="text" id="guncelleAd">
@@ -208,11 +218,12 @@
   <input type="date" id="gelecekTarih">
   <textarea id="gelecekHaftaKonu" placeholder="Gelecek hafta işlenecek konu"></textarea>
 
-  <button onclick="haftalikVeriyiEkle()">➕ Ödevi Sisteme Ekle</button>
+ <button type="button" onclick="haftalikVeriyiEkle()">➕ Ödevi Sisteme Ekle</button>
   <button onclick="haftalikVeriyiKaydet()">💾 Tümünü Kaydet</button>
   <button onclick="haftalikFormYenile()">🔄 Yenile</button>
 <hr>
 <h3>📋 Kayıtlı Haftalık Değerlendirmeler</h3>
+<button type="button" onclick="tumHaftalikKayitlariSil()">🗑️ Tüm Kayıtları Sil</button>
 <div id="haftalikKayitListesi"></div>
   <p id="haftaDurumMesaji"></p>
 </section>
@@ -263,6 +274,20 @@
 </div>
 
   <script>
+    function tumHaftalikKayitlariSil() {
+  if (confirm("Tüm haftalık kayıtları silmek istediğinize emin misiniz?")) {
+    database.ref("haftalikDegerlendirme").remove()
+      .then(() => {
+        haftalikKayitlariListele();
+        alert("✅ Tüm haftalık kayıtlar silindi.");
+      })
+      .catch(error => {
+        console.error("Kayıtlar silinemedi:", error);
+        alert("❌ Kayıtlar silinemedi.");
+      });
+  }
+}
+
 function qrKodModalAc() {
   const mesaj = document.getElementById('raporMesaj').value.trim();
   if (!mesaj) return alert("Mesaj boş.");
@@ -289,85 +314,109 @@ function qrKodModalAc() {
 }
 
    
-  let guncellenecekHaftaIndex = null;
+  let guncellenecekHaftaKey = null;
 
-function haftalikKaydiGuncelle(index) {
-  const kayitlar = JSON.parse(localStorage.getItem('haftalikKayitlar') || '[]');
-  const k = kayitlar[index];
-  guncellenecekHaftaIndex = index;
-  document.getElementById('guncelleHaftaOgrenci').value = k.ogrenci || '';
-  document.getElementById('guncelleHaftaKonu').value = k.konu || '';
-  document.getElementById('guncelleHaftaOdev').value = k.odev || '';
-  document.getElementById('guncelleHaftaDurum').value = k.durum || '';
-  document.getElementById('guncelleHaftaTarih').value = k.tarih || '';
-  document.getElementById('guncelleGelecekKonu').value = k.gelecekKonu || '';
-  document.getElementById('guncelleGelecekOdev').value = k.gelecekOdev || '';
-  document.getElementById('haftalikModalArkaPlan').style.display = 'block';
-  document.getElementById('haftalikGuncelleModal').style.display = 'block';
+function haftalikKaydiGuncelle(key, veri) {
+  guncellenecekHaftaKey = key;
+
+  document.getElementById('guncelleHaftaOgrenci').value = veri.ogrenci || '';
+  document.getElementById('guncelleHaftaOdev').value = veri.odev || '';
+  document.getElementById('guncelleHaftaDurum').value = veri.durum || '';
+  document.getElementById('guncelleHaftaKonu').value = veri.konu || '';
+  document.getElementById('guncelleHaftaTarih').value = veri.tarih || '';
+  document.getElementById('guncelleGelecekOdev').value = veri.gelecekOdev || '';
+  document.getElementById('guncelleGelecekKonu').value = veri.gelecekKonu || '';
+
+  document.getElementById("haftalikModalArkaPlan").style.display = "block";
+  document.getElementById("haftalikGuncelleModal").style.display = "block";
 }
+
+
+
 
 function haftalikKaydiGuncelleKaydet() {
-  const kayitlar = JSON.parse(localStorage.getItem('haftalikKayitlar') || '[]');
-  if (guncellenecekHaftaIndex === null) return;
-
-  kayitlar[guncellenecekHaftaIndex] = {
-    ogrenci: document.getElementById('guncelleHaftaOgrenci').value,
-    konu: document.getElementById('guncelleHaftaKonu').value,
-    odev: document.getElementById('guncelleHaftaOdev').value,
-    durum: document.getElementById('guncelleHaftaDurum').value,
-    tarih: document.getElementById('guncelleHaftaTarih').value,
-    gelecekKonu: document.getElementById('guncelleGelecekKonu').value,
-    gelecekOdev: document.getElementById('guncelleGelecekOdev').value,
-    zaman: new Date().toISOString()
-  };
-
-  localStorage.setItem('haftalikKayitlar', JSON.stringify(kayitlar));
-  haftalikModalKapat();
-  haftalikKayitlariListele();
-}
-
-function haftalikModalKapat() {
-  document.getElementById('haftalikModalArkaPlan').style.display = 'none';
-  document.getElementById('haftalikGuncelleModal').style.display = 'none';
-  guncellenecekHaftaIndex = null;
-}
-  
-  function haftalikKaydiSil(index) {
-  if (!confirm("Bu haftalık kayıt silinsin mi?")) return;
-  let kayitlar = JSON.parse(localStorage.getItem('haftalikKayitlar') || '[]');
-  kayitlar.splice(index, 1);
-  localStorage.setItem('haftalikKayitlar', JSON.stringify(kayitlar));
-  haftalikKayitlariListele();
-}
-  
-function haftalikKayitlariListele() {
-  const liste = document.getElementById('haftalikKayitListesi');
-  const kayitlar = JSON.parse(localStorage.getItem('haftalikKayitlar') || '[]');
-
-  if (kayitlar.length === 0) {
-    liste.innerHTML = '<p>Henüz haftalık değerlendirme yapılmamış.</p>';
+  if (!guncellenecekHaftaKey) {
+    alert("Güncellenecek kayıt yok.");
     return;
   }
 
-  // Sıralama: Yeni en üstte
-  kayitlar.sort((a, b) => new Date(b.zaman || b.tarih) - new Date(a.zaman || a.tarih));
+  const veri = {
+    ogrenci: document.getElementById('guncelleHaftaOgrenci').value,
+    odev: document.getElementById('guncelleHaftaOdev').value,
+    durum: document.getElementById('guncelleHaftaDurum').value,
+    konu: document.getElementById('guncelleHaftaKonu').value,
+    tarih: document.getElementById('guncelleHaftaTarih').value,
+    gelecekOdev: document.getElementById('guncelleGelecekOdev').value,
+    gelecekKonu: document.getElementById('guncelleGelecekKonu').value,
+    zaman: new Date().toISOString()
+  };
 
-  liste.innerHTML = kayitlar.map((k, i) => `
-    <div class="student-entry">
-      <span>
-        👤 <b>${k.ogrenci}</b><br>
-        📌 Konu: ${k.konu || '-'}<br>
-        📅 Tarih: ${k.tarih || '-'}<br>
-        📘 Ödev: ${k.odev || '-'} (${k.durum || 'Durum yok'})<br>
-        ➡️ Gelecek Hafta: ${k.gelecekKonu || '-'} / ${k.gelecekOdev || '-'}
-      </span>
-      <div>
-        <button class="btn-small" onclick="haftalikKaydiSil(${i})">🗑️</button>
-        <button class="btn-small" onclick="haftalikKaydiGuncelle(${i})">✏️</button>
-      </div>
-    </div>
-  `).join('');
+  database.ref("haftalikDegerlendirme/" + guncellenecekHaftaKey).update(veri)
+    .then(() => {
+      haftalikModalKapat();
+      haftalikKayitlariListele();
+      alert("✅ Kayıt güncellendi.");
+    })
+    .catch(err => {
+      console.error("Güncelleme hatası:", err);
+      alert("❌ Güncelleme başarısız.");
+    });
 }
+
+
+
+function haftalikModalKapat() {
+  document.getElementById("haftalikModalArkaPlan").style.display = "none";
+  document.getElementById("haftalikGuncelleModal").style.display = "none";
+  guncellenecekHaftaKey = null;
+}
+
+  
+function haftalikKaydiSil(key) {
+  if (confirm("Bu haftalık kaydı silmek istiyor musunuz?")) {
+    database.ref("haftalikDegerlendirme/" + key).remove()
+      .then(() => haftalikKayitlariListele());
+  }
+}
+
+
+  
+function haftalikKayitlariListele() {
+  const liste = document.getElementById("haftalikKayitListesi");
+  liste.innerHTML = "";
+
+  database.ref("haftalikDegerlendirme").once("value")
+    .then(snapshot => {
+      const veriler = snapshot.val();
+      if (!veriler) return;
+
+      Object.entries(veriler).forEach(([key, veri]) => {
+        const div = document.createElement("div");
+        div.className = "student-entry";
+
+        const metin = `${veri.ogrenci || '???'} - ${veri.tarih || '???'} - ${veri.konu || '???'}`;
+        const span = document.createElement("span");
+        span.textContent = metin;
+
+        const silBtn = document.createElement("button");
+        silBtn.className = "btn-small";
+        silBtn.textContent = "🗑️";
+        silBtn.onclick = () => haftalikKaydiSil(key);
+
+        const guncelleBtn = document.createElement("button");
+        guncelleBtn.className = "btn-small";
+        guncelleBtn.textContent = "✏️";
+        guncelleBtn.onclick = () => haftalikKaydiGuncelle(key, veri);
+
+        div.appendChild(span);
+        div.appendChild(guncelleBtn);
+        div.appendChild(silBtn);
+        liste.appendChild(div);
+      });
+    });
+}
+
+
 
   
   function raporTipiDegisti() {
@@ -387,10 +436,7 @@ function whatsappMesajGonder() {
 function raporMesajiOlustur() {
   const tip = document.getElementById('raporTipi').value;
   const secilenId = document.getElementById('raporOgrenciSec').value;
-  const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler') || '[]');
-  const haftalikKayitlar = JSON.parse(localStorage.getItem('haftalikKayitlar') || '[]');
-  const ogrenci = ogrenciler.find(o => o.id === secilenId);
-  if (!ogrenci) return;
+  if (!secilenId) return;
 
   const ayAdlari = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
   const formatTarih = (date) => `${date.getDate()} ${ayAdlari[date.getMonth()]} ${date.getFullYear()}`;
@@ -412,13 +458,29 @@ function raporMesajiOlustur() {
     }
   };
 
-  const ogrenciAdi = ogrenci.ad;
+  // Firebase'ten öğrenci ve haftalık kayıtları al
+  Promise.all([
+    database.ref("ogrenciler").once("value"),
+    database.ref("haftalikDegerlendirme").once("value")
+  ]).then(([ogrenciSnap, haftalikSnap]) => {
+    const ogrenciler = ogrenciSnap.val() || [];
+    const haftalikKayitlar = haftalikSnap.val() || [];
 
-  if (tip === 'haftalik') {
-    const kayitlar = haftalikKayitlar.filter(k => k.ogrenci === ogrenciAdi);
-    const sonKayit = kayitlar[kayitlar.length - 1];
+    const ogrenci = Array.isArray(ogrenciler)
+      ? ogrenciler.find(o => o.id == secilenId)
+      : Object.values(ogrenciler).find(o => o.id == secilenId);
 
-    const mesaj = `📘 Özel Ders Takip Sistemi
+    if (!ogrenci) return;
+
+    const ogrenciAdi = ogrenci.ad;
+
+    const kayitlar = Array.isArray(haftalikKayitlar) ? haftalikKayitlar : Object.values(haftalikKayitlar);
+
+    if (tip === 'haftalik') {
+      const ogrenciKayitlari = kayitlar.filter(k => k.ogrenci === ogrenciAdi);
+      const sonKayit = ogrenciKayitlari[ogrenciKayitlari.length - 1];
+
+      const mesaj = `📘 Özel Ders Takip Sistemi
 📅 *Tarih:* ${formatTarih(bugun)}
 👤 *Öğrenci:* ${ogrenciAdi}
 🎓 *Öğretmen:* Ferhat Karagöz
@@ -434,37 +496,32 @@ function raporMesajiOlustur() {
 
 Saygılarımızla, bilginize.`;
 
-    document.getElementById('raporMesaj').value = mesaj;
+      document.getElementById('raporMesaj').value = mesaj;
 
-  } else if (tip === 'aylik') {
-    // Sıralanmış şekilde alınan son 1 aylık kayıtlar (yeni → eski)
-    const tarihAraligindakiKayitlar = haftalikKayitlar
-      .filter(k => {
-        const ogr = k.ogrenci === ogrenciAdi;
-        const tarihStr = toShortDateStr(k.zaman || k.tarih);
-        return ogr && tarihStr >= birAyOnceStr && tarihStr <= bugunStr;
-      })
-      .sort((a, b) => {
-        const tA = new Date(a.zaman || a.tarih);
-        const tB = new Date(b.zaman || b.tarih);
-        return tB - tA; // Yeni tarih başta
+    } else if (tip === 'aylik') {
+      const tarihAraligindakiKayitlar = kayitlar
+        .filter(k => {
+          const ogr = k.ogrenci === ogrenciAdi;
+          const tarihStr = toShortDateStr(k.zaman || k.tarih);
+          return ogr && tarihStr >= birAyOnceStr && tarihStr <= bugunStr;
+        })
+        .sort((a, b) => new Date(b.zaman || b.tarih) - new Date(a.zaman || a.tarih));
+
+      const konular = tarihAraligindakiKayitlar.map(k => {
+        const t = new Date(k.zaman || k.tarih);
+        return `- ${formatTarih(t)} → ${k.konu || 'Konu girilmemiş'}`;
       });
 
-    const konular = tarihAraligindakiKayitlar.map(k => {
-      const t = new Date(k.zaman || k.tarih);
-      return `- ${formatTarih(t)} → ${k.konu || 'Konu girilmemiş'}`;
-    });
+      const odevSatirlari = tarihAraligindakiKayitlar.map(k => {
+        const t = new Date(k.zaman || k.tarih);
+        return `- ${formatTarih(t)} → ${k.odev || 'Ödev Yok'} → ${durumIcon(k.durum)}`;
+      });
 
-    const odevSatirlari = tarihAraligindakiKayitlar.map(k => {
-      const t = new Date(k.zaman || k.tarih);
-      return `- ${formatTarih(t)} → ${k.odev || 'Ödev Yok'} → ${durumIcon(k.durum)}`;
-    });
+      const toplamOdev = tarihAraligindakiKayitlar.filter(k => k.odev).length;
+      const yapilanOdev = tarihAraligindakiKayitlar.filter(k => (k.durum || '').toLowerCase() === 'yapti').length;
+      const oran = toplamOdev ? Math.round((yapilanOdev / toplamOdev) * 100) : 0;
 
-    const toplamOdev = tarihAraligindakiKayitlar.filter(k => k.odev).length;
-    const yapilanOdev = tarihAraligindakiKayitlar.filter(k => (k.durum || '').toLowerCase() === 'yapti').length;
-    const oran = toplamOdev ? Math.round((yapilanOdev / toplamOdev) * 100) : 0;
-
-    const mesaj = `📘 Özel Ders Takip Sistemi
+      const mesaj = `📘 Özel Ders Takip Sistemi
 📅 *Tarih:* ${formatTarih(bugun)}
 👤 *Öğrenci:* ${ogrenciAdi}
 🎓 *Öğretmen:* Ferhat Karagöz
@@ -486,10 +543,34 @@ ${odevSatirlari.length ? odevSatirlari.join("\n") : '- Veri yok'}
 
 Saygılarımızla, bilginize.`;
 
-    document.getElementById('raporMesaj').value = mesaj;
-  }
+      document.getElementById('raporMesaj').value = mesaj;
+    }
+  });
 }
 
+
+function raporOgrenciSecDoldur() {
+  const select = document.getElementById("raporOgrenciSec");
+  if (!select) return;
+
+  database.ref("ogrenciler").once("value")
+    .then(snapshot => {
+      const ogrenciler = snapshot.val() || [];
+      select.innerHTML = '<option value="">Öğrenci Seçiniz</option>';
+
+      ogrenciler.forEach(o => {
+        const option = document.createElement("option");
+        option.value = o.id || o.ad; // Güvenli
+        option.textContent = o.ad;
+        select.appendChild(option);
+      });
+
+      console.log("Dropdown için öğrenciler yüklendi:", ogrenciler);
+    })
+    .catch(error => {
+      console.error("Rapor öğrenci listesi alınamadı:", error);
+    });
+}
 
 
 function raporOgrenciListesiDoldur() {
@@ -505,84 +586,181 @@ function raporOgrenciListesiDoldur() {
 }
 
 window.addEventListener('load', () => {
-  raporOgrenciListesiDoldur();
+  raporOgrenciSecDoldur();  // ✅ Bunu çağır
   document.getElementById('raporTipi').addEventListener('change', raporMesajiOlustur);
   document.getElementById('raporOgrenciSec').addEventListener('change', raporMesajiOlustur);
   document.getElementById('raporAy').addEventListener('change', raporMesajiOlustur);
 });
-  let guncellenecekOdevIndex = null;
+ let guncellenecekOdevKey = null;
 
-function odevGuncelleModalAc(index) {
-  const odevler = getOdevler();
-  const o = odevler[index];
-  guncellenecekOdevIndex = index;
-  document.getElementById('guncelleOdevTarih').value = o.tarih;
-  document.getElementById('guncelleOdevIcerik').value = o.icerik;
-  document.getElementById('odevModalArkaPlan').style.display = 'block';
-  document.getElementById('odevGuncelleModal').style.display = 'block';
+function odevGuncelleModalAc(key) {
+  database.ref("odevler/" + key).once("value")
+    .then(snapshot => {
+      const odev = snapshot.val();
+      if (!odev) return;
+
+      guncellenecekOdevKey = key;
+      document.getElementById("guncelleOdevTarih").value = odev.tarih || "";
+      document.getElementById("guncelleOdevIcerik").value = odev.konu || odev.icerik || "";
+
+      document.getElementById("odevModalArkaPlan").style.display = "block";
+      document.getElementById("odevGuncelleModal").style.display = "block";
+    })
+    .catch(error => {
+      console.error("Güncellenecek ödev alınamadı:", error);
+    });
 }
+
+
 
 function odevModalKapat() {
-  document.getElementById('odevModalArkaPlan').style.display = 'none';
-  document.getElementById('odevGuncelleModal').style.display = 'none';
+  document.getElementById("odevModalArkaPlan").style.display = "none";
+  document.getElementById("odevGuncelleModal").style.display = "none";
+  guncellenecekOdevKey = null;
 }
 
-function odevGuncelleKaydet() {
+function odevGuncelle() {
   const yeniTarih = document.getElementById('guncelleOdevTarih').value;
   const yeniIcerik = document.getElementById('guncelleOdevIcerik').value.trim();
+
   if (!yeniTarih || !yeniIcerik) {
     alert('Lütfen tüm alanları doldurun.');
     return;
   }
 
-  const odevler = getOdevler();
-  if (guncellenecekOdevIndex !== null) {
-    odevler[guncellenecekOdevIndex].tarih = yeniTarih;
-    odevler[guncellenecekOdevIndex].icerik = yeniIcerik;
-    setOdevler(odevler);
-    odevListele();
-    odevModalKapat();
+  if (!guncellenecekOdevKey) {
+    alert("Güncellenecek ödev bulunamadı.");
+    return;
   }
-}
-  
-  function getOdevler() {
-  return JSON.parse(localStorage.getItem('odevler') || '[]');
+
+  database.ref("odevler/" + guncellenecekOdevKey).update({
+    tarih: yeniTarih,
+    konu: yeniIcerik
+  })
+  .then(() => {
+    odevListele();
+    odevModalKapat(); // modalı kapat
+  })
+  .catch(error => {
+    console.error("Güncelleme sırasında hata oluştu:", error);
+    alert("Ödev güncellenemedi.");
+  });
 }
 
-function setOdevler(data) {
-  localStorage.setItem('odevler', JSON.stringify(data));
-}
+function odevGuncelleKaydet() {
+  const yeniTarih = document.getElementById('guncelleOdevTarih').value;
+  const yeniIcerik = document.getElementById('guncelleOdevIcerik').value.trim();
 
-function odevEkle() {
-  const ogrenci = document.getElementById('odevOgrenci').value;
-  const tarih = document.getElementById('odevTarih').value;
-  const icerik = document.getElementById('odevIcerik').value.trim();
-
-  if (!ogrenci || !tarih || !icerik) {
+  if (!yeniTarih || !yeniIcerik) {
     alert('Lütfen tüm alanları doldurun.');
     return;
   }
 
-  const odevler = getOdevler();
-  odevler.push({ ogrenci, tarih, icerik });
-  setOdevler(odevler);
-  odevFormTemizle();
-  odevListele();
+  if (!guncellenecekOdevKey) {
+    alert("Güncellenecek ödev bulunamadı.");
+    return;
+  }
+
+  database.ref("odevler/" + guncellenecekOdevKey).update({
+    tarih: yeniTarih,
+    konu: yeniIcerik
+  })
+  .then(() => {
+    odevListele();             // Listeyi yeniden yükle
+    odevModalKapat();          // Modalı kapat
+    alert("✅ Ödev güncellendi.");
+  })
+  .catch(error => {
+    console.error("Güncelleme sırasında hata oluştu:", error);
+    alert("❌ Ödev güncellenemedi.");
+  });
 }
 
-function odevSil(index) {
-  if (!confirm('Bu ödev silinsin mi?')) return;
-  const odevler = getOdevler();
-  odevler.splice(index, 1);
-  setOdevler(odevler);
-  odevListele();
+  
+function getOdevler(callback) {
+  database.ref("odevler").once("value")
+    .then(snapshot => {
+      const data = snapshot.val();
+      const odevler = Array.isArray(data) ? data : Object.values(data || {});
+      callback(odevler);
+    })
+    .catch(error => {
+      console.error("Ödev verisi alınamadı:", error);
+      callback([]);
+    });
 }
+
+
+function setOdevler(data) {
+  const newRef = database.ref("odevler").push();
+  return newRef.set(data);
+}
+
+
+
+
+function setOdevler(data) {
+  database.ref("odevler").set(data)
+    .then(() => {
+      console.log("Ödevler başarıyla kaydedildi.");
+    })
+    .catch(error => {
+      console.error("Ödevler kaydedilemedi:", error);
+    });
+}
+
+
+function odevEkle() {
+  const ogrenci = document.getElementById("odevOgrenci").value;
+  const konu = document.getElementById("odevIcerik").value.trim();
+  const tarih = document.getElementById("odevTarih").value;
+
+  if (!ogrenci || !konu || !tarih) {
+    alert("Öğrenci, konu ve tarih boş bırakılamaz.");
+    return;
+  }
+
+  getOdevler(odevler => {
+    const yeniOdev = { ogrenci, konu, tarih };
+    odevler.push(yeniOdev);
+    setOdevler(odevler);
+    odevListele();
+    alert("✅ Ödev eklendi.");
+  });
+}
+
+
+
+
+function odevSil(key) {
+  if (confirm("Bu ödevi silmek istediğinize emin misiniz?")) {
+    database.ref("odevler/" + key).remove()
+      .then(() => {
+        console.log("Ödev silindi:", key);
+        odevListele();
+      })
+      .catch(error => {
+        console.error("Ödev silinemedi:", error);
+      });
+  }
+}
+
+
 
 function tumOdevleriSil() {
-  if (!confirm('Tüm ödevler silinsin mi?')) return;
-  localStorage.removeItem('odevler');
-  odevListele();
+  if (confirm("Tüm ödevleri silmek istediğinize emin misiniz?")) {
+    database.ref("odevler").remove()
+      .then(() => {
+        console.log("Tüm ödevler silindi.");
+        odevListele();
+      })
+      .catch(error => {
+        console.error("Tüm ödevler silinemedi:", error);
+      });
+  }
 }
+
+
 
 function odevFormTemizle() {
   document.getElementById('odevOgrenci').value = '';
@@ -591,82 +769,168 @@ function odevFormTemizle() {
 }
 
 function odevListele() {
-  const liste = document.getElementById('odevListesi');
-  const odevler = getOdevler();
+  const liste = document.getElementById("odevListesi");
+  if (!liste) return;
 
-  if (odevler.length === 0) {
-    liste.innerHTML = '<p>Henüz ödev girilmedi.</p>';
-    return;
-  }
+  liste.innerHTML = ""; // Önceki listeyi temizle
 
-  // Sıralama: Yeni en üstte
-  odevler.sort((a, b) => new Date(b.tarih) - new Date(a.tarih));
+  database.ref("odevler").once("value")
+    .then(snapshot => {
+      const odevler = snapshot.val() || {};
 
-  liste.innerHTML = odevler.map((o, i) => `
-    <div class="student-entry">
-      <span><b>${o.ogrenci}</b> - ${o.tarih} <br> ${o.icerik}</span>
-      <div>
-        <button class="btn-small" onclick="odevSil(${i})">🗑️</button>
-        <button class="btn-small" onclick="odevGuncelleModalAc(${i})">✏️</button>
-      </div>
-    </div>
-  `).join('');
+      Object.entries(odevler).forEach(([key, odev]) => {
+        const div = document.createElement("div");
+        div.className = "student-entry";
+
+        const span = document.createElement("span");
+        span.textContent = `${odev.ogrenci || 'Öğrenci Yok'} - ${odev.tarih || 'Tarih Yok'} - ${odev.konu || odev.icerik || 'İçerik Yok'}`;
+
+        const silBtn = document.createElement("button");
+        silBtn.textContent = "🗑️";
+        silBtn.className = "btn-small";
+        silBtn.onclick = () => odevSil(key);
+
+        const guncelleBtn = document.createElement("button");
+        guncelleBtn.textContent = "✏️";
+        guncelleBtn.className = "btn-small";
+        guncelleBtn.onclick = () => odevGuncelleModalAc(key);
+
+        div.appendChild(span);
+        div.appendChild(silBtn);
+        div.appendChild(guncelleBtn);
+        liste.appendChild(div);
+      });
+    })
+    .catch(error => {
+      console.error("Ödevler listelenemedi:", error);
+    });
 }
+
+
+
+
 
 
 function doldurOgrenciSecimi() {
-  const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler') || '[]');
   const select = document.getElementById('odevOgrenci');
   if (!select) return;
-  select.innerHTML = '<option value=\"\">Öğrenci Seçiniz</option>' +
-    ogrenciler.map(o => `<option value=\"${o.ad}\">${o.ad}</option>`).join('');
+
+  select.innerHTML = '<option value="">Öğrenci Seçiniz</option>';
+
+  getOgrenciler(ogrenciler => {
+    ogrenciler.forEach(o => {
+      const opt = document.createElement("option");
+      opt.value = o.ad;
+opt.textContent = o.ad;
+      select.appendChild(opt);
+    });
+  });
 }
+
+
+
 
 window.addEventListener('load', () => {
   doldurOgrenciSecimi();
   odevListele();
 });
   
-  function haftalikVeriyiEkle() {
+function haftalikVeriyiEkle() {
   const ogrenci = document.getElementById('haftaOgrenci').value;
-  const odevIcerik = document.getElementById('gelecekHaftaOdev').value.trim();
+  const odev = document.getElementById('haftaOdev').value;
+  const durum = document.getElementById('odevDurumu').value;
+  const konu = document.getElementById('buHaftaKonu').value.trim();
+  const gelecekOdev = document.getElementById('gelecekHaftaOdev').value.trim();
   const tarih = document.getElementById('gelecekTarih').value;
+  const gelecekKonu = document.getElementById('gelecekHaftaKonu').value.trim();
 
-  if (!ogrenci || !odevIcerik || !tarih) {
-    alert('Öğrenci, ödev ve tarih girilmelidir.');
+  if (!ogrenci || !tarih) {
+    alert("🚫 Öğrenci ve tarih boş bırakılamaz.");
     return;
   }
 
-  // Ödevi haftalık sisteme ekleme (ayrıca localStorage'da saklanan haftalık kayıtlara dahil edilebilir)
-  const odevler = JSON.parse(localStorage.getItem('odevler') || '[]');
-  odevler.push({ ogrenci, tarih, icerik: odevIcerik });
-  localStorage.setItem('odevler', JSON.stringify(odevler));
+  const zamanDamgasi = new Date().toISOString();
 
-  // Liste güncellensin (eğer varsa)
-  if (typeof odevListele === 'function') {
-    odevListele();
-  }
+  const haftalikKayit = {
+    ogrenci,
+    odev,
+    durum,
+    konu,
+    gelecekOdev,
+    tarih,
+    gelecekKonu,
+    zaman: zamanDamgasi
+  };
 
-  document.getElementById('haftaDurumMesaji').innerText = '✅ Ödev sisteme kaydedildi.';
+  const odevKaydi = {
+    ogrenci,
+    konu: gelecekOdev,
+    tarih
+  };
+
+  // Firebase'e hem haftalık kayıt hem de odev kaydı ekleniyor
+  const haftalikRef = database.ref("haftalikDegerlendirme").push();
+  const odevRef = database.ref("odevler").push();
+
+  Promise.all([
+    haftalikRef.set(haftalikKayit),
+    odevRef.set(odevKaydi)
+  ])
+    .then(() => {
+      document.getElementById('haftaDurumMesaji').innerText = '✅ Kayıt ve ödev başarıyla eklendi.';
+      haftalikKayitlariListele();
+      odevListele(); // opsiyonel: Ödev ekranı da yenilensin
+    })
+    .catch(error => {
+      console.error("❌ Kayıt eklenemedi:", error);
+      alert("⚠️ Veri eklenirken hata oluştu.");
+    });
 }
+
+
+
+
 
 function haftalikVeriyiKaydet() {
-  const data = {
-    ogrenci: document.getElementById('haftaOgrenci').value,
-    odev: document.getElementById('haftaOdev').value,
-    durum: document.getElementById('odevDurumu').value,
-    konu: document.getElementById('buHaftaKonu').value.trim(),
-    gelecekOdev: document.getElementById('gelecekHaftaOdev').value.trim(),
-    tarih: document.getElementById('gelecekTarih').value,
-    gelecekKonu: document.getElementById('gelecekHaftaKonu').value.trim(),
-    zaman: new Date().toISOString()
+  const ogrenci = document.getElementById('haftaOgrenci').value;
+  const odev = document.getElementById('haftaOdev').value;
+  const durum = document.getElementById('odevDurumu').value;
+  const konu = document.getElementById('buHaftaKonu').value.trim();
+  const gelecekOdev = document.getElementById('gelecekHaftaOdev').value.trim();
+  const tarih = document.getElementById('gelecekTarih').value;
+  const gelecekKonu = document.getElementById('gelecekHaftaKonu').value.trim();
+
+  if (!ogrenci || !tarih) {
+    alert("🚫 Öğrenci ve tarih zorunludur.");
+    return;
+  }
+
+  const zamanDamgasi = new Date().toISOString();
+
+  const haftalikKayit = {
+    ogrenci,
+    odev,
+    durum,
+    konu,
+    gelecekOdev,
+    tarih,
+    gelecekKonu,
+    zaman: zamanDamgasi
   };
-  const kayitlar = JSON.parse(localStorage.getItem('haftalikKayitlar') || '[]');
-  kayitlar.push(data);
-  localStorage.setItem('haftalikKayitlar', JSON.stringify(kayitlar));
-  document.getElementById('haftaDurumMesaji').innerText = '💾 Kayıt başarıyla yapıldı';
-  haftalikKayitlariListele();
+
+  database.ref("haftalikDegerlendirme").push(haftalikKayit)
+    .then(() => {
+      document.getElementById('haftaDurumMesaji').innerText = '✅ Tüm veri kaydedildi.';
+      haftalikFormYenile();
+      haftalikKayitlariListele();  // Listeyi yenile
+    })
+    .catch(error => {
+      console.error("❌ Haftalık veri kaydı başarısız:", error);
+      alert("⚠️ Kayıt eklenirken hata oluştu.");
+    });
 }
+
+
 
 function haftalikFormYenile() {
   document.getElementById('haftaOgrenci').value = '';
@@ -681,19 +945,51 @@ function haftalikFormYenile() {
 
 function doldurHaftaOgrenciListesi() {
   const select = document.getElementById('haftaOgrenci');
-  const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler') || '[]');
-  select.innerHTML = '<option value=\"\">Öğrenci Seçin</option>' +
-    ogrenciler.map(o => `<option value=\"${o.ad}\">${o.ad}</option>`).join('');
+  if (!select) return;
+
+  select.innerHTML = '<option value="">Öğrenci Seçin</option>';
+
+  database.ref("ogrenciler").once("value")
+    .then(snapshot => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      Object.values(data).forEach(o => {
+        const option = document.createElement("option");
+        option.value = o.ad;
+        option.textContent = o.ad;
+        select.appendChild(option);
+      });
+    })
+    .catch(error => {
+      console.error("Hafta öğrenci listesi yüklenemedi:", error);
+    });
 }
 
+
+
 document.getElementById('haftaOgrenci').addEventListener('change', function () {
-  const secili = this.value;
-  const tumOdevler = JSON.parse(localStorage.getItem('odevler') || '[]');
-  const odevler = tumOdevler.filter(o => o.ogrenci === secili);
+  const seciliOgrenci = this.value;
   const select = document.getElementById('haftaOdev');
-  select.innerHTML = '<option value=\"\">Ödev Seçin</option>' +
-    odevler.map((o, i) => `<option value=\"${o.icerik}\">${o.tarih} - ${o.icerik}</option>`).join('');
+  select.innerHTML = '<option value="">Ödev Seçin</option>';
+
+  database.ref("odevler").once("value")
+    .then(snapshot => {
+      const odevler = snapshot.val() || {};
+      Object.values(odevler)
+        .filter(o => o.ogrenci === seciliOgrenci)
+        .forEach(o => {
+          const option = document.createElement("option");
+          option.value = o.konu || o.icerik || '';
+          option.textContent = `${o.tarih} - ${o.konu || o.icerik}`;
+          select.appendChild(option);
+        });
+    })
+    .catch(error => {
+      console.error("Ödevler yüklenemedi:", error);
+    });
 });
+
 
 window.addEventListener('load', doldurHaftaOgrenciListesi);
     let guncellenecekId = null;
@@ -705,78 +1001,75 @@ window.addEventListener('load', doldurHaftaOgrenciListesi);
   el.classList.add('active');
 }
 
-    function temizleInputlar() {
-      document.getElementById('ogrenciAd').value = '';
-      document.getElementById('ogrenciSinif').value = '';
-    }
+function temizleInputlar() {
+  document.getElementById('ogrenciAd').value = '';
+  document.getElementById('ogrenciSinif').value = '';
+}
 
-    function getOgrenciler() {
-      return JSON.parse(localStorage.getItem('ogrenciler') || '[]');
-    }
+
+function getOgrenciler(callback) {
+  database.ref("ogrenciler").once("value")
+    .then(snapshot => {
+      const data = snapshot.val();
+      callback(data ? data : []);
+    })
+    .catch(error => {
+      console.error("Öğrenciler alınırken hata oluştu:", error);
+      callback([]); // Hata durumunda boş liste döner
+    });
+}
+
 
     function setOgrenciler(data) {
-      localStorage.setItem('ogrenciler', JSON.stringify(data));
-    }
+  database.ref("ogrenciler").set(data)
+    .then(() => {
+      console.log("Öğrenciler başarıyla kaydedildi.");
+    })
+    .catch(error => {
+      console.error("Öğrenciler kaydedilirken hata oluştu:", error);
+    });
+}
 
-    function ogrenciEkle() {
-  const ad = document.getElementById('ogrenciAd').value.trim();
-  const sinif = document.getElementById('ogrenciSinif').value.trim();
+
+function ogrenciEkle() {
+  const ad = document.getElementById("ogrenciAd").value.trim();
+  const sinif = document.getElementById("ogrenciSinif").value;
+  const id = Date.now();
+
   if (!ad || !sinif) {
-    alert('Lütfen tüm alanları doldurun.');
+    alert("Lütfen öğrenci adı ve sınıf seçin.");
     return;
   }
-  const ogrenciler = getOgrenciler();
-  const id = 'ogr_' + Date.now();
-  ogrenciler.push({ id, ad, sinif });
-  setOgrenciler(ogrenciler);
-  temizleInputlar();
-  ogrenciListele();
 
-  // 👇 Dropdown listeleri de güncellensin:
-  if (typeof doldurOgrenciSecimi === 'function') doldurOgrenciSecimi();
-  if (typeof doldurHaftaOgrenciListesi === 'function') doldurHaftaOgrenciListesi();
-  if (typeof raporOgrenciListesiDoldur === 'function') raporOgrenciListesiDoldur();
+  // Önce mevcut öğrencileri al
+  database.ref("ogrenciler").once("value")
+    .then(snapshot => {
+      const ogrenciler = snapshot.val() || [];
+      const yeniOgrenci = { id, ad, sinif };
+      ogrenciler.push(yeniOgrenci);
+      return database.ref("ogrenciler").set(ogrenciler);
+    })
+    .then(() => {
+      alert("✅ Öğrenci eklendi.");
+      ogrenciListele(); // Listeyi güncelle
+      temizleInputlar(); // Formu temizle
+    })
+    .catch(error => {
+      console.error("Öğrenci eklenemedi:", error);
+      alert("Hata: Öğrenci eklenemedi.");
+    });
 }
 
-    function ogrenciSil(id) {
-  if (!confirm('Öğrenci ve ona ait tüm veriler silinsin mi?')) return;
 
-  const ogrenciler = getOgrenciler();
-  const silinenOgrenci = ogrenciler.find(o => o.id === id);
-  const silinenAd = silinenOgrenci?.ad || '';
 
-  // 1. Öğrenci listesi güncelle
-  const yeniOgrenciler = ogrenciler.filter(o => o.id !== id);
-  setOgrenciler(yeniOgrenciler);
-
-  // 2. Ödevleri temizle (ogrenciId veya ogrenci adı)
-  let odevler = JSON.parse(localStorage.getItem('odevler') || '[]');
-  odevler = odevler.filter(o => o.ogrenciId !== id && o.ogrenci !== silinenAd);
-  localStorage.setItem('odevler', JSON.stringify(odevler));
-
-  // 3. Haftalık kayıtları temizle
-  let haftalikKayitlar = JSON.parse(localStorage.getItem('haftalikKayitlar') || '[]');
-  haftalikKayitlar = haftalikKayitlar.filter(k => k.ogrenci !== silinenAd);
-  localStorage.setItem('haftalikKayitlar', JSON.stringify(haftalikKayitlar));
-
-  // 4. Tüm listeleri ve arayüz öğelerini güncelle
-  ogrenciListele();
-  haftalikKayitlariListele(); // öğrencinin kayıtları da arayüzden kalksın
-  if (typeof doldurOgrenciSecimi === 'function') doldurOgrenciSecimi();
-  if (typeof doldurHaftaOgrenciListesi === 'function') doldurHaftaOgrenciListesi();
-  if (typeof raporOgrenciListesiDoldur === 'function') raporOgrenciListesiDoldur();
-  if (typeof odevListele === 'function') odevListele();
-  if (typeof haftalikFormYenile === 'function') haftalikFormYenile();
-
-  // 5. Seçili öğrencileri sıfırla (form temizliği)
-  ['odevOgrenci', 'haftaOgrenci', 'raporOgrenciSec'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
+function ogrenciSil(id) {
+  getOgrenciler(ogrenciler => {
+    const guncelOgrenciler = ogrenciler.filter(o => o.id !== id);
+    setOgrenciler(guncelOgrenciler);
+    ogrenciListele(); // Listeyi güncelle
   });
-
-  // 6. Kullanıcıya bilgi ver
-  alert(`✅ ${silinenAd} adlı öğrenci ve tüm ilişkili veriler tamamen silindi.`);
 }
+
 
     function ogrenciGuncelle(id) {
       const ogrenciler = getOgrenciler();
@@ -795,83 +1088,53 @@ window.addEventListener('load', doldurHaftaOgrenciListesi);
       document.getElementById('guncelleModal').style.display = 'none';
     }
 
-    function ogrenciGuncelleKaydet() {
-      const yeniAd = document.getElementById('guncelleAd').value.trim();
-      const yeniSinif = document.getElementById('guncelleSinif').value.trim();
-      if (!yeniAd || !yeniSinif) {
-        alert('Lütfen tüm alanları doldurun.');
-        return;
-      }
-      let ogrenciler = getOgrenciler();
-      const index = ogrenciler.findIndex(o => o.id === guncellenecekId);
-      if (index !== -1) {
-        ogrenciler[index].ad = yeniAd;
-        ogrenciler[index].sinif = yeniSinif;
-        setOgrenciler(ogrenciler);
-        ogrenciListele();
-        modalKapat();
-      }
-    }
+function ogrenciGuncelleKaydet() {
+  const id = parseInt(document.getElementById("guncelle-id").value);
+  const isim = document.getElementById("guncelle-isim").value.trim();
+  const soyisim = document.getElementById("guncelle-soyisim").value.trim();
+  const sinif = document.getElementById("guncelle-sinif").value;
 
-    function ogrenciListele() {
-      const listeDiv = document.getElementById('ogrenciListesi');
-      const ogrenciler = getOgrenciler();
-      if (ogrenciler.length === 0) {
-        listeDiv.innerHTML = '<p>Henüz kayıtlı öğrenci yok.</p>';
-        return;
+  getOgrenciler(ogrenciler => {
+    const guncelOgrenciler = ogrenciler.map(o => {
+      if (o.id === id) {
+        return { id, isim, soyisim, sinif };
       }
-      listeDiv.innerHTML = ogrenciler.map(o => `
-        <div class="student-entry">
-          <span>${o.ad} (${o.sinif})</span>
-          <div>
-            <button class="btn-small" onclick="ogrenciSil('${o.id}')">🗑️</button>
-            <button class="btn-small" onclick="ogrenciGuncelle('${o.id}')">✏️</button>
-          </div>
-        </div>
-      `).join('');
-    }
+      return o;
+    });
 
-    function verileriYedekle() {
-  const data = {
-    ogrenciler: JSON.parse(localStorage.getItem('ogrenciler') || '[]'),
-    odevler: JSON.parse(localStorage.getItem('odevler') || '[]'),
-    haftalikKayitlar: JSON.parse(localStorage.getItem('haftalikKayitlar') || '[]') // eklendi
-  };
-  const dosyaAdi = document.getElementById('dosyaAdi').value.trim() || 'ozel_ders_yedek';
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = dosyaAdi + '.json';
-  a.click();
-  document.getElementById('yedekDurum').innerText = `📂 '${dosyaAdi}.json' dosyası indirildi. Lütfen bilgisayarınızın Downloads klasörünü kontrol edin.`;
+    setOgrenciler(guncelOgrenciler);
+    ogrenciListele();
+  });
+
+  // Güncelleme panelini kapat
+  document.getElementById("guncelle-form").style.display = "none";
 }
-    function verileriYukle(event) {
-  const file = event.target.files[0];
-  if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (data.ogrenciler && data.odevler) {
-        localStorage.setItem('ogrenciler', JSON.stringify(data.ogrenciler));
-        localStorage.setItem('odevler', JSON.stringify(data.odevler));
 
-        if (data.haftalikKayitlar) {
-          localStorage.setItem('haftalikKayitlar', JSON.stringify(data.haftalikKayitlar));
-        }
+function ogrenciListele() {
+  const liste = document.getElementById("ogrenciListesi");
+  if (!liste) return;
 
-        document.getElementById('yedekDurum').innerText = '✅ Yedek başarıyla yüklendi!';
-        ogrenciListele();
-      } else {
-        document.getElementById('yedekDurum').innerText = '⚠️ Geçersiz dosya formatı!';
-      }
-    } catch {
-      document.getElementById('yedekDurum').innerText = '❌ Yükleme sırasında hata oluştu!';
-    }
-  };
-  reader.readAsText(file);
+  database.ref("ogrenciler").once("value")
+    .then(snapshot => {
+      const ogrenciler = snapshot.val() || [];
+      liste.innerHTML = "";
+      ogrenciler.forEach(ogrenci => {
+        const div = document.createElement("div");
+        div.classList.add("student-entry");
+        div.innerHTML = `
+          <span>${ogrenci.ad} (${ogrenci.sinif})</span>
+          <button class="btn-small" onclick="ogrenciSil(${ogrenci.id})">🗑️</button>
+        `;
+        liste.appendChild(div);
+      });
+    })
+    .catch(error => {
+      console.error("Öğrenciler listelenemedi:", error);
+    });
 }
+
+
   window.onload = ogrenciListele;
   window.addEventListener('load', () => {
   haftalikKayitlariListele();
