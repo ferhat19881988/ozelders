@@ -220,7 +220,6 @@
   <textarea id="gelecekHaftaKonu" placeholder="Gelecek hafta işlenecek konu"></textarea>
 
  <button type="button" onclick="haftalikVeriyiEkle()">➕ Ödevi Sisteme Ekle</button>
-  <button onclick="haftalikVeriyiKaydet()">💾 Tümünü Kaydet</button>
   <button onclick="haftalikFormYenile()">🔄 Yenile</button>
 <hr>
 <h3>📋 Kayıtlı Haftalık Değerlendirmeler</h3>
@@ -887,51 +886,6 @@ function haftalikVeriyiEkle() {
       alert("⚠️ Veri eklenirken hata oluştu.");
     });
 }
-
-
-
-
-
-function haftalikVeriyiKaydet() {
-  const ogrenci = document.getElementById('haftaOgrenci').value;
-  const odev = document.getElementById('haftaOdev').value;
-  const durum = document.getElementById('odevDurumu').value;
-  const konu = document.getElementById('buHaftaKonu').value.trim();
-  const gelecekOdev = document.getElementById('gelecekHaftaOdev').value.trim();
-  const tarih = document.getElementById('gelecekTarih').value;
-  const gelecekKonu = document.getElementById('gelecekHaftaKonu').value.trim();
-
-  if (!ogrenci || !tarih) {
-    alert("🚫 Öğrenci ve tarih zorunludur.");
-    return;
-  }
-
-  const zamanDamgasi = new Date().toISOString();
-
-  const haftalikKayit = {
-    ogrenci,
-    odev,
-    durum,
-    konu,
-    gelecekOdev,
-    tarih,
-    gelecekKonu,
-    zaman: zamanDamgasi
-  };
-
-  database.ref("haftalikDegerlendirme").push(haftalikKayit)
-    .then(() => {
-      document.getElementById('haftaDurumMesaji').innerText = '✅ Tüm veri kaydedildi.';
-      haftalikFormYenile();
-      haftalikKayitlariListele();  // Listeyi yenile
-    })
-    .catch(error => {
-      console.error("❌ Haftalık veri kaydı başarısız:", error);
-      alert("⚠️ Kayıt eklenirken hata oluştu.");
-    });
-}
-
-
 
 function haftalikFormYenile() {
   document.getElementById('haftaOgrenci').value = '';
