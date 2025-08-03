@@ -966,7 +966,7 @@ function getOgrenciler(callback) {
   database.ref("ogrenciler").once("value")
     .then(snapshot => {
       const data = snapshot.val();
-      callback(data ? data : []);
+      callback(data ? Object.values(data) : []);
     })
     .catch(error => {
       console.error("Öğrenciler alınırken hata oluştu:", error);
@@ -1072,7 +1072,7 @@ function ogrenciListele() {
 
   database.ref("ogrenciler").once("value")
     .then(snapshot => {
-      const ogrenciler = snapshot.val() || [];
+      const ogrenciler = Object.values(snapshot.val() || {});
       liste.innerHTML = "";
       ogrenciler.forEach(ogrenci => {
         const div = document.createElement("div");
