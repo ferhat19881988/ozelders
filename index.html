@@ -1,486 +1,783 @@
-<!DOCTYPE html><html lang="tr">
+<!DOCTYPE html>
+<html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Özel Ders Takip Sistemi</title>
+
+  <!-- Bootstrap 5.3 (CSS) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <!-- Icons (opsiyonel) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+
+  <!-- QR ve Firebase -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-<script>
-  // Firebase yapılandırman
-  const firebaseConfig = {
-    apiKey: "AIzaSyD4Ctf-F5BSU_4fHK2WgTQUj_okrzyI7OI",
-    authDomain: "birebir-1df98.firebaseapp.com",
-    databaseURL: "https://birebir-1df98-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "birebir-1df98",
-    storageBucket: "birebir-1df98.firebasestorage.app",
-    messagingSenderId: "145327250159",
-    appId: "1:145327250159:web:f4d8be51e312f5552f591a",
-    measurementId: "G-8CB54NS9QW"
-  };
-
-  // Firebase'i başlat
-  firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
-</script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      color: #333;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
-    h1 {
-      margin-bottom: 20px;
-    }
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .tabs button {
-  font-size: 11px;         /* küçültüldü */
-  line-height: 1.2;
-  white-space: normal;
-  width: 90px;             /* biraz daraltıldı */
-  padding: 6px 4px;        /* daha sıkı kenarlar */
+    body { background: #f5f7fb; }
+    .app-card { background:#fff; border-radius:1rem; box-shadow:0 10px 30px rgba(15,23,42,.06); }
+    .sticky-tabs { position: sticky; top: 0; z-index: 1020; background: #f5f7fb; padding-top: .5rem; }
+    .list-fit .list-group-item { display:flex; align-items:center; justify-content:space-between; gap: .5rem; }
+    .qr-center { display:flex; align-items:center; justify-content:center; min-height:240px; }
+    .small-muted { font-size:.9rem; color:#6c757d; }
+    .form-row-gap { row-gap: .75rem; }
+    textarea { resize: vertical; }
+    .navbar-brand img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
 }
-    .tabs button.active {
-      border-color: #333;
-      background: #ddd;
-    }
-    section {
-      display: none;
-      background: white;
-      border-radius: 10px;
-      padding: 20px;
-      max-width: 600px;
-      margin: 0 auto 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    section.active {
-      display: block;
-    }
-    input, select, textarea, button {
-      margin: 8px 0;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    button {
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #ddd;
-    }
-    .btn-small {
-      width: auto;
-      margin: 0 5px;
-      padding: 6px 12px;
-    }
-    .icon {
-      font-size: 16px;
-      margin-right: 5px;
-    }
-    .student-entry {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    .student-entry span {
-      flex: 1;
-      text-align: left;
-    }
-    #guncelleModal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      display: none;
-      z-index: 1000;
-      width: 90%;
-      max-width: 400px;
-    }
-    #modalArkaPlan {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.3);
-      display: none;
-      z-index: 999;
-    }
-    #haftalikKayitListesi,
-#odevListesi {
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px;
-  background: #fafafa;
-}
-#qrCanvasContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 10px auto;
-  width: 100%;
-}
-
   </style>
-</head>
-<body>
-  <h1>📘 Özel Ders Takip Sistemi</h1>  <div class="tabs">
- <button class="tabBtn" onclick="switchTab('ogrenciKayit', this)">👤 Öğrenci Kaydı</button>
-<button class="tabBtn" onclick="switchTab('haftalikDegerlendirme', this)">📅 Haftalık Değerlendirme</button>
-<button class="tabBtn" onclick="switchTab('whatsappRapor', this)">📤 WhatsApp Rapor</button>
-  </div>  <section id="ogrenciKayit" class="active">
-    <h2>👤 Öğrenci Kaydı</h2>
-    <input type="text" id="ogrenciAd" placeholder="Öğrenci Adı">
-    <select id="ogrenciSinif">
-      <option value="">Sınıf Seçiniz</option>
-      <option value="5. Sınıf">5. Sınıf</option>
-      <option value="6. Sınıf">6. Sınıf</option>
-      <option value="7. Sınıf">7. Sınıf</option>
-      <option value="8. Sınıf">8. Sınıf</option>
-    </select>
-    <div style="display: flex; gap: 10px;">
-      <button onclick="ogrenciEkle()">➕ Öğrenci Ekle</button>
-      <button onclick="temizleInputlar()">🔄 Yenile</button>
-    </div>
-    <div id="ogrenciListesi"></div>
-    <hr>
-<h3>📘 Ödev Ekle</h3>
-
-<select id="odevOgrenci">
-  <option value="">Öğrenci Seçiniz</option>
-</select>
-
-<input type="date" id="odevTarih">
-<textarea id="odevIcerik" placeholder="Ödev içeriği girin..."></textarea>
-
-<div style="display: flex; gap: 10px;">
-  <button onclick="odevEkle()">➕ Ödev Ekle</button>
-  <button onclick="odevFormTemizle()">🔄 Yenile</button>
-  <button onclick="tumOdevleriSil()">🗑️ Tüm Ödevleri Sil</button>
-</div>
-
-<div id="odevListesi"></div>
-  </section>  
-  <div id="modalArkaPlan" onclick="modalKapat()"></div>
-  <div id="guncelleModal">
-    <h3>✏️ Öğrenci Güncelle</h3>
-    <input type="text" id="guncelleAd">
-    <select id="guncelleSinif">
-      <option value="">Sınıf Seçiniz</option>
-      <option value="5. Sınıf">5. Sınıf</option>
-      <option value="6. Sınıf">6. Sınıf</option>
-      <option value="7. Sınıf">7. Sınıf</option>
-      <option value="8. Sınıf">8. Sınıf</option>
-    </select>
-    <button onclick="ogrenciGuncelleKaydet()">💾 Kaydet</button>
-    <button onclick="modalKapat()">❌ Kapat</button>
-  </div>  
-  <section id="haftalikDegerlendirme">
-  <h2>📅 Haftalık Değerlendirme</h2>
-
-  <select id="haftaOgrenci">
-    <option value="">Öğrenci Seçin</option>
-  </select>
-
-  <select id="haftaOdev">
-    <option value="">Ödev Seçin</option>
-  </select>
-
-  <select id="odevDurumu">
-    <option value="">Ödev Durumu</option>
-    <option value="yapti">✅ Yaptı</option>
-    <option value="yapmadi">❌ Yapmadı</option>
-    <option value="eksik">⚠️ Eksik</option>
-    <option value="getirmedi">📭 Getirmedi</option>
-  </select>
-
-  <textarea id="buHaftaKonu" placeholder="Bu hafta işlenen konu"></textarea>
-  <textarea id="gelecekHaftaOdev" placeholder="Gelecek haftanın ödevi"></textarea>
-  <input type="date" id="gelecekTarih">
-  <textarea id="gelecekHaftaKonu" placeholder="Gelecek hafta işlenecek konu"></textarea>
-
- <button type="button" onclick="haftalikVeriyiEkle()">➕ Ödevi Sisteme Ekle</button>
-  <button onclick="haftalikFormYenile()">🔄 Yenile</button>
-<hr>
-<h3>📋 Kayıtlı Haftalık Değerlendirmeler</h3>
-<button type="button" onclick="tumHaftalikKayitlariSil()">🗑️ Tüm Kayıtları Sil</button>
-<div id="haftalikKayitListesi"></div>
-  <p id="haftaDurumMesaji"></p>
-</section>
-  <div id="odevModalArkaPlan" onclick="odevModalKapat()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:999;"></div>
-
-<div id="odevGuncelleModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; padding:20px; border-radius:10px; max-width:400px; width:90%; z-index:1000;">
-  <h3>✏️ Ödev Güncelle</h3>
-  <input type="date" id="guncelleOdevTarih">
-  <textarea id="guncelleOdevIcerik" rows="4"></textarea>
-  <button onclick="odevGuncelleKaydet()">💾 Kaydet</button>
-  <button onclick="odevModalKapat()">❌ Kapat</button>
-</div>
-  <!-- WhatsApp Rapor Sekmesi Başlangıcı -->
-  <section id="whatsappRapor">
-  <h2>📤 WhatsApp Raporları</h2>  <div style="margin-bottom: 20px;">
-    <label for="raporTipi"><strong>Rapor Türü:</strong></label>
-    <select id="raporTipi" onchange="raporTipiDegisti()">
-      <option value="haftalik">📅 Haftalık Rapor</option>
-      <option value="aylik">📆 Aylık Rapor</option>
-    </select>
-  </div>  <!-- Ortak Öğrenci Seçimi -->  <div style="margin-bottom: 15px;">
-    <label for="raporOgrenciSec">👤 Öğrenci Seç:</label>
-    <select id="raporOgrenciSec"></select>
-  </div> 
-    <!-- Mesaj Önizleme Alanı -->  <div>
-    <label><strong>📄 Oluşturulan Mesaj:</strong></label>
-    <textarea id="raporMesaj" rows="12"></textarea></div>  <!-- Gönder Butonu -->
-    <button onclick="whatsappMesajGonder()">📤 Gönder</button>
-    <button onclick="raporFormYenile()">🔄 Yenile</button>
-    <button onclick="qrKodModalAc()">📱 QR Kod ile Göster</button>
-<div id="qrCanvasContainer"></div>
-</section>
-<!-- WhatsApp Rapor Sekmesi Sonu -->
-  <!-- Haftalık Kayıt Güncelle Modalı -->
-<div id="haftalikModalArkaPlan" onclick="haftalikModalKapat()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:999;"></div>
-
-<div id="haftalikGuncelleModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; padding:20px; border-radius:10px; max-width:450px; width:90%; z-index:1000;">
-  <h3>✏️ Haftalık Kayıt Güncelle</h3>
-  <input type="text" id="guncelleHaftaOgrenci" placeholder="Öğrenci Adı">
-  <input type="text" id="guncelleHaftaKonu" placeholder="Bu hafta konusu">
-  <input type="text" id="guncelleHaftaOdev" placeholder="Ödev">
-  <input type="text" id="guncelleHaftaDurum" placeholder="Ödev durumu (yapti, yapmadi...)">
-  <input type="date" id="guncelleHaftaTarih">
-  <input type="text" id="guncelleGelecekKonu" placeholder="Gelecek hafta konusu">
-  <input type="text" id="guncelleGelecekOdev" placeholder="Gelecek hafta ödevi">
-  <button onclick="haftalikKaydiGuncelleKaydet()">💾 Kaydet</button>
-  <button onclick="haftalikModalKapat()">❌ Kapat</button>
-</div>
 
   <script>
-    function tumHaftalikKayitlariSil() {
-  if (confirm("Tüm haftalık kayıtları silmek istediğinize emin misiniz?")) {
-    database.ref("haftalikDegerlendirme").remove()
-      .then(() => {
-        haftalikKayitlariListele();
-        alert("✅ Tüm haftalık kayıtlar silindi.");
-      })
-      .catch(error => {
-        console.error("Kayıtlar silinemedi:", error);
-        alert("❌ Kayıtlar silinemedi.");
-      });
-  }
-}
+    // Firebase yapılandırma
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4Ctf-F5BSU_4fHK2WgTQUj_okrzyI7OI",
+      authDomain: "birebir-1df98.firebaseapp.com",
+      databaseURL: "https://birebir-1df98-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "birebir-1df98",
+      storageBucket: "birebir-1df98.firebasestorage.app",
+      messagingSenderId: "145327250159",
+      appId: "1:145327250159:web:f4d8be51e312f5552f591a",
+      measurementId: "G-8CB54NS9QW"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+  </script>
+</head>
+<body>
 
-function qrKodModalAc() {
-  const mesaj = document.getElementById('raporMesaj').value.trim();
-  if (!mesaj) return alert("Mesaj boş.");
-  const url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
-
-  const container = document.getElementById('qrCanvasContainer');
-  container.innerHTML = '';
-  new QRCode(container, {
-    text: url,
-    width: 250,
-    height: 250,
-    correctLevel: QRCode.CorrectLevel.M
-  });
-
-  document.getElementById('qrModalArkaPlan').style.display = 'block';
-  document.getElementById('qrModal').style.display = 'block';
-}
-
-    
-   function raporFormYenile() {
-  document.getElementById('raporTipi').value = 'haftalik';
-  document.getElementById('raporOgrenciSec').value = '';
-  document.getElementById('raporMesaj').value = '';
-}
-
-   
-  let guncellenecekHaftaKey = null;
-
-function haftalikKaydiGuncelle(key, veri) {
-  guncellenecekHaftaKey = key;
-
-  document.getElementById('guncelleHaftaOgrenci').value = veri.ogrenci || '';
-  document.getElementById('guncelleHaftaOdev').value = veri.odev || '';
-  document.getElementById('guncelleHaftaDurum').value = veri.durum || '';
-  document.getElementById('guncelleHaftaKonu').value = veri.konu || '';
-  document.getElementById('guncelleHaftaTarih').value = veri.tarih || '';
-  document.getElementById('guncelleGelecekOdev').value = veri.gelecekOdev || '';
-  document.getElementById('guncelleGelecekKonu').value = veri.gelecekKonu || '';
-
-  document.getElementById("haftalikModalArkaPlan").style.display = "block";
-  document.getElementById("haftalikGuncelleModal").style.display = "block";
-}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="#">
+      <img src="https://i.ibb.co/F4cDX7MX/logom.jpg" alt="Logo" height="32" class="rounded" />
+      📘 Özel Ders Takip Sistemi
+    </a>
+  </div>
+</nav>
 
 
+  <!-- Sekmeler -->
+  <div class="sticky-tabs border-bottom">
+    <div class="container">
+      <ul class="nav nav-pills my-3" id="mainTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tab-ogrenci" data-bs-toggle="pill" data-bs-target="#pnl-ogrenci" type="button" role="tab">
+            <i class="bi bi-person"></i> Öğrenci Kaydı
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-haftalik" data-bs-toggle="pill" data-bs-target="#pnl-haftalik" type="button" role="tab">
+            <i class="bi bi-calendar-week"></i> Haftalık Değerlendirme
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-rapor" data-bs-toggle="pill" data-bs-target="#pnl-rapor" type="button" role="tab">
+            <i class="bi bi-whatsapp"></i> WhatsApp Rapor
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
 
+  <!-- İçerik -->
+  <div class="container my-4">
+    <div class="tab-content">
 
-function haftalikKaydiGuncelleKaydet() {
-  if (!guncellenecekHaftaKey) {
-    alert("Güncellenecek kayıt yok.");
-    return;
-  }
+      <!-- ÖĞRENCİ KAYIT -->
+      <div class="tab-pane fade show active" id="pnl-ogrenci" role="tabpanel" aria-labelledby="tab-ogrenci">
+        <div class="app-card p-4 p-md-5">
+          <h2 class="h4 mb-4">👤 Öğrenci Kaydı</h2>
 
-  const veri = {
-    ogrenci: document.getElementById('guncelleHaftaOgrenci').value,
-    odev: document.getElementById('guncelleHaftaOdev').value,
-    durum: document.getElementById('guncelleHaftaDurum').value,
-    konu: document.getElementById('guncelleHaftaKonu').value,
-    tarih: document.getElementById('guncelleHaftaTarih').value,
-    gelecekOdev: document.getElementById('guncelleGelecekOdev').value,
-    gelecekKonu: document.getElementById('guncelleGelecekKonu').value,
-    zaman: new Date().toISOString()
-  };
+          <div class="row g-3 form-row-gap">
+            <div class="col-md-6">
+              <label class="form-label">Öğrenci Adı</label>
+              <input type="text" id="ogrenciAd" class="form-control" placeholder="Örn: Ayşe Yılmaz" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Sınıf</label>
+              <select id="ogrenciSinif" class="form-select">
+                <option value="">Sınıf Seçiniz</option>
+                <option>5. Sınıf</option><option>6. Sınıf</option>
+                <option>7. Sınıf</option><option>8. Sınıf</option>
+              </select>
+            </div>
+            <div class="col-12 d-flex gap-2">
+              <button class="btn btn-primary" onclick="ogrenciEkle()"><i class="bi bi-plus-circle"></i> Öğrenci Ekle</button>
+              <button class="btn btn-outline-secondary" onclick="temizleInputlar()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
+            </div>
+          </div>
 
-  database.ref("haftalikDegerlendirme/" + guncellenecekHaftaKey).update(veri)
-    .then(() => {
-      haftalikModalKapat();
-      haftalikKayitlariListele();
-      alert("✅ Kayıt güncellendi.");
-    })
-    .catch(err => {
-      console.error("Güncelleme hatası:", err);
-      alert("❌ Güncelleme başarısız.");
-    });
-}
+          <hr class="my-4" />
 
+          <h3 class="h5 mb-3">📋 Öğrenci Listesi</h3>
+          <div class="list-group list-fit" id="ogrenciListesi"></div>
 
+          <hr class="my-4" />
 
-function haftalikModalKapat() {
-  document.getElementById("haftalikModalArkaPlan").style.display = "none";
-  document.getElementById("haftalikGuncelleModal").style.display = "none";
-  guncellenecekHaftaKey = null;
-}
+          <h3 class="h5 mb-3">📘 Ödev Ekle</h3>
+          <div class="row g-3 form-row-gap">
+            <div class="col-md-4">
+              <label class="form-label">Öğrenci</label>
+              <select id="odevOgrenci" class="form-select">
+                <option value="">Öğrenci Seçiniz</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Tarih</label>
+              <input type="date" id="odevTarih" class="form-control"/>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Ödev İçeriği</label>
+              <textarea id="odevIcerik" class="form-control" rows="3" placeholder="Örn: Sayfa 45-47 problemler..."></textarea>
+            </div>
+            <div class="col-12 d-flex flex-wrap gap-2">
+              <button class="btn btn-success" onclick="odevEkle()"><i class="bi bi-plus-circle"></i> Ödev Ekle</button>
+              <button class="btn btn-outline-secondary" onclick="odevFormTemizle()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
+              <button class="btn btn-outline-danger" onclick="tumOdevleriSil()"><i class="bi bi-trash"></i> Tüm Ödevleri Sil</button>
+            </div>
+          </div>
 
-  
-function haftalikKaydiSil(key) {
-  if (confirm("Bu haftalık kaydı silmek istiyor musunuz?")) {
-    database.ref("haftalikDegerlendirme/" + key).remove()
-      .then(() => haftalikKayitlariListele());
-  }
-}
+          <div class="mt-4">
+            <h3 class="h6 text-uppercase text-muted">Kayıtlı Ödevler</h3>
+            <div id="odevListesi" class="list-group list-fit"></div>
+          </div>
+        </div>
+      </div>
 
+      <!-- HAFTALIK DEĞERLENDİRME -->
+      <div class="tab-pane fade" id="pnl-haftalik" role="tabpanel" aria-labelledby="tab-haftalik">
+        <div class="app-card p-4 p-md-5">
+          <h2 class="h4 mb-4">📅 Haftalık Değerlendirme</h2>
 
-  
-function haftalikKayitlariListele() {
-  const liste = document.getElementById("haftalikKayitListesi");
-  liste.innerHTML = "";
+          <div class="row g-3 form-row-gap">
+            <div class="col-md-4">
+              <label class="form-label">Öğrenci</label>
+              <select id="haftaOgrenci" class="form-select">
+                <option value="">Öğrenci Seçin</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Ödev</label>
+              <select id="haftaOdev" class="form-select">
+                <option value="">Ödev Seçin</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Ödev Durumu</label>
+              <select id="odevDurumu" class="form-select">
+                <option value="">Ödev Durumu</option>
+                <option value="yapti">✅ Yaptı</option>
+                <option value="yapmadi">❌ Yapmadı</option>
+                <option value="eksik">⚠️ Eksik</option>
+                <option value="getirmedi">📭 Getirmedi</option>
+              </select>
+            </div>
 
-  database.ref("haftalikDegerlendirme").once("value")
-    .then(snapshot => {
-      const veriler = snapshot.val();
-      if (!veriler) return;
+            <div class="col-12">
+              <label class="form-label">Bu hafta işlenen konu</label>
+              <textarea id="buHaftaKonu" class="form-control" rows="2"></textarea>
+            </div>
 
-      Object.entries(veriler).forEach(([key, veri]) => {
-        const div = document.createElement("div");
-        div.className = "student-entry";
+            <div class="col-md-6">
+              <label class="form-label">Gelecek haftanın ödevi</label>
+              <textarea id="gelecekHaftaOdev" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Teslim Tarihi</label>
+              <input type="date" id="gelecekTarih" class="form-control" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Gelecek hafta konusu</label>
+              <textarea id="gelecekHaftaKonu" class="form-control" rows="1"></textarea>
+            </div>
 
-        const metin = `${veri.ogrenci || '???'} - ${veri.tarih || '???'} - ${veri.konu || '???'}`;
-        const span = document.createElement("span");
-        span.textContent = metin;
+            <div class="col-12 d-flex flex-wrap gap-2">
+              <button class="btn btn-primary" type="button" onclick="haftalikVeriyiEkle()"><i class="bi bi-plus-circle"></i> Ödevi Sisteme Ekle</button>
+              <button class="btn btn-outline-secondary" onclick="haftalikFormYenile()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
+              <button class="btn btn-outline-danger ms-auto" type="button" onclick="tumHaftalikKayitlariSil()"><i class="bi bi-trash"></i> Tüm Kayıtları Sil</button>
+            </div>
+          </div>
 
-        const silBtn = document.createElement("button");
-        silBtn.className = "btn-small";
-        silBtn.textContent = "🗑️";
-        silBtn.onclick = () => haftalikKaydiSil(key);
+          <hr class="my-4" />
 
-        const guncelleBtn = document.createElement("button");
-        guncelleBtn.className = "btn-small";
-        guncelleBtn.textContent = "✏️";
-        guncelleBtn.onclick = () => haftalikKaydiGuncelle(key, veri);
+          <h3 class="h5 mb-3">📋 Kayıtlı Haftalık Değerlendirmeler</h3>
+          <div id="haftalikKayitListesi" class="list-group list-fit"></div>
+          <p id="haftaDurumMesaji" class="mt-3 small-muted"></p>
+        </div>
+      </div>
 
-        div.appendChild(span);
-        div.appendChild(guncelleBtn);
-        div.appendChild(silBtn);
-        liste.appendChild(div);
-      });
-    });
-}
+      <!-- WHATSAPP RAPOR -->
+      <div class="tab-pane fade" id="pnl-rapor" role="tabpanel" aria-labelledby="tab-rapor">
+        <div class="app-card p-4 p-md-5">
+          <h2 class="h4 mb-4">📤 WhatsApp Raporları</h2>
 
+          <div class="row g-3 form-row-gap">
+            <div class="col-md-4">
+              <label class="form-label">Rapor Türü</label>
+              <select id="raporTipi" class="form-select" onchange="raporTipiDegisti()">
+                <option value="haftalik">📅 Haftalık Rapor</option>
+                <option value="aylik">📆 Aylık Rapor</option>
+              </select>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label">Öğrenci Seç</label>
+              <select id="raporOgrenciSec" class="form-select"></select>
+            </div>
 
+            <div class="col-12">
+              <label class="form-label">Oluşturulan Mesaj</label>
+              <textarea id="raporMesaj" rows="10" class="form-control"></textarea>
+            </div>
 
-  
-  function raporTipiDegisti() {
-  const raporTipi = document.getElementById('raporTipi').value;
-  const aylikSecimAlani = document.getElementById('aylikSecimAlani');
-  aylikSecimAlani.style.display = (raporTipi === 'aylik') ? 'block' : 'none';
-  raporMesajiOlustur();
-}
+            <div class="col-12 d-flex flex-wrap gap-2">
+              <button class="btn btn-success" onclick="whatsappMesajGonder()"><i class="bi bi-send"></i> Gönder</button>
+              <button class="btn btn-outline-secondary" onclick="raporFormYenile()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
+              <button class="btn btn-outline-dark" onclick="qrKodModalAc()"><i class="bi bi-qr-code"></i> QR Kod ile Göster</button>
+            </div>
+          </div>
+          <div id="qrCanvasContainer" class="qr-center mt-3"></div>
+        </div>
+      </div>
 
-function whatsappMesajGonder() {
-  const mesaj = document.getElementById('raporMesaj').value.trim();
-  if (!mesaj) return alert('Gönderilecek mesaj boş.');
-  const url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
-  window.open(url, '_blank');
-}
+    </div>
+  </div>
 
-function raporMesajiOlustur() {
-  const tip = document.getElementById('raporTipi').value;
-  const secilenId = document.getElementById('raporOgrenciSec').value;
-  if (!secilenId) return;
+  <!-- MODALS -->
 
-  const ayAdlari = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-  const formatTarih = (date) => `${date.getDate()} ${ayAdlari[date.getMonth()]} ${date.getFullYear()}`;
-  const toShortDateStr = (d) => new Date(d).toISOString().split('T')[0];
+  <!-- Öğrenci Güncelle Modal -->
+  <div class="modal fade" id="ogrenciGuncelleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">✏️ Öğrenci Güncelle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Ad</label>
+            <input type="text" id="guncelleAd" class="form-control"/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Sınıf</label>
+            <select id="guncelleSinif" class="form-select">
+              <option value="">Sınıf Seçiniz</option>
+              <option>5. Sınıf</option><option>6. Sınıf</option>
+              <option>7. Sınıf</option><option>8. Sınıf</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
+          <button class="btn btn-primary" onclick="ogrenciGuncelleKaydet()"><i class="bi bi-save"></i> Kaydet</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  const bugun = new Date();
-  const bugunStr = toShortDateStr(bugun);
-  const birAyOnce = new Date(bugun);
-  birAyOnce.setMonth(birAyOnce.getMonth() - 1);
-  const birAyOnceStr = toShortDateStr(birAyOnce);
+  <!-- Ödev Güncelle Modal -->
+  <div class="modal fade" id="odevGuncelleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">✏️ Ödev Güncelle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Tarih</label>
+            <input type="date" id="guncelleOdevTarih" class="form-control"/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">İçerik</label>
+            <textarea id="guncelleOdevIcerik" rows="4" class="form-control"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
+          <button class="btn btn-primary" onclick="odevGuncelleKaydet()"><i class="bi bi-save"></i> Kaydet</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  const durumIcon = (durum) => {
-    switch ((durum || '').toLowerCase()) {
-      case 'yapti': return '✅ Yaptı';
-      case 'yapmadi': return '❌ Yapmadı';
-      case 'eksik': return '⚠️ Eksik';
-      case 'getirmedi': return '📭 Getirmedi';
-      default: return '➖ Bilgi Yok';
+  <!-- Haftalık Kayıt Güncelle Modal -->
+  <div class="modal fade" id="haftalikGuncelleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">✏️ Haftalık Kayıt Güncelle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="guncelleHaftaOgrenci" class="form-control mb-2" placeholder="Öğrenci Adı">
+          <input type="text" id="guncelleHaftaKonu" class="form-control mb-2" placeholder="Bu hafta konusu">
+          <input type="text" id="guncelleHaftaOdev" class="form-control mb-2" placeholder="Ödev">
+          <input type="text" id="guncelleHaftaDurum" class="form-control mb-2" placeholder="Ödev durumu (yapti, yapmadi...)">
+          <input type="date" id="guncelleHaftaTarih" class="form-control mb-2">
+          <input type="text" id="guncelleGelecekKonu" class="form-control mb-2" placeholder="Gelecek hafta konusu">
+          <input type="text" id="guncelleGelecekOdev" class="form-control mb-2" placeholder="Gelecek hafta ödevi">
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
+          <button class="btn btn-primary" onclick="haftalikKaydiGuncelleKaydet()"><i class="bi bi-save"></i> Kaydet</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Kod Modal -->
+  <div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">📱 WhatsApp Mesajı için QR Kod</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body">
+          <div id="qrModalCanvas" class="qr-center"></div>
+          <p class="small-muted text-center mt-3">QR’ı telefon kameranızla okutarak WhatsApp mesajını açabilirsiniz.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3 (JS) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    /************ Yardımcılar ************/
+    let guncellenecekId = null;            // Öğrenci güncelle
+    let guncellenecekOdevKey = null;       // Ödev güncelle
+    let guncellenecekHaftaKey = null;      // Haftalık kayıt güncelle
+
+    const bsModal = (id) => new bootstrap.Modal(document.getElementById(id));
+
+    const durumIcon = (durum) => {
+      switch ((durum || '').toLowerCase()) {
+        case 'yapti': return '✅ Yaptı';
+        case 'yapmadi': return '❌ Yapmadı';
+        case 'eksik': return '⚠️ Eksik';
+        case 'getirmedi': return '📭 Getirmedi';
+        default: return '➖ Bilgi Yok';
+      }
+    };
+
+    // --- Ortak yenile yardımcıları ---
+    function refreshStudents() {
+      ogrenciListele();
+      doldurOgrenciSecimi();       // Ödev ekleme öğrenci select
+      doldurHaftaOgrenciListesi(); // Haftalık değerlendirme öğrenci select
+      raporOgrenciSecDoldur();     // Rapor öğrenci select
     }
-  };
+    function refreshAssignments() {
+      odevListele();
+    }
+    function refreshWeekly() {
+      haftalikKayitlariListele();
+    }
+    function refreshAll() {
+      refreshStudents();
+      refreshAssignments();
+      refreshWeekly();
+      // Rapor seçimi yapılmışsa mesajı tazele
+      const sel = document.getElementById('raporOgrenciSec');
+      if (sel && sel.value) { raporMesajiOlustur(); }
+    }
 
-  // Firebase'ten öğrenci ve haftalık kayıtları al
-  Promise.all([
-    database.ref("ogrenciler").once("value"),
-    database.ref("haftalikDegerlendirme").once("value")
-  ]).then(([ogrenciSnap, haftalikSnap]) => {
-    const ogrenciler = ogrenciSnap.val() || [];
-    const haftalikKayitlar = haftalikSnap.val() || [];
+    // Öğrenci - dizi olarak sakla / getir
+    function getOgrenciler(cb){
+      database.ref("ogrenciler").once("value").then(s => {
+        const val = s.val();
+        const arr = Array.isArray(val) ? (val.filter(Boolean) || []) : (Object.values(val || {}));
+        cb(arr || []);
+      }).catch(_ => cb([]));
+    }
+    function setOgrenciler(arr){
+      return database.ref("ogrenciler").set(arr || []);
+    }
 
-    const ogrenci = Array.isArray(ogrenciler)
-      ? ogrenciler.find(o => o.id == secilenId)
-      : Object.values(ogrenciler).find(o => o.id == secilenId);
+    /************ ÖĞRENCİ ************/
+    function temizleInputlar(){
+      document.getElementById('ogrenciAd').value = '';
+      document.getElementById('ogrenciSinif').value = '';
+    }
 
-    if (!ogrenci) return;
+    function ogrenciEkle(){
+      const ad = document.getElementById('ogrenciAd').value.trim();
+      const sinif = document.getElementById('ogrenciSinif').value;
+      if(!ad || !sinif){ alert("Lütfen öğrenci adı ve sınıf seçin."); return; }
 
-    const ogrenciAdi = ogrenci.ad;
+      getOgrenciler(ogrenciler=>{
+        const id = Date.now();
+        const yeni = { id, ad, sinif };
+        const guncel = [...ogrenciler, yeni];
+        setOgrenciler(guncel).then(()=>{
+          alert("✅ Öğrenci eklendi.");
+          refreshStudents(); // önemli
+          temizleInputlar();
+        }).catch(()=> alert("❌ Öğrenci eklenemedi."));
+      });
+    }
 
-    const kayitlar = Array.isArray(haftalikKayitlar) ? haftalikKayitlar : Object.values(haftalikKayitlar);
+    function ogrenciSil(id){
+      getOgrenciler(ogrenciler=>{
+        const guncel = ogrenciler.filter(o=>o.id !== id);
+        setOgrenciler(guncel).then(()=>{
+          refreshStudents(); // önemli
+        });
+      });
+    }
 
-    if (tip === 'haftalik') {
-      const ogrenciKayitlari = kayitlar.filter(k => k.ogrenci === ogrenciAdi);
-      const sonKayit = ogrenciKayitlari[ogrenciKayitlari.length - 1];
+    function ogrenciGuncelleAc(id){
+      getOgrenciler(ogrenciler=>{
+        const o = ogrenciler.find(x=>x.id===id);
+        if(!o) return;
+        guncellenecekId = id;
+        document.getElementById('guncelleAd').value = o.ad || '';
+        document.getElementById('guncelleSinif').value = o.sinif || '';
+        bsModal('ogrenciGuncelleModal').show();
+      });
+    }
 
-      const mesaj = `📘 Özel Ders Takip Sistemi
+    function ogrenciGuncelleKaydet(){
+      const ad = document.getElementById('guncelleAd').value.trim();
+      const sinif = document.getElementById('guncelleSinif').value;
+      if(!guncellenecekId){ alert("Güncellenecek öğrenci yok."); return; }
+      getOgrenciler(ogrenciler=>{
+        const guncel = ogrenciler.map(o=> o.id===guncellenecekId ? ({...o, ad, sinif}) : o);
+        setOgrenciler(guncel).then(()=>{
+          bsModal('ogrenciGuncelleModal').hide();
+          refreshStudents(); // önemli
+          alert("✅ Öğrenci güncellendi.");
+        });
+      });
+    }
+
+    function ogrenciListele(){
+      const liste = document.getElementById('ogrenciListesi');
+      liste.innerHTML = '<div class="text-center text-muted py-3">Yükleniyor...</div>';
+      getOgrenciler(ogrenciler=>{
+        liste.innerHTML = '';
+        if(!ogrenciler.length){
+          liste.innerHTML = '<div class="text-center text-muted py-3">Kayıtlı öğrenci yok.</div>';
+          return;
+        }
+        ogrenciler.forEach(o=>{
+          const item = document.createElement('div');
+          item.className = 'list-group-item';
+          item.innerHTML = `
+            <div>
+              <div class="fw-medium">${o.ad}</div>
+              <div class="small-muted">${o.sinif}</div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-sm btn-outline-primary" onclick="ogrenciGuncelleAc(${o.id})"><i class="bi bi-pencil-square"></i></button>
+              <button class="btn btn-sm btn-outline-danger" onclick="ogrenciSil(${o.id})"><i class="bi bi-trash"></i></button>
+            </div>
+          `;
+          liste.appendChild(item);
+        });
+      });
+    }
+
+    /************ ÖDEVLER ************/
+    function doldurOgrenciSecimi(){
+      const sel = document.getElementById('odevOgrenci');
+      sel.innerHTML = '<option value="">Öğrenci Seçiniz</option>';
+      getOgrenciler(ogrenciler=>{
+        ogrenciler.forEach(o=>{
+          const opt = document.createElement('option');
+          opt.value = o.ad; opt.textContent = o.ad;
+          sel.appendChild(opt);
+        });
+      });
+    }
+
+    function odevListele(){
+      const liste = document.getElementById('odevListesi');
+      liste.innerHTML = '';
+      database.ref("odevler").once("value").then(snap=>{
+        const val = snap.val() || {};
+        const entries = Object.entries(val);
+        if(!entries.length){
+          liste.innerHTML = '<div class="text-center text-muted py-3">Kayıtlı ödev yok.</div>';
+          return;
+        }
+        entries.forEach(([key, odev])=>{
+          const item = document.createElement('div');
+          item.className = 'list-group-item';
+          item.innerHTML = `
+            <div class="me-2 flex-grow-1">
+              <div class="fw-medium">${odev.ogrenci || 'Öğrenci Yok'} — ${odev.tarih || 'Tarih Yok'}</div>
+              <div class="small-muted">${odev.konu || odev.icerik || 'İçerik Yok'}</div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-sm btn-outline-primary" onclick="odevGuncelleModalAc('${key}')"><i class="bi bi-pencil-square"></i></button>
+              <button class="btn btn-sm btn-outline-danger" onclick="odevSil('${key}')"><i class="bi bi-trash"></i></button>
+            </div>
+          `;
+          liste.appendChild(item);
+        });
+      });
+    }
+
+    function odevFormTemizle(){
+      document.getElementById('odevOgrenci').value = '';
+      document.getElementById('odevTarih').value = '';
+      document.getElementById('odevIcerik').value = '';
+    }
+
+    function pushOdev(odev){
+      const ref = database.ref("odevler").push();
+      return ref.set(odev);
+    }
+
+    function odevEkle(){
+      const ogrenci = document.getElementById('odevOgrenci').value;
+      const konu = (document.getElementById('odevIcerik').value || '').trim();
+      const tarih = document.getElementById('odevTarih').value;
+      if(!ogrenci || !konu || !tarih){ alert("Öğrenci, konu ve tarih boş bırakılamaz."); return; }
+      pushOdev({ogrenci, konu, tarih}).then(()=>{
+        alert("✅ Ödev eklendi.");
+        refreshAssignments(); // önemli
+        odevFormTemizle();
+      }).catch(()=> alert("❌ Ödev eklenemedi."));
+    }
+
+    function odevGuncelleModalAc(key){
+      database.ref("odevler/"+key).once("value").then(s=>{
+        const o = s.val(); if(!o) return;
+        guncellenecekOdevKey = key;
+        document.getElementById('guncelleOdevTarih').value = o.tarih || '';
+        document.getElementById('guncelleOdevIcerik').value = o.konu || o.icerik || '';
+        bsModal('odevGuncelleModal').show();
+      });
+    }
+
+    function odevGuncelleKaydet(){
+      if(!guncellenecekOdevKey){ alert("Güncellenecek ödev yok."); return; }
+      const tarih = document.getElementById('guncelleOdevTarih').value;
+      const konu  = document.getElementById('guncelleOdevIcerik').value.trim();
+      if(!tarih || !konu){ alert("Lütfen tüm alanları doldurun."); return; }
+      database.ref("odevler/"+guncellenecekOdevKey).update({tarih, konu}).then(()=>{
+        bsModal('odevGuncelleModal').hide();
+        refreshAssignments(); // önemli
+        alert("✅ Ödev güncellendi.");
+      }).catch(()=> alert("❌ Ödev güncellenemedi."));
+    }
+
+    function odevSil(key){
+      if(!confirm("Bu ödevi silmek istediğinize emin misiniz?")) return;
+      database.ref("odevler/"+key).remove().then(()=>{
+        refreshAssignments(); // önemli
+      });
+    }
+
+    function tumOdevleriSil(){
+      if(!confirm("Tüm ödevleri silmek istediğinize emin misiniz?")) return;
+      database.ref("odevler").remove().then(()=>{
+        refreshAssignments(); // önemli
+      });
+    }
+
+    /************ HAFTALIK ************/
+    function doldurHaftaOgrenciListesi(){
+      const sel = document.getElementById('haftaOgrenci');
+      sel.innerHTML = '<option value="">Öğrenci Seçin</option>';
+      getOgrenciler(ogrenciler=>{
+        ogrenciler.forEach(o=>{
+          const opt = document.createElement('option');
+          opt.value = o.ad; opt.textContent = o.ad;
+          sel.appendChild(opt);
+        });
+      });
+    }
+
+    document.getElementById('haftaOgrenci').addEventListener('change', function(){
+      const secili = this.value;
+      const sel = document.getElementById('haftaOdev');
+      sel.innerHTML = '<option value="">Ödev Seçin</option>';
+      database.ref("odevler").once("value").then(s=>{
+        const val = s.val() || {};
+        Object.values(val).filter(o=>o.ogrenci===secili).forEach(o=>{
+          const opt = document.createElement('option');
+          opt.value = o.konu || o.icerik || '';
+          opt.textContent = `${o.tarih} - ${o.konu || o.icerik}`;
+          sel.appendChild(opt);
+        });
+      });
+    });
+
+    function haftalikVeriyiEkle(){
+      const ogrenci = document.getElementById('haftaOgrenci').value;
+      const odev    = document.getElementById('haftaOdev').value;
+      const durum   = document.getElementById('odevDurumu').value;
+      const konu    = document.getElementById('buHaftaKonu').value.trim();
+      const gelecekOdev = document.getElementById('gelecekHaftaOdev').value.trim();
+      const tarih   = document.getElementById('gelecekTarih').value;
+      const gelecekKonu = document.getElementById('gelecekHaftaKonu').value.trim();
+
+      if(!ogrenci || !tarih){ alert("🚫 Öğrenci ve tarih boş bırakılamaz."); return; }
+
+      const zaman = new Date().toISOString();
+      const haftalikKayit = { ogrenci, odev, durum, konu, gelecekOdev, tarih, gelecekKonu, zaman };
+      const odevKaydi = { ogrenci, konu: gelecekOdev, tarih };
+
+      const haftalikRef = database.ref("haftalikDegerlendirme").push();
+      const odevRef     = database.ref("odevler").push();
+
+      Promise.all([haftalikRef.set(haftalikKayit), odevRef.set(odevKaydi)]).then(()=>{
+        document.getElementById('haftaDurumMesaji').innerText = '✅ Kayıt ve ödev başarıyla eklendi.';
+        refreshWeekly();      // önemli
+        refreshAssignments(); // önemli
+      }).catch(()=>{
+        alert("⚠️ Veri eklenirken hata oluştu.");
+      });
+    }
+
+    function haftalikKayitlariListele(){
+      const liste = document.getElementById('haftalikKayitListesi');
+      liste.innerHTML = '';
+      database.ref("haftalikDegerlendirme").once("value").then(s=>{
+        const val = s.val();
+        if(!val){ liste.innerHTML = '<div class="text-center text-muted py-3">Kayıt bulunamadı.</div>'; return; }
+        Object.entries(val).forEach(([key, veri])=>{
+          const item = document.createElement('div');
+          item.className = 'list-group-item';
+          const metin = `${veri.ogrenci || '???'} — ${veri.tarih || '???'} — ${veri.konu || '???'}`;
+          item.innerHTML = `
+            <div class="me-2 flex-grow-1">
+              <div class="fw-medium">${metin}</div>
+              <div class="small-muted">${(veri.odev ? 'Ödev: '+veri.odev+' → ' : '') + durumIcon(veri.durum)}</div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-sm btn-outline-primary" onclick='haftalikKaydiGuncelle("${key}")'><i class="bi bi-pencil-square"></i></button>
+              <button class="btn btn-sm btn-outline-danger" onclick='haftalikKaydiSil("${key}")'><i class="bi bi-trash"></i></button>
+            </div>
+          `;
+          liste.appendChild(item);
+        });
+      });
+    }
+
+    function haftalikKaydiSil(key){
+      if(!confirm("Bu haftalık kaydı silmek istiyor musunuz?")) return;
+      database.ref("haftalikDegerlendirme/"+key).remove().then(()=>{
+        refreshWeekly(); // önemli
+      });
+    }
+
+    function haftalikKaydiGuncelle(key){
+      guncellenecekHaftaKey = key;
+      database.ref("haftalikDegerlendirme/"+key).once("value").then(s=>{
+        const v = s.val() || {};
+        document.getElementById('guncelleHaftaOgrenci').value = v.ogrenci || '';
+        document.getElementById('guncelleHaftaOdev').value    = v.odev || '';
+        document.getElementById('guncelleHaftaDurum').value   = v.durum || '';
+        document.getElementById('guncelleHaftaKonu').value    = v.konu || '';
+        document.getElementById('guncelleHaftaTarih').value   = v.tarih || '';
+        document.getElementById('guncelleGelecekOdev').value  = v.gelecekOdev || '';
+        document.getElementById('guncelleGelecekKonu').value  = v.gelecekKonu || '';
+        bsModal('haftalikGuncelleModal').show();
+      });
+    }
+
+    function haftalikKaydiGuncelleKaydet(){
+      if(!guncellenecekHaftaKey){ alert("Güncellenecek kayıt yok."); return; }
+      const veri = {
+        ogrenci: document.getElementById('guncelleHaftaOgrenci').value,
+        odev: document.getElementById('guncelleHaftaOdev').value,
+        durum: document.getElementById('guncelleHaftaDurum').value,
+        konu: document.getElementById('guncelleHaftaKonu').value,
+        tarih: document.getElementById('guncelleHaftaTarih').value,
+        gelecekOdev: document.getElementById('guncelleGelecekOdev').value,
+        gelecekKonu: document.getElementById('guncelleGelecekKonu').value,
+        zaman: new Date().toISOString()
+      };
+      database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).update(veri).then(()=>{
+        bsModal('haftalikGuncelleModal').hide();
+        refreshWeekly(); // önemli
+        alert("✅ Kayıt güncellendi.");
+      }).catch(()=> alert("❌ Güncelleme başarısız."));
+    }
+
+    function tumHaftalikKayitlariSil(){
+      if(!confirm("Tüm haftalık kayıtları silmek istediğinize emin misiniz?")) return;
+      database.ref("haftalikDegerlendirme").remove().then(()=>{
+        refreshWeekly(); // önemli
+        alert("✅ Tüm haftalık kayıtlar silindi.");
+      }).catch(()=> alert("❌ Kayıtlar silinemedi."));
+    }
+
+    /************ RAPOR ************/
+    function raporFormYenile(){
+      document.getElementById('raporTipi').value = 'haftalik';
+      document.getElementById('raporOgrenciSec').value = '';
+      document.getElementById('raporMesaj').value = '';
+    }
+
+    function raporTipiDegisti(){ raporMesajiOlustur(); }
+
+    function raporOgrenciSecDoldur(){
+      const select = document.getElementById("raporOgrenciSec");
+      if(!select) return;
+      database.ref("ogrenciler").once("value").then(s=>{
+        const val = s.val() || [];
+        const arr = Array.isArray(val) ? (val.filter(Boolean) || []) : Object.values(val);
+        select.innerHTML = '<option value="">Öğrenci Seçiniz</option>';
+        (arr||[]).forEach(o=>{
+          const opt = document.createElement('option');
+          opt.value = o.id || o.ad;
+          opt.textContent = o.ad;
+          select.appendChild(opt);
+        });
+      });
+    }
+
+    function whatsappMesajGonder(){
+      const mesaj = (document.getElementById('raporMesaj').value || '').trim();
+      if(!mesaj) return alert('Gönderilecek mesaj boş.');
+      const url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
+      window.open(url, '_blank');
+    }
+
+    function raporMesajiOlustur(){
+      const tip = document.getElementById('raporTipi').value;
+      const secilenId = document.getElementById('raporOgrenciSec').value;
+      if(!secilenId) return;
+
+      const ayAdlari = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+      const formatTarih = (date) => `${date.getDate()} ${ayAdlari[date.getMonth()]} ${date.getFullYear()}`;
+      const toShortDateStr = (d) => new Date(d).toISOString().split('T')[0];
+
+      const bugun = new Date();
+      const bugunStr = toShortDateStr(bugun);
+      const birAyOnce = new Date(bugun); birAyOnce.setMonth(birAyOnce.getMonth() - 1);
+      const birAyOnceStr = toShortDateStr(birAyOnce);
+
+      Promise.all([
+        database.ref("ogrenciler").once("value"),
+        database.ref("haftalikDegerlendirme").once("value")
+      ]).then(([ogrenciSnap, haftalikSnap])=>{
+        const ogrVal = ogrenciSnap.val() || [];
+        const ogrArr = Array.isArray(ogrVal) ? (ogrVal.filter(Boolean)||[]) : Object.values(ogrVal||{});
+        const haftVal = haftalikSnap.val() || {};
+        const kayitlar = Object.values(haftVal);
+
+        const ogrenci = ogrArr.find(o => (o.id == secilenId) || (o.ad == secilenId));
+        if(!ogrenci) return;
+
+        const ogrenciAdi = ogrenci.ad;
+
+        if(tip === 'haftalik'){
+          const ogrKay = kayitlar.filter(k=>k.ogrenci === ogrenciAdi);
+          const sonKayit = ogrKay[ogrKay.length - 1];
+          const mesaj = `📘 Özel Ders Takip Sistemi
 📅 *Tarih:* ${formatTarih(bugun)}
 👤 *Öğrenci:* ${ogrenciAdi}
 🎓 *Öğretmen:* Ferhat Karagöz
@@ -495,33 +792,29 @@ function raporMesajiOlustur() {
 📚 *İşlenecek Konular:* ${sonKayit?.gelecekKonu || 'Konu Yok'}
 
 Saygılarımızla, bilginize.`;
+          document.getElementById('raporMesaj').value = mesaj;
+        } else {
+          const tarihAraligindakiKayitlar = kayitlar
+            .filter(k=>{
+              const ogr = k.ogrenci === ogrenciAdi;
+              const tStr = toShortDateStr(k.zaman || k.tarih);
+              return ogr && tStr >= birAyOnceStr && tStr <= bugunStr;
+            })
+            .sort((a,b)=> new Date(b.zaman || b.tarih) - new Date(a.zaman || a.tarih));
 
-      document.getElementById('raporMesaj').value = mesaj;
+          const konular = tarihAraligindakiKayitlar.map(k=>{
+            const t = new Date(k.zaman || k.tarih);
+            return `- ${formatTarih(t)} → ${k.konu || 'Konu girilmemiş'}`;
+          });
+          const odevSatirlari = tarihAraligindakiKayitlar.map(k=>{
+            const t = new Date(k.zaman || k.tarih);
+            return `- ${formatTarih(t)} → ${k.odev || 'Ödev Yok'} → ${durumIcon(k.durum)}`;
+          });
+          const toplamOdev = tarihAraligindakiKayitlar.filter(k=>k.odev).length;
+          const yapilanOdev = tarihAraligindakiKayitlar.filter(k=>(k.durum||'').toLowerCase()==='yapti').length;
+          const oran = toplamOdev ? Math.round((yapilanOdev / toplamOdev) * 100) : 0;
 
-    } else if (tip === 'aylik') {
-      const tarihAraligindakiKayitlar = kayitlar
-        .filter(k => {
-          const ogr = k.ogrenci === ogrenciAdi;
-          const tarihStr = toShortDateStr(k.zaman || k.tarih);
-          return ogr && tarihStr >= birAyOnceStr && tarihStr <= bugunStr;
-        })
-        .sort((a, b) => new Date(b.zaman || b.tarih) - new Date(a.zaman || a.tarih));
-
-      const konular = tarihAraligindakiKayitlar.map(k => {
-        const t = new Date(k.zaman || k.tarih);
-        return `- ${formatTarih(t)} → ${k.konu || 'Konu girilmemiş'}`;
-      });
-
-      const odevSatirlari = tarihAraligindakiKayitlar.map(k => {
-        const t = new Date(k.zaman || k.tarih);
-        return `- ${formatTarih(t)} → ${k.odev || 'Ödev Yok'} → ${durumIcon(k.durum)}`;
-      });
-
-      const toplamOdev = tarihAraligindakiKayitlar.filter(k => k.odev).length;
-      const yapilanOdev = tarihAraligindakiKayitlar.filter(k => (k.durum || '').toLowerCase() === 'yapti').length;
-      const oran = toplamOdev ? Math.round((yapilanOdev / toplamOdev) * 100) : 0;
-
-      const mesaj = `📘 Özel Ders Takip Sistemi
+          const mesaj = `📘 Özel Ders Takip Sistemi
 📅 *Tarih:* ${formatTarih(bugun)}
 👤 *Öğrenci:* ${ogrenciAdi}
 🎓 *Öğretmen:* Ferhat Karagöz
@@ -542,558 +835,34 @@ ${odevSatirlari.length ? odevSatirlari.join("\n") : '- Veri yok'}
 *Bu rapor, son bir ay içinde işlenen tüm konuları ve ödev takibini içermektedir.*
 
 Saygılarımızla, bilginize.`;
-
-      document.getElementById('raporMesaj').value = mesaj;
-    }
-  });
-}
-
-
-function raporOgrenciSecDoldur() {
-  const select = document.getElementById("raporOgrenciSec");
-  if (!select) return;
-
-  database.ref("ogrenciler").once("value")
-    .then(snapshot => {
-      const ogrenciler = snapshot.val() || [];
-      select.innerHTML = '<option value="">Öğrenci Seçiniz</option>';
-
-      ogrenciler.forEach(o => {
-        const option = document.createElement("option");
-        option.value = o.id || o.ad; // Güvenli
-        option.textContent = o.ad;
-        select.appendChild(option);
+          document.getElementById('raporMesaj').value = mesaj;
+        }
       });
-
-      console.log("Dropdown için öğrenciler yüklendi:", ogrenciler);
-    })
-    .catch(error => {
-      console.error("Rapor öğrenci listesi alınamadı:", error);
-    });
-}
-
-
-function raporOgrenciListesiDoldur() {
-  const sec = document.getElementById('raporOgrenciSec');
-  sec.innerHTML = '<option value="">-- Seçiniz --</option>';
-  const liste = JSON.parse(localStorage.getItem('ogrenciler') || '[]');
-  liste.forEach(o => {
-    const opt = document.createElement('option');
-    opt.value = o.id;
-    opt.textContent = o.ad + ' (' + o.sinif + ')';
-    sec.appendChild(opt);
-  });
-}
-
-window.addEventListener('load', () => {
-  raporOgrenciSecDoldur();  // ✅ Bunu çağır
-  document.getElementById('raporTipi').addEventListener('change', raporMesajiOlustur);
-  document.getElementById('raporOgrenciSec').addEventListener('change', raporMesajiOlustur);
-  document.getElementById('raporAy').addEventListener('change', raporMesajiOlustur);
-});
- let guncellenecekOdevKey = null;
-
-function odevGuncelleModalAc(key) {
-  database.ref("odevler/" + key).once("value")
-    .then(snapshot => {
-      const odev = snapshot.val();
-      if (!odev) return;
-
-      guncellenecekOdevKey = key;
-      document.getElementById("guncelleOdevTarih").value = odev.tarih || "";
-      document.getElementById("guncelleOdevIcerik").value = odev.konu || odev.icerik || "";
-
-      document.getElementById("odevModalArkaPlan").style.display = "block";
-      document.getElementById("odevGuncelleModal").style.display = "block";
-    })
-    .catch(error => {
-      console.error("Güncellenecek ödev alınamadı:", error);
-    });
-}
-
-
-
-function odevModalKapat() {
-  document.getElementById("odevModalArkaPlan").style.display = "none";
-  document.getElementById("odevGuncelleModal").style.display = "none";
-  guncellenecekOdevKey = null;
-}
-
-function odevGuncelle() {
-  const yeniTarih = document.getElementById('guncelleOdevTarih').value;
-  const yeniIcerik = document.getElementById('guncelleOdevIcerik').value.trim();
-
-  if (!yeniTarih || !yeniIcerik) {
-    alert('Lütfen tüm alanları doldurun.');
-    return;
-  }
-
-  if (!guncellenecekOdevKey) {
-    alert("Güncellenecek ödev bulunamadı.");
-    return;
-  }
-
-  database.ref("odevler/" + guncellenecekOdevKey).update({
-    tarih: yeniTarih,
-    konu: yeniIcerik
-  })
-  .then(() => {
-    odevListele();
-    odevModalKapat(); // modalı kapat
-  })
-  .catch(error => {
-    console.error("Güncelleme sırasında hata oluştu:", error);
-    alert("Ödev güncellenemedi.");
-  });
-}
-
-function odevGuncelleKaydet() {
-  const yeniTarih = document.getElementById('guncelleOdevTarih').value;
-  const yeniIcerik = document.getElementById('guncelleOdevIcerik').value.trim();
-
-  if (!yeniTarih || !yeniIcerik) {
-    alert('Lütfen tüm alanları doldurun.');
-    return;
-  }
-
-  if (!guncellenecekOdevKey) {
-    alert("Güncellenecek ödev bulunamadı.");
-    return;
-  }
-
-  database.ref("odevler/" + guncellenecekOdevKey).update({
-    tarih: yeniTarih,
-    konu: yeniIcerik
-  })
-  .then(() => {
-    odevListele();             // Listeyi yeniden yükle
-    odevModalKapat();          // Modalı kapat
-    alert("✅ Ödev güncellendi.");
-  })
-  .catch(error => {
-    console.error("Güncelleme sırasında hata oluştu:", error);
-    alert("❌ Ödev güncellenemedi.");
-  });
-}
-
-  
-function getOdevler(callback) {
-  database.ref("odevler").once("value")
-    .then(snapshot => {
-      const data = snapshot.val();
-      const odevler = Array.isArray(data) ? data : Object.values(data || {});
-      callback(odevler);
-    })
-    .catch(error => {
-      console.error("Ödev verisi alınamadı:", error);
-      callback([]);
-    });
-}
-
-
-function setOdevler(data) {
-  const newRef = database.ref("odevler").push();
-  return newRef.set(data);
-}
-
-
-
-
-function setOdevler(data) {
-  database.ref("odevler").set(data)
-    .then(() => {
-      console.log("Ödevler başarıyla kaydedildi.");
-    })
-    .catch(error => {
-      console.error("Ödevler kaydedilemedi:", error);
-    });
-}
-
-
-function odevEkle() {
-  const ogrenci = document.getElementById("odevOgrenci").value;
-  const konu = document.getElementById("odevIcerik").value.trim();
-  const tarih = document.getElementById("odevTarih").value;
-
-  if (!ogrenci || !konu || !tarih) {
-    alert("Öğrenci, konu ve tarih boş bırakılamaz.");
-    return;
-  }
-
-  getOdevler(odevler => {
-    const yeniOdev = { ogrenci, konu, tarih };
-    odevler.push(yeniOdev);
-    setOdevler(odevler);
-    odevListele();
-    alert("✅ Ödev eklendi.");
-  });
-}
-
-
-
-
-function odevSil(key) {
-  if (confirm("Bu ödevi silmek istediğinize emin misiniz?")) {
-    database.ref("odevler/" + key).remove()
-      .then(() => {
-        console.log("Ödev silindi:", key);
-        odevListele();
-      })
-      .catch(error => {
-        console.error("Ödev silinemedi:", error);
-      });
-  }
-}
-
-
-
-function tumOdevleriSil() {
-  if (confirm("Tüm ödevleri silmek istediğinize emin misiniz?")) {
-    database.ref("odevler").remove()
-      .then(() => {
-        console.log("Tüm ödevler silindi.");
-        odevListele();
-      })
-      .catch(error => {
-        console.error("Tüm ödevler silinemedi:", error);
-      });
-  }
-}
-
-
-
-function odevFormTemizle() {
-  document.getElementById('odevOgrenci').value = '';
-  document.getElementById('odevTarih').value = '';
-  document.getElementById('odevIcerik').value = '';
-}
-
-function odevListele() {
-  const liste = document.getElementById("odevListesi");
-  if (!liste) return;
-
-  liste.innerHTML = ""; // Önceki listeyi temizle
-
-  database.ref("odevler").once("value")
-    .then(snapshot => {
-      const odevler = snapshot.val() || {};
-
-      Object.entries(odevler).forEach(([key, odev]) => {
-        const div = document.createElement("div");
-        div.className = "student-entry";
-
-        const span = document.createElement("span");
-        span.textContent = `${odev.ogrenci || 'Öğrenci Yok'} - ${odev.tarih || 'Tarih Yok'} - ${odev.konu || odev.icerik || 'İçerik Yok'}`;
-
-        const silBtn = document.createElement("button");
-        silBtn.textContent = "🗑️";
-        silBtn.className = "btn-small";
-        silBtn.onclick = () => odevSil(key);
-
-        const guncelleBtn = document.createElement("button");
-        guncelleBtn.textContent = "✏️";
-        guncelleBtn.className = "btn-small";
-        guncelleBtn.onclick = () => odevGuncelleModalAc(key);
-
-        div.appendChild(span);
-        div.appendChild(silBtn);
-        div.appendChild(guncelleBtn);
-        liste.appendChild(div);
-      });
-    })
-    .catch(error => {
-      console.error("Ödevler listelenemedi:", error);
-    });
-}
-
-
-
-
-
-
-function doldurOgrenciSecimi() {
-  const select = document.getElementById('odevOgrenci');
-  if (!select) return;
-
-  select.innerHTML = '<option value="">Öğrenci Seçiniz</option>';
-
-  getOgrenciler(ogrenciler => {
-    ogrenciler.forEach(o => {
-      const opt = document.createElement("option");
-      opt.value = o.ad;
-opt.textContent = o.ad;
-      select.appendChild(opt);
-    });
-  });
-}
-
-
-
-
-window.addEventListener('load', () => {
-  doldurOgrenciSecimi();
-  odevListele();
-});
-  
-function haftalikVeriyiEkle() {
-  const ogrenci = document.getElementById('haftaOgrenci').value;
-  const odev = document.getElementById('haftaOdev').value;
-  const durum = document.getElementById('odevDurumu').value;
-  const konu = document.getElementById('buHaftaKonu').value.trim();
-  const gelecekOdev = document.getElementById('gelecekHaftaOdev').value.trim();
-  const tarih = document.getElementById('gelecekTarih').value;
-  const gelecekKonu = document.getElementById('gelecekHaftaKonu').value.trim();
-
-  if (!ogrenci || !tarih) {
-    alert("🚫 Öğrenci ve tarih boş bırakılamaz.");
-    return;
-  }
-
-  const zamanDamgasi = new Date().toISOString();
-
-  const haftalikKayit = {
-    ogrenci,
-    odev,
-    durum,
-    konu,
-    gelecekOdev,
-    tarih,
-    gelecekKonu,
-    zaman: zamanDamgasi
-  };
-
-  const odevKaydi = {
-    ogrenci,
-    konu: gelecekOdev,
-    tarih
-  };
-
-  // Firebase'e hem haftalık kayıt hem de odev kaydı ekleniyor
-  const haftalikRef = database.ref("haftalikDegerlendirme").push();
-  const odevRef = database.ref("odevler").push();
-
-  Promise.all([
-    haftalikRef.set(haftalikKayit),
-    odevRef.set(odevKaydi)
-  ])
-    .then(() => {
-      document.getElementById('haftaDurumMesaji').innerText = '✅ Kayıt ve ödev başarıyla eklendi.';
-      haftalikKayitlariListele();
-      odevListele(); // opsiyonel: Ödev ekranı da yenilensin
-    })
-    .catch(error => {
-      console.error("❌ Kayıt eklenemedi:", error);
-      alert("⚠️ Veri eklenirken hata oluştu.");
-    });
-}
-
-function haftalikFormYenile() {
-  document.getElementById('haftaOgrenci').value = '';
-  document.getElementById('haftaOdev').value = '';
-  document.getElementById('odevDurumu').value = '';
-  document.getElementById('buHaftaKonu').value = '';
-  document.getElementById('gelecekHaftaOdev').value = '';
-  document.getElementById('gelecekTarih').value = '';
-  document.getElementById('gelecekHaftaKonu').value = '';
-  document.getElementById('haftaDurumMesaji').innerText = '';
-}
-
-function doldurHaftaOgrenciListesi() {
-  const select = document.getElementById('haftaOgrenci');
-  if (!select) return;
-
-  select.innerHTML = '<option value="">Öğrenci Seçin</option>';
-
-  database.ref("ogrenciler").once("value")
-    .then(snapshot => {
-      const data = snapshot.val();
-      if (!data) return;
-
-      Object.values(data).forEach(o => {
-        const option = document.createElement("option");
-        option.value = o.ad;
-        option.textContent = o.ad;
-        select.appendChild(option);
-      });
-    })
-    .catch(error => {
-      console.error("Hafta öğrenci listesi yüklenemedi:", error);
-    });
-}
-
-
-
-document.getElementById('haftaOgrenci').addEventListener('change', function () {
-  const seciliOgrenci = this.value;
-  const select = document.getElementById('haftaOdev');
-  select.innerHTML = '<option value="">Ödev Seçin</option>';
-
-  database.ref("odevler").once("value")
-    .then(snapshot => {
-      const odevler = snapshot.val() || {};
-      Object.values(odevler)
-        .filter(o => o.ogrenci === seciliOgrenci)
-        .forEach(o => {
-          const option = document.createElement("option");
-          option.value = o.konu || o.icerik || '';
-          option.textContent = `${o.tarih} - ${o.konu || o.icerik}`;
-          select.appendChild(option);
-        });
-    })
-    .catch(error => {
-      console.error("Ödevler yüklenemedi:", error);
-    });
-});
-
-
-window.addEventListener('load', doldurHaftaOgrenciListesi);
-    let guncellenecekId = null;
-
-    function switchTab(id, el) {
-  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.tabBtn').forEach(btn => btn.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function temizleInputlar() {
-  document.getElementById('ogrenciAd').value = '';
-  document.getElementById('ogrenciSinif').value = '';
-}
-
-
-function getOgrenciler(callback) {
-  database.ref("ogrenciler").once("value")
-    .then(snapshot => {
-      const data = snapshot.val();
-      callback(data ? Object.values(data) : []);
-    })
-    .catch(error => {
-      console.error("Öğrenciler alınırken hata oluştu:", error);
-      callback([]); // Hata durumunda boş liste döner
-    });
-}
-
-
-    function setOgrenciler(data) {
-  database.ref("ogrenciler").set(data)
-    .then(() => {
-      console.log("Öğrenciler başarıyla kaydedildi.");
-    })
-    .catch(error => {
-      console.error("Öğrenciler kaydedilirken hata oluştu:", error);
-    });
-}
-
-
-function ogrenciEkle() {
-  const ad = document.getElementById("ogrenciAd").value.trim();
-  const sinif = document.getElementById("ogrenciSinif").value;
-  const id = Date.now();
-
-  if (!ad || !sinif) {
-    alert("Lütfen öğrenci adı ve sınıf seçin.");
-    return;
-  }
-
-  // Önce mevcut öğrencileri al
-  database.ref("ogrenciler").once("value")
-    .then(snapshot => {
-      const ogrenciler = snapshot.val() || [];
-      const yeniOgrenci = { id, ad, sinif };
-      ogrenciler.push(yeniOgrenci);
-      return database.ref("ogrenciler").set(ogrenciler);
-    })
-    .then(() => {
-      alert("✅ Öğrenci eklendi.");
-      ogrenciListele(); // Listeyi güncelle
-      temizleInputlar(); // Formu temizle
-    })
-    .catch(error => {
-      console.error("Öğrenci eklenemedi:", error);
-      alert("Hata: Öğrenci eklenemedi.");
-    });
-}
-
-
-
-function ogrenciSil(id) {
-  getOgrenciler(ogrenciler => {
-    const guncelOgrenciler = ogrenciler.filter(o => o.id !== id);
-    setOgrenciler(guncelOgrenciler);
-    ogrenciListele(); // Listeyi güncelle
-  });
-}
-
-
-    function ogrenciGuncelle(id) {
-      const ogrenciler = getOgrenciler();
-      const ogrenci = ogrenciler.find(o => o.id === id);
-      if (ogrenci) {
-        guncellenecekId = id;
-        document.getElementById('guncelleAd').value = ogrenci.ad;
-        document.getElementById('guncelleSinif').value = ogrenci.sinif;
-        document.getElementById('modalArkaPlan').style.display = 'block';
-        document.getElementById('guncelleModal').style.display = 'block';
-      }
     }
 
-    function modalKapat() {
-      document.getElementById('modalArkaPlan').style.display = 'none';
-      document.getElementById('guncelleModal').style.display = 'none';
+    function qrKodModalAc(){
+      const mesaj = (document.getElementById('raporMesaj').value || '').trim();
+      if(!mesaj){ alert("Mesaj boş."); return; }
+      const url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
+      const container = document.getElementById('qrModalCanvas');
+      container.innerHTML = '';
+      new QRCode(container, { text:url, width:250, height:250, correctLevel: QRCode.CorrectLevel.M });
+      bsModal('qrModal').show();
     }
 
-function ogrenciGuncelleKaydet() {
-  const id = parseInt(document.getElementById("guncelle-id").value);
-  const isim = document.getElementById("guncelle-isim").value.trim();
-  const soyisim = document.getElementById("guncelle-soyisim").value.trim();
-  const sinif = document.getElementById("guncelle-sinif").value;
-
-  getOgrenciler(ogrenciler => {
-    const guncelOgrenciler = ogrenciler.map(o => {
-      if (o.id === id) {
-        return { id, isim, soyisim, sinif };
-      }
-      return o;
+    /************ INIT ************/
+    window.addEventListener('load', ()=>{
+      refreshAll(); // başlangıç
+      // ---- Gerçek zamanlı otomatik yenileme istersen alttakileri aktif et:
+      // database.ref("ogrenciler").on("value", ()=> refreshStudents());
+      // database.ref("odevler").on("value",   ()=> refreshAssignments());
+      // database.ref("haftalikDegerlendirme").on("value", ()=> refreshWeekly());
+      // -----------------------------------------
+      // Rapor alanı tetikleyicileri
+      document.getElementById('raporTipi').addEventListener('change', raporMesajiOlustur);
+      document.getElementById('raporOgrenciSec').addEventListener('change', raporMesajiOlustur);
+      // Haftalıkta öğrenci değişince ödev seçeneklerini dolduruyoruz (yukarıda eklendi)
     });
-
-    setOgrenciler(guncelOgrenciler);
-    ogrenciListele();
-  });
-
-  // Güncelleme panelini kapat
-  document.getElementById("guncelle-form").style.display = "none";
-}
-
-
-function ogrenciListele() {
-  const liste = document.getElementById("ogrenciListesi");
-  if (!liste) return;
-
-  database.ref("ogrenciler").once("value")
-    .then(snapshot => {
-      const ogrenciler = Object.values(snapshot.val() || {});
-      liste.innerHTML = "";
-      ogrenciler.forEach(ogrenci => {
-        const div = document.createElement("div");
-        div.classList.add("student-entry");
-        div.innerHTML = `
-          <span>${ogrenci.ad} (${ogrenci.sinif})</span>
-          <button class="btn-small" onclick="ogrenciSil(${ogrenci.id})">🗑️</button>
-        `;
-        liste.appendChild(div);
-      });
-    })
-    .catch(error => {
-      console.error("Öğrenciler listelenemedi:", error);
-    });
-}
-
-
-  window.onload = ogrenciListele;
-  window.addEventListener('load', () => {
-  haftalikKayitlariListele();
-});
   </script>
 </body>
 </html>
