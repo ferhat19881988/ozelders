@@ -205,6 +205,16 @@
               <textarea id="gelecekHaftaKonu" class="form-control" rows="1"></textarea>
             </div>
 
+          <!-- Motivasyon ve Açıklama alanları -->
+          <div class="col-md-3">
+            <label class="form-label">Motivasyon (1‑10)</label>
+            <input type="number" id="haftaMotivasyon" class="form-control" min="1" max="10" />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Genel Ders Durumu</label>
+            <textarea id="haftaMotivasyonAciklama" class="form-control" rows="2"></textarea>
+          </div>
+
             <div class="col-12 d-flex flex-wrap gap-2">
               <button class="btn btn-primary" type="button" onclick="haftalikVeriyiEkle()"><i class="bi bi-plus-circle"></i> Ödevi Sisteme Ekle</button>
               <button class="btn btn-outline-secondary" onclick="haftalikFormYenile()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
@@ -225,6 +235,8 @@
             </div>
           </div>
           <div id="haftalikKayitListesi" class="list-group list-fit"></div>
+          <!-- Filtre uygulandığında toplam ders sayısını göstermek için özet alanı -->
+          <div id="haftalikOzet" class="mt-2 small-muted"></div>
           <p id="haftaDurumMesaji" class="mt-3 small-muted"></p>
         </div>
       </div>
@@ -339,6 +351,10 @@
           <input type="date" id="guncelleHaftaTarih" class="form-control mb-2">
           <input type="text" id="guncelleGelecekKonu" class="form-control mb-2" placeholder="Gelecek hafta konusu">
           <input type="text" id="guncelleGelecekOdev" class="form-control mb-2" placeholder="Gelecek hafta ödevi">
+
+          <!-- Motivasyon ve açıklama güncelleme alanları -->
+          <input type="number" id="guncelleHaftaMotivasyon" class="form-control mb-2" min="1" max="10" placeholder="Motivasyon (1-10)">
+          <textarea id="guncelleHaftaMotivasyonAciklama" class="form-control mb-2" placeholder="Genel ders durumu" rows="2"></textarea>
         </div>
         <div class="modal-footer">
           <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
@@ -685,10 +701,19 @@
       const tarih   = document.getElementById('gelecekTarih').value;
       const gelecekKonu = document.getElementById('gelecekHaftaKonu').value.trim();
 
+      // Motivasyon puanı ve açıklaması
+      const motivasyonInput = document.getElementById('haftaMotivasyon');
+      let motivasyon = 0;
+      if (motivasyonInput && motivasyonInput.value) {
+        motivasyon = parseInt(motivasyonInput.value);
+        if (isNaN(motivasyon) || motivasyon < 0) motivasyon = 0;
+      }
+      const motivasyonAciklama = (document.getElementById('haftaMotivasyonAciklama')?.value || '').trim();
+
       if(!ogrenci || !tarih){ alert("🚫 Öğrenci ve tarih boş bırakılamaz."); return; }
 
       const zaman = new Date().toISOString();
-      const haftalikKayit = { ogrenci, odev, durum, konu, gelecekOdev, tarih, gelecekKonu, zaman };
+      const haftalikKayit = { ogrenci, odev, durum, konu, gelecekOdev, tarih, gelecekKonu, zaman, motivasyon, motivasyonAciklama };
       const odevKaydi = { ogrenci, konu: gelecekOdev, tarih };
 
       const haftalikRef = database.ref("haftalikDegerlendirme").push();
@@ -696,6 +721,11 @@
 
       Promise.all([haftalikRef.set(haftalikKayit), odevRef.set(odevKaydi)]).then(()=>{
         document.getElementById('haftaDurumMesaji').innerText = '✅ Kayıt ve ödev başarıyla eklendi.';
+        // form alanlarını temizle
+        const motInp = document.getElementById('haftaMotivasyon');
+        if (motInp) motInp.value = '';
+        const motAcikInp = document.getElementById('haftaMotivasyonAciklama');
+        if (motAcikInp) motAcikInp.value = '';
         refreshWeekly();      // önemli
         refreshAssignments(); // önemli
       }).catch(()=>{
@@ -737,6 +767,17 @@
         if(sayac === 0){
           liste.innerHTML = '<div class="text-center text-muted py-3">Seçilen öğrenci için kayıt bulunamadı.</div>';
         }
+        // Filtre uygulanmışsa, toplam ders sayısını gösteren özet bilgiyi güncelle
+        const ozetEl = document.getElementById('haftalikOzet');
+        if (ozetEl) {
+          if (filtreDeger) {
+            // filtre uygulanmış ve kayıt varsa
+            ozetEl.innerText = sayac > 0 ? `Toplam ${sayac} ders kaydı bulundu.` : '';
+          } else {
+            // filtre yoksa özet alanını temizle
+            ozetEl.innerText = '';
+          }
+        }
       });
     }
 
@@ -758,12 +799,21 @@
         document.getElementById('guncelleHaftaTarih').value   = v.tarih || '';
         document.getElementById('guncelleGelecekOdev').value  = v.gelecekOdev || '';
         document.getElementById('guncelleGelecekKonu').value  = v.gelecekKonu || '';
+        // Motivasyon puanı ve açıklama değerlerini doldur
+        const motEl = document.getElementById('guncelleHaftaMotivasyon');
+        if (motEl) motEl.value = v.motivasyon || '';
+        const motAcikEl = document.getElementById('guncelleHaftaMotivasyonAciklama');
+        if (motAcikEl) motAcikEl.value = v.motivasyonAciklama || '';
         bsModal('haftalikGuncelleModal').show();
       });
     }
 
     function haftalikKaydiGuncelleKaydet(){
       if(!guncellenecekHaftaKey){ alert("Güncellenecek kayıt yok."); return; }
+      // Güncellenen veri objesi
+      // Motivasyon verileri de dahil ediliyor
+      const motVal = parseInt(document.getElementById('guncelleHaftaMotivasyon')?.value) || 0;
+      const motAcik = document.getElementById('guncelleHaftaMotivasyonAciklama')?.value || '';
       const veri = {
         ogrenci: document.getElementById('guncelleHaftaOgrenci').value,
         odev: document.getElementById('guncelleHaftaOdev').value,
@@ -772,10 +822,15 @@
         tarih: document.getElementById('guncelleHaftaTarih').value,
         gelecekOdev: document.getElementById('guncelleGelecekOdev').value,
         gelecekKonu: document.getElementById('guncelleGelecekKonu').value,
+        motivasyon: motVal,
+        motivasyonAciklama: motAcik.trim(),
         zaman: new Date().toISOString()
       };
       database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).update(veri).then(()=>{
-        bsModal('haftalikGuncelleModal').hide();
+        // Modalı güvenli bir şekilde kapat
+        const modalEl = document.getElementById('haftalikGuncelleModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
         refreshWeekly(); // önemli
         alert("✅ Kayıt güncellendi.");
       }).catch(()=> alert("❌ Güncelleme başarısız."));
@@ -852,6 +907,13 @@
         if(tip === 'haftalik'){
           const ogrKay = kayitlar.filter(k=>k.ogrenci === ogrenciAdi);
           const sonKayit = ogrKay[ogrKay.length - 1];
+          // Motivasyon bilgilerini hazırla
+          const mot = parseInt(sonKayit?.motivasyon) || 0;
+          const motAcik = (sonKayit?.motivasyonAciklama || '').trim();
+          const yildizStr = mot > 0 ? '⭐'.repeat(mot) : '';
+          const motMetni = mot ? `${mot}/10 ${yildizStr}` : 'Bilgi Yok';
+          const motAcikMetni = motAcik || 'Bilgi Yok';
+
           const mesaj = `📘 Özel Ders Takip Sistemi
 📅 *Tarih:* ${formatTarih(bugun)}
 👤 *Öğrenci:* ${ogrenciAdi}
@@ -860,6 +922,8 @@
 📌 *Bu Hafta Yapılanlar*
 📚 *İşlenen Konu:* ${sonKayit?.konu || 'Bilgi Yok'}
 📝 *Geçen Haftaki Ödev:* ${sonKayit?.odev || 'Ödev Yok'} → ${durumIcon(sonKayit?.durum)}
+⭐ *Motivasyon:* ${motMetni}
+🗒️ *Genel Ders Durumu:* ${motAcikMetni}
 
 📖 *Gelecek Hafta Yapılacaklar*
 📝 *Ödev:* ${sonKayit?.gelecekOdev || 'Ödev Yok'}
