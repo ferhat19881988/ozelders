@@ -401,6 +401,28 @@
       }
     };
 
+    // Tarih formatlama yardımcı fonksiyonu
+    // Bu fonksiyon bir tarih stringini (YYYY-MM-DD veya ISO format) alır ve
+    // gün.ay.yıl (01.11.2025) formatında geri döndürür. Geçersiz tarihler
+    // olduğu gibi döndürülür. Bu fonksiyon liste ve rapor görünümünde
+    // tarihleri kullanıcıya daha okunur şekilde göstermek için kullanılır.
+    function formatTurkishDate(dateStr) {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      // Eğer geçerli bir tarih değilse veya parse edilemiyorsa stringi aynen döndür.
+      if (isNaN(date.getTime())) return dateStr;
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}.${month}.${year}`;
+    }
+
+    // Sayfalama için global değişkenler. Her liste için mevcut sayfayı tutar.
+    // Bir filtre değiştiğinde veya veri yeniden yüklendiğinde bu değişkenler
+    // gerektiğinde güncellenir.
+    let odevCurrentPage = 1;
+    let haftalikCurrentPage = 1;
+
     // --- Ortak yenile yardımcıları ---
     function refreshStudents() {
       ogrenciListele();
@@ -538,24 +560,54 @@
     function odevListele(){
       const liste = document.getElementById('odevListesi');
       liste.innerHTML = '';
-      database.ref("odevler").once("value").then(snap=>{
+      // Sayfalama kapsayıcısını veya mevcut nav'ı bul. Eğer yoksa oluştur.
+      let paginationContainer = document.getElementById('odevPagination');
+      if (!paginationContainer) {
+        paginationContainer = document.createElement('div');
+        paginationContainer.id = 'odevPagination';
+        paginationContainer.className = 'mt-3';
+        liste.parentNode.appendChild(paginationContainer);
+      }
+      // Veriyi Firebase'den alıp sayfalama ve sıralama uygula.
+      database.ref("odevler").once("value").then(snap => {
         const val = snap.val() || {};
-        const entries = Object.entries(val);
+        const allEntries = Object.entries(val);
         const filtreSel = document.getElementById('odevFiltreOgrenci');
         const filtreDeger = filtreSel ? filtreSel.value : '';
-        if(!entries.length){
-          liste.innerHTML = '<div class="text-center text-muted py-3">Kayıtlı ödev yok.</div>';
+        // Filtrele
+        let filtered = allEntries.filter(([_, odev]) => {
+          return !filtreDeger || odev.ogrenci === filtreDeger;
+        });
+        // Eğer hiç veri yoksa uygun mesajı göster ve sayfalama temizle.
+        if (filtered.length === 0) {
+          liste.innerHTML = '<div class="text-center text-muted py-3">' +
+            (allEntries.length === 0 ? 'Kayıtlı ödev yok.' : 'Seçilen öğrenci için ödev bulunamadı.') +
+            '</div>';
+          paginationContainer.innerHTML = '';
           return;
         }
-        let sayac = 0;
-        entries.forEach(([key, odev])=>{
-          // filtre uygulama
-          if(filtreDeger && odev.ogrenci !== filtreDeger) return;
+        // Tarihe göre azalan sırala
+        filtered.sort((a, b) => {
+          const da = new Date(a[1].tarih);
+          const db = new Date(b[1].tarih);
+          return db - da;
+        });
+        // Sayfalama hesapla
+        const pageSize = 10;
+        const totalPages = Math.ceil(filtered.length / pageSize);
+        // Eğer mevcut sayfa totalPages'den büyükse son sayfaya ayarla
+        if (odevCurrentPage > totalPages) odevCurrentPage = totalPages;
+        if (odevCurrentPage < 1) odevCurrentPage = 1;
+        const startIdx = (odevCurrentPage - 1) * pageSize;
+        const endIdx = startIdx + pageSize;
+        const pageEntries = filtered.slice(startIdx, endIdx);
+        // Liste öğelerini oluştur
+        pageEntries.forEach(([key, odev]) => {
           const item = document.createElement('div');
-          item.className = 'list-group-item';
+          item.className = 'list-group-item d-flex align-items-start';
           item.innerHTML = `
             <div class="me-2 flex-grow-1">
-              <div class="fw-medium">${odev.ogrenci || 'Öğrenci Yok'} — ${odev.tarih || 'Tarih Yok'}</div>
+              <div class="fw-medium">${odev.ogrenci || 'Öğrenci Yok'} — ${formatTurkishDate(odev.tarih) || 'Tarih Yok'}</div>
               <div class="small-muted">${odev.konu || odev.icerik || 'İçerik Yok'}</div>
             </div>
             <div class="d-flex gap-2 flex-wrap">
@@ -564,10 +616,65 @@
             </div>
           `;
           liste.appendChild(item);
-          sayac++;
         });
-        if(sayac === 0){
-          liste.innerHTML = '<div class="text-center text-muted py-3">Seçilen öğrenci için ödev bulunamadı.</div>';
+        // Sayfalama kontrollerini oluştur
+        paginationContainer.innerHTML = '';
+        if (totalPages > 1) {
+          const nav = document.createElement('nav');
+          const ul = document.createElement('ul');
+          ul.className = 'pagination justify-content-center';
+          // Önceki butonu
+          const prevLi = document.createElement('li');
+          prevLi.className = 'page-item' + (odevCurrentPage === 1 ? ' disabled' : '');
+          const prevLink = document.createElement('a');
+          prevLink.className = 'page-link';
+          prevLink.href = '#';
+          prevLink.innerText = '«';
+          prevLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (odevCurrentPage > 1) {
+              odevCurrentPage--;
+              odevListele();
+            }
+          });
+          prevLi.appendChild(prevLink);
+          ul.appendChild(prevLi);
+          // Sayfa numaraları
+          for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement('li');
+            li.className = 'page-item' + (i === odevCurrentPage ? ' active' : '');
+            const a = document.createElement('a');
+            a.className = 'page-link';
+            a.href = '#';
+            a.innerText = i;
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              if (i !== odevCurrentPage) {
+                odevCurrentPage = i;
+                odevListele();
+              }
+            });
+            li.appendChild(a);
+            ul.appendChild(li);
+          }
+          // Sonraki butonu
+          const nextLi = document.createElement('li');
+          nextLi.className = 'page-item' + (odevCurrentPage === totalPages ? ' disabled' : '');
+          const nextLink = document.createElement('a');
+          nextLink.className = 'page-link';
+          nextLink.href = '#';
+          nextLink.innerText = '»';
+          nextLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (odevCurrentPage < totalPages) {
+              odevCurrentPage++;
+              odevListele();
+            }
+          });
+          nextLi.appendChild(nextLink);
+          ul.appendChild(nextLi);
+          nav.appendChild(ul);
+          paginationContainer.appendChild(nav);
         }
       });
     }
@@ -683,10 +790,12 @@
       sel.innerHTML = '<option value="">Ödev Seçin</option>';
       database.ref("odevler").once("value").then(s=>{
         const val = s.val() || {};
-        Object.values(val).filter(o=>o.ogrenci===secili).forEach(o=>{
+        Object.values(val).filter(o => o.ogrenci === secili).forEach(o => {
           const opt = document.createElement('option');
           opt.value = o.konu || o.icerik || '';
-          opt.textContent = `${o.tarih} - ${o.konu || o.icerik}`;
+          // Tarihi okunur formata çevir
+          const tarihStr = formatTurkishDate(o.tarih);
+          opt.textContent = `${tarihStr} - ${o.konu || o.icerik}`;
           sel.appendChild(opt);
         });
       });
@@ -736,24 +845,63 @@
     function haftalikKayitlariListele(){
       const liste = document.getElementById('haftalikKayitListesi');
       liste.innerHTML = '';
-      database.ref("haftalikDegerlendirme").once("value").then(s=>{
-        const val = s.val();
+      // Sayfalama kapsayıcısını bul veya oluştur
+      let paginationContainer = document.getElementById('haftalikPagination');
+      if (!paginationContainer) {
+        paginationContainer = document.createElement('div');
+        paginationContainer.id = 'haftalikPagination';
+        paginationContainer.className = 'mt-3';
+        liste.parentNode.appendChild(paginationContainer);
+      }
+      database.ref("haftalikDegerlendirme").once("value").then(s => {
+        const val = s.val() || {};
         const filtreSel = document.getElementById('haftalikFiltreOgrenci');
         const filtreDeger = filtreSel ? filtreSel.value : '';
-        if(!val){ liste.innerHTML = '<div class="text-center text-muted py-3">Kayıt bulunamadı.</div>'; return; }
-        let sayac = 0;
-        Object.entries(val).forEach(([key, veri])=>{
-          // filtre uygula
-          if(filtreDeger && veri.ogrenci !== filtreDeger) return;
-          const item = document.createElement('div');
-          item.className = 'list-group-item';
-          const metin = `${veri.ogrenci || '???'} — ${veri.tarih || '???'} — ${veri.konu || '???'}`;
-          // gelecek hafta ödevi vurgusu
+        // Kayıt yoksa mesaj göster ve temizle
+        const entries = Object.entries(val);
+        if (entries.length === 0) {
+          liste.innerHTML = '<div class="text-center text-muted py-3">Kayıt bulunamadı.</div>';
+          paginationContainer.innerHTML = '';
+          const ozetEl = document.getElementById('haftalikOzet');
+          if (ozetEl) ozetEl.innerText = '';
+          return;
+        }
+        // Filtre uygula
+        let filtered = entries.filter(([_, veri]) => {
+          return !filtreDeger || veri.ogrenci === filtreDeger;
+        });
+        // Eğer filtre sonrasında veri kalmadıysa mesaj göster ve temizle
+        if (filtered.length === 0) {
+          liste.innerHTML = '<div class="text-center text-muted py-3">Seçilen öğrenci için kayıt bulunamadı.</div>';
+          paginationContainer.innerHTML = '';
+          const ozetEl = document.getElementById('haftalikOzet');
+          if (ozetEl) ozetEl.innerText = '';
+          return;
+        }
+        // Tarihe göre azalan sırala (veri.tarih veya veri.zaman)
+        filtered.sort((a, b) => {
+          const da = new Date(a[1].tarih || a[1].zaman);
+          const db = new Date(b[1].tarih || b[1].zaman);
+          return db - da;
+        });
+        // Sayfalama hesapla
+        const pageSize = 10;
+        const totalPages = Math.ceil(filtered.length / pageSize);
+        if (haftalikCurrentPage > totalPages) haftalikCurrentPage = totalPages;
+        if (haftalikCurrentPage < 1) haftalikCurrentPage = 1;
+        const startIdx = (haftalikCurrentPage - 1) * pageSize;
+        const endIdx = startIdx + pageSize;
+        const pageEntries = filtered.slice(startIdx, endIdx);
+        // Liste öğelerini oluştur
+        pageEntries.forEach(([key, veri]) => {
+          const metin = `${veri.ogrenci || '???'} — ${formatTurkishDate(veri.tarih || veri.zaman) || '???'} — ${veri.konu || '???'}`;
           const nextLine = veri.gelecekOdev ? `<div class="fw-bold mt-1">${veri.gelecekOdev}</div>` : '';
+          const item = document.createElement('div');
+          item.className = 'list-group-item d-flex align-items-start';
           item.innerHTML = `
             <div class="me-2 flex-grow-1">
               <div class="fw-medium">${metin}</div>
-              <div class="small-muted">${(veri.odev ? 'Ödev: '+veri.odev+' → ' : '') + durumIcon(veri.durum)}</div>
+              <div class="small-muted">${(veri.odev ? 'Ödev: ' + veri.odev + ' → ' : '') + durumIcon(veri.durum)}</div>
               ${nextLine}
             </div>
             <div class="d-flex gap-2 flex-wrap">
@@ -762,21 +910,74 @@
             </div>
           `;
           liste.appendChild(item);
-          sayac++;
         });
-        if(sayac === 0){
-          liste.innerHTML = '<div class="text-center text-muted py-3">Seçilen öğrenci için kayıt bulunamadı.</div>';
-        }
-        // Filtre uygulanmışsa, toplam ders sayısını gösteren özet bilgiyi güncelle
+        // Özet alanını güncelle
         const ozetEl = document.getElementById('haftalikOzet');
         if (ozetEl) {
           if (filtreDeger) {
-            // filtre uygulanmış ve kayıt varsa
-            ozetEl.innerText = sayac > 0 ? `Toplam ${sayac} ders kaydı bulundu.` : '';
+            ozetEl.innerText = `Toplam ${filtered.length} ders kaydı bulundu.`;
           } else {
-            // filtre yoksa özet alanını temizle
             ozetEl.innerText = '';
           }
+        }
+        // Sayfalama kontrolleri
+        paginationContainer.innerHTML = '';
+        if (totalPages > 1) {
+          const nav = document.createElement('nav');
+          const ul = document.createElement('ul');
+          ul.className = 'pagination justify-content-center';
+          // Önceki
+          const prevLi = document.createElement('li');
+          prevLi.className = 'page-item' + (haftalikCurrentPage === 1 ? ' disabled' : '');
+          const prevLink = document.createElement('a');
+          prevLink.className = 'page-link';
+          prevLink.href = '#';
+          prevLink.innerText = '«';
+          prevLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (haftalikCurrentPage > 1) {
+              haftalikCurrentPage--;
+              haftalikKayitlariListele();
+            }
+          });
+          prevLi.appendChild(prevLink);
+          ul.appendChild(prevLi);
+          // Numaralar
+          for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement('li');
+            li.className = 'page-item' + (i === haftalikCurrentPage ? ' active' : '');
+            const a = document.createElement('a');
+            a.className = 'page-link';
+            a.href = '#';
+            a.innerText = i;
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              if (i !== haftalikCurrentPage) {
+                haftalikCurrentPage = i;
+                haftalikKayitlariListele();
+              }
+            });
+            li.appendChild(a);
+            ul.appendChild(li);
+          }
+          // Sonraki
+          const nextLi = document.createElement('li');
+          nextLi.className = 'page-item' + (haftalikCurrentPage === totalPages ? ' disabled' : '');
+          const nextLink = document.createElement('a');
+          nextLink.className = 'page-link';
+          nextLink.href = '#';
+          nextLink.innerText = '»';
+          nextLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (haftalikCurrentPage < totalPages) {
+              haftalikCurrentPage++;
+              haftalikKayitlariListele();
+            }
+          });
+          nextLi.appendChild(nextLink);
+          ul.appendChild(nextLi);
+          nav.appendChild(ul);
+          paginationContainer.appendChild(nav);
         }
       });
     }
@@ -1003,12 +1204,20 @@ Saygılarımızla, bilginize.`;
       // Haftalıkta öğrenci değişince ödev seçeneklerini dolduruyoruz (yukarıda eklendi)
       // Filtre select değişince listeleri yeniden oluştur
       const odevFiltreSelect = document.getElementById('odevFiltreOgrenci');
-      if(odevFiltreSelect){
-        odevFiltreSelect.addEventListener('change', odevListele);
+      if (odevFiltreSelect) {
+        odevFiltreSelect.addEventListener('change', () => {
+          // Filtre değiştirildiğinde sayfalama sıfırlanır ve liste yeniden çizilir
+          odevCurrentPage = 1;
+          odevListele();
+        });
       }
       const haftalikFiltreSelect = document.getElementById('haftalikFiltreOgrenci');
-      if(haftalikFiltreSelect){
-        haftalikFiltreSelect.addEventListener('change', haftalikKayitlariListele);
+      if (haftalikFiltreSelect) {
+        haftalikFiltreSelect.addEventListener('change', () => {
+          // Filtre değişince sayfa 1'den başlat
+          haftalikCurrentPage = 1;
+          haftalikKayitlariListele();
+        });
       }
     });
   </script>
