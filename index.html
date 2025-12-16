@@ -790,7 +790,10 @@
       sel.innerHTML = '<option value="">Ödev Seçin</option>';
       database.ref("odevler").once("value").then(s=>{
         const val = s.val() || {};
-        Object.values(val).filter(o => o.ogrenci === secili).forEach(o => {
+        Object.values(val)
+  .filter(o => o.ogrenci === secili)
+  .sort((a, b) => new Date(b.tarih) - new Date(a.tarih))
+  .forEach(o => {
           const opt = document.createElement('option');
           opt.value = o.konu || o.icerik || '';
           // Tarihi okunur formata çevir
