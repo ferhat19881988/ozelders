@@ -5,108 +5,257 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Özel Ders Takip Sistemi</title>
 
+  <!-- Bootstrap 5.3 (CSS) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
 
+  <!-- Icons (opsiyonel) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
 
+  <!-- QR ve Firebase -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    :root {
-      --primary-color: #4f46e5;
-      --primary-hover: #4338ca;
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --border-color: #e2e8f0;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      --radius: 12px;
-    }
-
-    body { 
-      background-color: var(--bg-color); 
-      color: var(--text-main);
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    }
-
-    /* Navbar */
-    .navbar {
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.9) !important;
-      border-bottom: 1px solid var(--border-color) !important;
-    }
-
-    /* Kart Tasarımı */
-    .app-card { 
-      background: var(--card-bg); 
-      border-radius: var(--radius); 
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border-color);
-      margin-bottom: 2rem;
-    }
-
-    /* Sekme Tasarımı */
-    .sticky-tabs { 
-      position: sticky; 
-      top: 0; 
-      z-index: 1020; 
-      background: rgba(248, 250, 252, 0.95);
-      backdrop-filter: blur(8px);
-      padding: 0.75rem 0;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .nav-pills .nav-link {
-      color: var(--text-muted);
-      font-weight: 500;
-      border-radius: 8px;
-      padding: 0.6rem 1.2rem;
-      transition: all 0.3s ease;
-    }
-
-    .nav-pills .nav-link.active {
-      background-color: var(--primary-color);
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-    }
-
-    /* Liste Öğeleri */
-    .list-fit .list-group-item { 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      padding: 1rem;
-      margin-bottom: 0.5rem;
-      border-radius: 8px !important;
-      border: 1px solid var(--border-color);
-      transition: transform 0.2s ease;
-    }
-
-    .list-fit .list-group-item:hover {
-      background-color: #f1f5f9;
-      transform: translateX(5px);
-    }
-
-    /* Buton ve Form */
-    .btn { border-radius: 8px; font-weight: 500; }
-    .btn-primary { background-color: var(--primary-color); border: none; }
-    .form-control, .form-select { border-radius: 8px; border: 1px solid var(--border-color); }
-
-    .qr-center { 
-      display: flex; 
-      flex-direction: column;
-      align-items: center; 
-      justify-content: center; 
-      min-height: 250px; 
-      border: 2px dashed var(--border-color);
-      border-radius: var(--radius);
-    }
+  :root{
+    --app-bg: #f6f8fc;
+    --app-text:#0f172a;
+    --app-muted:#64748b;
+    --app-border: rgba(15,23,42,.10);
+    --app-primary:#4f46e5;
+    --app-accent:#06b6d4;
+    --radius-xl: 1.25rem;
+    --radius-lg: 1rem;
+    --shadow-sm: 0 6px 18px rgba(15,23,42,.06);
+    --shadow-md: 0 16px 44px rgba(15,23,42,.09);
+  }
+  
+  html, body { height: 100%; }
+  
+  body{
+    margin: 0;
+    color: var(--app-text);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+                 Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    background:
+      radial-gradient(1200px 700px at 20% -10%, rgba(79,70,229,.13), transparent 55%),
+      radial-gradient(900px 520px at 110% 10%, rgba(6,182,212,.11), transparent 60%),
+      linear-gradient(180deg, var(--app-bg), #ffffff 55%, #f7fafc);
+  }
+  
+  /* Sayfayı "telefon ekranına" uygun, tek kolon bir uygulama gibi kullan */
+  .app-shell{
+    max-width: 560px;
+    margin-inline: auto;
+    padding-left: clamp(12px, 4vw, 20px);
+    padding-right: clamp(12px, 4vw, 20px);
+  }
+  .container.app-shell{ max-width: 560px !important; }
+  
+  /* Modern, cam efekti üst bar */
+  .app-navbar{
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: rgba(255,255,255,.78) !important;
+    border-bottom: 1px solid var(--app-border) !important;
+    backdrop-filter: saturate(180%) blur(14px);
+  }
+  
+  .navbar-brand{
+    letter-spacing: -.02em;
+  }
+  
+  .brand-badge{
+    display: inline-flex;
+    align-items: center;
+    gap: .65rem;
+    padding: .45rem .75rem;
+    border-radius: 999px;
+    background: rgba(79,70,229,.08);
+    border: 1px solid rgba(79,70,229,.14);
+  }
+  .brand-badge .brand-title{
+    font-weight: 800;
+    font-size: 1rem;
+    line-height: 1.1;
+  }
+  
+  /* Sekmeler: yapışkan, kaydırılabilir ve modern */
+  .sticky-tabs{
+    position: sticky;
+    top: 56px; /* navbar yüksekliği */
+    z-index: 1020;
+    background: rgba(246,248,252,.74);
+    border-bottom: 1px solid var(--app-border);
+    backdrop-filter: saturate(180%) blur(14px);
+  }
+  
+  .nav-pills{
+    gap: .5rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: .25rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-pills::-webkit-scrollbar{ height: 6px; }
+  .nav-pills::-webkit-scrollbar-thumb{ background: rgba(15,23,42,.12); border-radius: 999px; }
+  
+  .nav-pills .nav-link{
+    white-space: nowrap;
+    border: 1px solid var(--app-border);
+    background: rgba(255,255,255,.72);
+    border-radius: 999px;
+    padding: .6rem .95rem;
+    font-weight: 700;
+    color: var(--app-text);
+    box-shadow: var(--shadow-sm);
+    transition: transform .14s ease, box-shadow .14s ease, background .14s ease;
+  }
+  .nav-pills .nav-link:hover{
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  .nav-pills .nav-link.active{
+    color: #fff;
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--app-primary), var(--app-accent));
+    box-shadow: 0 16px 30px rgba(79,70,229,.22);
+  }
+  
+  .app-card{
+    background: rgba(255,255,255,.88);
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .section-title{
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    letter-spacing: -.02em;
+  }
+  .section-title i{ font-size: 1.2rem; opacity: .9; }
+  
+  .small-muted{ font-size: .9rem; color: var(--app-muted); }
+  textarea{ resize: vertical; }
+  
+  /* Form */
+  .form-label{
+    color: var(--app-muted);
+    font-weight: 700;
+    font-size: .9rem;
+  }
+  .form-control, .form-select, textarea{
+    border-radius: 1rem;
+    border: 1px solid rgba(15,23,42,.12);
+    background: rgba(255,255,255,.92);
+  }
+  .form-control:focus, .form-select:focus, textarea:focus{
+    border-color: rgba(79,70,229,.36);
+    box-shadow: 0 0 0 .25rem rgba(79,70,229,.14);
+  }
+  .form-row-gap{ row-gap: .75rem; }
+  
+  /* Buttons */
+  .btn{
+    border-radius: 999px;
+    font-weight: 800;
+    padding: .58rem 1.05rem;
+  }
+  .btn-primary{
+    border: 0;
+    background: linear-gradient(135deg, var(--app-primary), var(--app-accent));
+  }
+  .btn-success{
+    border: 0;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+  }
+  .btn-outline-secondary, .btn-outline-danger, .btn-outline-primary, .btn-outline-dark{
+    border-width: 1px;
+  }
+  
+  /* Lists */
+  .list-group{ --bs-list-group-border-color: transparent; }
+  .list-fit .list-group-item{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+  }
+  .list-group-item{
+    background: rgba(255,255,255,.78);
+    border: 1px solid var(--app-border);
+    border-radius: 1rem;
+    margin-bottom: .65rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform .14s ease, box-shadow .14s ease;
+  }
+  .list-group-item:hover{
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  /* QR */
+  .qr-center{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+  }
+  
+  /* Pagination */
+  .pagination .page-link{
+    border-radius: 999px;
+    margin: 0 .15rem;
+    border: 1px solid var(--app-border);
+    background: rgba(255,255,255,.75);
+    color: var(--app-text);
+  }
+  .pagination .page-item.active .page-link{
+    border-color: transparent;
+    color: #fff;
+    background: linear-gradient(135deg, var(--app-primary), var(--app-accent));
+  }
+  
+  /* Modals */
+  .modal-content{
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--app-border);
+    box-shadow: var(--shadow-md);
+  }
+  .modal-header, .modal-footer{ border-color: var(--app-border); }
+  
+  /* Dividers */
+  hr{
+    border-top: 1px solid var(--app-border);
+    opacity: 1;
+  }
+  
+  /* Logo */
+  .navbar-brand img{
+    height: 32px;
+    width: 32px;
+    object-fit: cover;
+    border-radius: .65rem;
+    box-shadow: 0 10px 22px rgba(15,23,42,.10);
+  }
+  
+  /* Motion preferences */
+  @media (prefers-reduced-motion: reduce){
+    * { transition: none !important; scroll-behavior: auto !important; }
+  }
+  
+  /* Small screens: daha geniş dokunma alanı */
+  @media (max-width: 576px){
+    .app-card{ padding: 1.1rem !important; }
+    .nav-pills .nav-link{ padding: .62rem .9rem; }
+  }
   </style>
 
   <script>
-    // Firebase Yapılandırması
+    // Firebase yapılandırma
     const firebaseConfig = {
       apiKey: "AIzaSyD4Ctf-F5BSU_4fHK2WgTQUj_okrzyI7OI",
       authDomain: "birebir-1df98.firebaseapp.com",
@@ -123,235 +272,1182 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg bg-white shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="#">
-      <img src="https://i.ibb.co/F4cDX7MX/logom.jpg" alt="Logo" height="32" class="rounded me-2" />
-      Özel Ders Takip
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg app-navbar">
+  <div class="container app-shell">
+    <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="#">
+      <img src="https://i.ibb.co/F4cDX7MX/logom.jpg" alt="Logo" height="32" class="rounded" />
+      <span class="brand-badge">
+        <i class="bi bi-journal-check"></i>
+        <span class="brand-title">Özel Ders Takip Sistemi</span>
+      </span>
     </a>
   </div>
 </nav>
 
-<div class="sticky-tabs">
-  <div class="container">
-    <ul class="nav nav-pills" id="mainTabs" role="tablist">
-      <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pnl-ogrenci">👤 Kayıt</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pnl-haftalik">📅 Haftalık</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pnl-rapor">📤 Rapor</button></li>
-    </ul>
-  </div>
-</div>
 
-<div class="container my-4">
-  <div class="tab-content">
-    
-    <div class="tab-pane fade show active" id="pnl-ogrenci">
-      <div class="app-card p-4">
-        <h4 class="mb-3">Öğrenci Ekle</h4>
-        <div class="row g-3">
-          <div class="col-md-6"><input type="text" id="ogrenciAd" class="form-control" placeholder="Öğrenci Adı Soyadı"></div>
-          <div class="col-md-6">
-            <select id="ogrenciSinif" class="form-select">
-              <option value="">Sınıf Seçin</option>
-              <option>5. Sınıf</option><option>6. Sınıf</option><option>7. Sınıf</option><option>8. Sınıf</option>
+  <!-- Sekmeler -->
+  <div class="sticky-tabs border-bottom">
+    <div class="container app-shell">
+      <ul class="nav nav-pills my-3" id="mainTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tab-ogrenci" data-bs-toggle="pill" data-bs-target="#pnl-ogrenci" type="button" role="tab">
+            <i class="bi bi-person"></i> Öğrenci Kaydı
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-haftalik" data-bs-toggle="pill" data-bs-target="#pnl-haftalik" type="button" role="tab">
+            <i class="bi bi-calendar-week"></i> Haftalık Değerlendirme
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-rapor" data-bs-toggle="pill" data-bs-target="#pnl-rapor" type="button" role="tab">
+            <i class="bi bi-whatsapp"></i> WhatsApp Rapor
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- İçerik -->
+  <div class="container app-shell my-4">
+    <div class="tab-content">
+
+      <!-- ÖĞRENCİ KAYIT -->
+      <div class="tab-pane fade show active" id="pnl-ogrenci" role="tabpanel" aria-labelledby="tab-ogrenci">
+        <div class="app-card p-4 p-md-5">
+          <h2 class="h4 mb-4 section-title"><i class="bi bi-person-circle"></i><span>Öğrenci Kaydı</span></h2>
+
+          <div class="row g-3 form-row-gap">
+            <div class="col-md-6">
+              <label class="form-label">Öğrenci Adı</label>
+              <input type="text" id="ogrenciAd" class="form-control" placeholder="Örn: Ayşe Yılmaz" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Sınıf</label>
+              <select id="ogrenciSinif" class="form-select">
+                <option value="">Sınıf Seçiniz</option>
+                <option>5. Sınıf</option><option>6. Sınıf</option>
+                <option>7. Sınıf</option><option>8. Sınıf</option>
+              </select>
+            </div>
+            <div class="col-12 d-flex gap-2">
+              <button class="btn btn-primary" onclick="ogrenciEkle()"><i class="bi bi-plus-circle"></i> Öğrenci Ekle</button>
+              <button class="btn btn-outline-secondary" onclick="temizleInputlar()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
+            </div>
+          </div>
+
+          <hr class="my-4" />
+
+          <h3 class="h5 mb-3 section-title"><i class="bi bi-people"></i><span>Öğrenci Listesi</span></h3>
+          <div class="list-group list-fit" id="ogrenciListesi"></div>
+
+          <hr class="my-4" />
+
+          <h3 class="h5 mb-3 section-title"><i class="bi bi-pencil-square"></i><span>Ödev Ekle</span></h3>
+          <div class="row g-3 form-row-gap">
+            <div class="col-md-4">
+              <label class="form-label">Öğrenci</label>
+              <select id="odevOgrenci" class="form-select">
+                <option value="">Öğrenci Seçiniz</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Tarih</label>
+              <input type="date" id="odevTarih" class="form-control"/>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Ödev İçeriği</label>
+              <textarea id="odevIcerik" class="form-control" rows="3" placeholder="Örn: Sayfa 45-47 problemler..."></textarea>
+            </div>
+            <div class="col-12 d-flex flex-wrap gap-2">
+              <button class="btn btn-success" onclick="odevEkle()"><i class="bi bi-plus-circle"></i> Ödev Ekle</button>
+              <button class="btn btn-outline-secondary" onclick="odevFormTemizle()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
+              <button class="btn btn-outline-danger" onclick="tumOdevleriSil()"><i class="bi bi-trash"></i> Tüm Ödevleri Sil</button>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <h3 class="h6 text-uppercase text-muted">Kayıtlı Ödevler</h3>
+            <!-- Öğrenci filtreleme alanı -->
+            <div class="row g-2 mb-3">
+              <div class="col-md-4">
+                <label class="form-label">Öğrenci Filtrele</label>
+                <select id="odevFiltreOgrenci" class="form-select">
+                  <option value="">Tümü</option>
+                </select>
+              </div>
+            </div>
+            <div id="odevListesi" class="list-group list-fit"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HAFTALIK DEĞERLENDİRME -->
+      <div class="tab-pane fade" id="pnl-haftalik" role="tabpanel" aria-labelledby="tab-haftalik">
+        <div class="app-card p-4 p-md-5">
+          <h2 class="h4 mb-4 section-title"><i class="bi bi-calendar2-week"></i><span>Haftalık Değerlendirme</span></h2>
+
+          <div class="row g-3 form-row-gap">
+            <div class="col-md-4">
+              <label class="form-label">Öğrenci</label>
+              <select id="haftaOgrenci" class="form-select">
+                <option value="">Öğrenci Seçin</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Ödev</label>
+              <select id="haftaOdev" class="form-select">
+                <option value="">Ödev Seçin</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Ödev Durumu</label>
+              <select id="odevDurumu" class="form-select">
+                <option value="">Ödev Durumu</option>
+                <option value="yapti">✅ Yaptı</option>
+                <option value="yapmadi">❌ Yapmadı</option>
+                <option value="eksik">⚠️ Eksik</option>
+                <option value="getirmedi">📭 Getirmedi</option>
+              </select>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Bu hafta işlenen konu</label>
+              <textarea id="buHaftaKonu" class="form-control" rows="2"></textarea>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Gelecek haftanın ödevi</label>
+              <textarea id="gelecekHaftaOdev" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Teslim Tarihi</label>
+              <input type="date" id="gelecekTarih" class="form-control" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Gelecek hafta konusu</label>
+              <textarea id="gelecekHaftaKonu" class="form-control" rows="1"></textarea>
+            </div>
+
+          <!-- Motivasyon ve Açıklama alanları -->
+          <div class="col-md-3">
+            <label class="form-label">Motivasyon (1‑10)</label>
+            <input type="number" id="haftaMotivasyon" class="form-control" min="1" max="10" />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Genel Ders Durumu</label>
+            <textarea id="haftaMotivasyonAciklama" class="form-control" rows="2"></textarea>
+          </div>
+
+            <div class="col-12 d-flex flex-wrap gap-2">
+              <button class="btn btn-primary" type="button" onclick="haftalikVeriyiEkle()"><i class="bi bi-plus-circle"></i> Ödevi Sisteme Ekle</button>
+              <button class="btn btn-outline-secondary" onclick="haftalikFormYenile()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
+              <button class="btn btn-outline-danger ms-auto" type="button" onclick="tumHaftalikKayitlariSil()"><i class="bi bi-trash"></i> Tüm Kayıtları Sil</button>
+            </div>
+          </div>
+
+          <hr class="my-4" />
+
+          <h3 class="h5 mb-3 section-title"><i class="bi bi-list-check"></i><span>Kayıtlı Haftalık Değerlendirmeler</span></h3>
+          <!-- Haftalık değerlendirme için öğrenci filtreleme -->
+          <div class="row g-2 mb-3">
+            <div class="col-md-4">
+              <label class="form-label">Öğrenci Filtrele</label>
+              <select id="haftalikFiltreOgrenci" class="form-select">
+                <option value="">Tümü</option>
+              </select>
+            </div>
+          </div>
+          <div id="haftalikKayitListesi" class="list-group list-fit"></div>
+          <!-- Filtre uygulandığında toplam ders sayısını göstermek için özet alanı -->
+          <div id="haftalikOzet" class="mt-2 small-muted"></div>
+          <p id="haftaDurumMesaji" class="mt-3 small-muted"></p>
+        </div>
+      </div>
+
+      <!-- WHATSAPP RAPOR -->
+      <div class="tab-pane fade" id="pnl-rapor" role="tabpanel" aria-labelledby="tab-rapor">
+        <div class="app-card p-4 p-md-5">
+          <h2 class="h4 mb-4 section-title"><i class="bi bi-whatsapp"></i><span>WhatsApp Raporları</span></h2>
+
+          <div class="row g-3 form-row-gap">
+            <div class="col-md-4">
+              <label class="form-label">Rapor Türü</label>
+              <select id="raporTipi" class="form-select" onchange="raporTipiDegisti()">
+                <option value="haftalik">📅 Haftalık Rapor</option>
+                <option value="aylik">📆 Aylık Rapor</option>
+              </select>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label">Öğrenci Seç</label>
+              <select id="raporOgrenciSec" class="form-select"></select>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Oluşturulan Mesaj</label>
+              <textarea id="raporMesaj" rows="10" class="form-control"></textarea>
+            </div>
+
+            <div class="col-12 d-flex flex-wrap gap-2">
+              <button class="btn btn-success" onclick="whatsappMesajGonder()"><i class="bi bi-send"></i> Gönder</button>
+              <button class="btn btn-outline-secondary" onclick="raporFormYenile()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
+              <button class="btn btn-outline-dark" onclick="qrKodModalAc()"><i class="bi bi-qr-code"></i> QR Kod ile Göster</button>
+            </div>
+          </div>
+          <div id="qrCanvasContainer" class="qr-center mt-3"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Öğrenci Güncelle Modal -->
+  <div class="modal fade" id="ogrenciGuncelleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">✏️ Öğrenci Güncelle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Ad</label>
+            <input type="text" id="guncelleAd" class="form-control"/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Sınıf</label>
+            <select id="guncelleSinif" class="form-select">
+              <option value="">Sınıf Seçiniz</option>
+              <option>5. Sınıf</option><option>6. Sınıf</option>
+              <option>7. Sınıf</option><option>8. Sınıf</option>
             </select>
           </div>
-          <div class="col-12"><button class="btn btn-primary w-100" onclick="ogrenciEkle()">Ekle</button></div>
         </div>
-        <hr>
-        <h5>Öğrenci Listesi</h5>
-        <div id="ogrenciListesi" class="list-group list-fit"></div>
-      </div>
-
-      <div class="app-card p-4">
-        <h4 class="mb-3">Ödev Tanımla</h4>
-        <div class="row g-3">
-          <div class="col-md-6"><select id="odevOgrenci" class="form-select"></select></div>
-          <div class="col-md-6"><input type="date" id="odevTarih" class="form-control"></div>
-          <div class="col-12"><textarea id="odevIcerik" class="form-control" placeholder="Ödev Detayları"></textarea></div>
-          <div class="col-12"><button class="btn btn-success w-100" onclick="odevEkle()">Ödevi Kaydet</button></div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
+          <button class="btn btn-primary" onclick="ogrenciGuncelleKaydet()"><i class="bi bi-save"></i> Kaydet</button>
         </div>
-        <div id="odevListesi" class="mt-3 list-group list-fit"></div>
       </div>
     </div>
+  </div>
 
-    <div class="tab-pane fade" id="pnl-haftalik">
-      <div class="app-card p-4">
-        <h4>Haftalık Takip</h4>
-        <div class="row g-3">
-          <div class="col-md-4"><select id="haftaOgrenci" class="form-select" onchange="haftaOgrenciSecildi()"></select></div>
-          <div class="col-md-4"><select id="haftaOdev" class="form-select"></select></div>
-          <div class="col-md-4">
-            <select id="odevDurumu" class="form-select">
-              <option value="yapti">✅ Yaptı</option>
-              <option value="yapmadi">❌ Yapmadı</option>
-              <option value="eksik">⚠️ Eksik</option>
-            </select>
+  <!-- Ödev Güncelle Modal -->
+  <div class="modal fade" id="odevGuncelleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">✏️ Ödev Güncelle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Tarih</label>
+            <input type="date" id="guncelleOdevTarih" class="form-control"/>
           </div>
-          <div class="col-12"><textarea id="buHaftaKonu" class="form-control" placeholder="Bu hafta işlenen konu"></textarea></div>
-          <div class="col-md-6"><textarea id="gelecekHaftaOdev" class="form-control" placeholder="Gelecek hafta ödevi"></textarea></div>
-          <div class="col-md-6"><input type="number" id="haftaMotivasyon" class="form-control" placeholder="Motivasyon (1-10)"></div>
-          <div class="col-12"><button class="btn btn-primary w-100" onclick="haftalikVeriyiEkle()">Kaydı Tamamla</button></div>
+          <div class="mb-3">
+            <label class="form-label">İçerik</label>
+            <textarea id="guncelleOdevIcerik" rows="4" class="form-control"></textarea>
+          </div>
         </div>
-        <div id="haftalikKayitListesi" class="mt-4 list-group list-fit"></div>
-      </div>
-    </div>
-
-    <div class="tab-pane fade" id="pnl-rapor">
-      <div class="app-card p-4">
-        <h4>Rapor Oluştur</h4>
-        <select id="raporOgrenciSec" class="form-select mb-3" onchange="raporMesajiOlustur()"></select>
-        <textarea id="raporMesaj" class="form-control mb-3" rows="10"></textarea>
-        <div class="d-flex gap-2">
-          <button class="btn btn-success flex-grow-1" onclick="whatsappMesajGonder()">WhatsApp'a Gönder</button>
-          <button class="btn btn-dark" onclick="qrKodModalAc()">QR Kod Al</button>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
+          <button class="btn btn-primary" onclick="odevGuncelleKaydet()"><i class="bi bi-save"></i> Kaydet</button>
         </div>
-        <div id="qrCanvasContainer" class="mt-3"></div>
       </div>
-    </div>
-
-  </div>
-</div>
-
-<div class="modal fade" id="ogrenciGuncelleModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header"><h5>Güncelle</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body">
-        <input type="text" id="guncelleAd" class="form-control mb-2">
-        <select id="guncelleSinif" class="form-select">
-          <option>5. Sınıf</option><option>6. Sınıf</option><option>7. Sınıf</option><option>8. Sınıf</option>
-        </select>
-      </div>
-      <div class="modal-footer"><button class="btn btn-primary" onclick="ogrenciGuncelleKaydet()">Kaydet</button></div>
     </div>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Haftalık Kayıt Güncelle Modal -->
+  <div class="modal fade" id="haftalikGuncelleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">✏️ Haftalık Kayıt Güncelle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="guncelleHaftaOgrenci" class="form-control mb-2" placeholder="Öğrenci Adı">
+          <input type="text" id="guncelleHaftaKonu" class="form-control mb-2" placeholder="Bu hafta konusu">
+          <input type="text" id="guncelleHaftaOdev" class="form-control mb-2" placeholder="Ödev">
+          <input type="text" id="guncelleHaftaDurum" class="form-control mb-2" placeholder="Ödev durumu (yapti, yapmadi...)">
+          <input type="date" id="guncelleHaftaTarih" class="form-control mb-2">
+          <input type="text" id="guncelleGelecekKonu" class="form-control mb-2" placeholder="Gelecek hafta konusu">
+          <input type="text" id="guncelleGelecekOdev" class="form-control mb-2" placeholder="Gelecek hafta ödevi">
 
-<script>
-  // JAVASCRIPT MANTIĞI - Firebase & CRUD
-  let guncellenecekId = null;
+          <!-- Motivasyon ve açıklama güncelleme alanları -->
+          <input type="number" id="guncelleHaftaMotivasyon" class="form-control mb-2" min="1" max="10" placeholder="Motivasyon (1-10)">
+          <textarea id="guncelleHaftaMotivasyonAciklama" class="form-control mb-2" placeholder="Genel ders durumu" rows="2"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
+          <button class="btn btn-primary" onclick="haftalikKaydiGuncelleKaydet()"><i class="bi bi-save"></i> Kaydet</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  function refreshAll() {
-    ogrenciListele();
-    doldurOgrenciSecimleri();
-    odevListele();
-    haftalikKayitlariListele();
-  }
+  <!-- QR Kod Modal -->
+  <div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">📱 WhatsApp Mesajı için QR Kod</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body">
+          <div id="qrModalCanvas" class="qr-center"></div>
+          <p class="small-muted text-center mt-3">QR’ı telefon kameranızla okutarak WhatsApp mesajını açabilirsiniz.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  // --- Öğrenci İşlemleri ---
-  function ogrenciEkle() {
-    const ad = document.getElementById('ogrenciAd').value;
-    const sinif = document.getElementById('ogrenciSinif').value;
-    if(!ad || !sinif) return alert("Eksik bilgi!");
-    const id = Date.now();
-    database.ref('ogrenciler/' + id).set({ id, ad, sinif }).then(() => {
-      document.getElementById('ogrenciAd').value = "";
-      refreshAll();
-    });
-  }
+  <!-- Bootstrap 5.3 (JS) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  function ogrenciListele() {
-    database.ref('ogrenciler').once('value', s => {
-      const list = document.getElementById('ogrenciListesi');
-      list.innerHTML = "";
-      s.forEach(item => {
-        const o = item.val();
-        list.innerHTML += `<div class="list-group-item">
-          <span><b>${o.ad}</b> (${o.sinif})</span>
-          <button class="btn btn-sm btn-danger" onclick="ogrenciSil(${o.id})">Sil</button>
-        </div>`;
+  <script>
+    /************ Yardımcılar ************/
+    let guncellenecekId = null;            // Öğrenci güncelle
+    let guncellenecekOdevKey = null;       // Ödev güncelle
+    let guncellenecekHaftaKey = null;      // Haftalık kayıt güncelle
+
+    const bsModal = (id) => bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
+
+    const durumIcon = (durum) => {
+      switch ((durum || '').toLowerCase()) {
+        case 'yapti': return '✅ Yaptı';
+        case 'yapmadi': return '❌ Yapmadı';
+        case 'eksik': return '⚠️ Eksik';
+        case 'getirmedi': return '📭 Getirmedi';
+        default: return '➖ Bilgi Yok';
+      }
+    };
+
+    // Tarih formatlama yardımcı fonksiyonu
+    // Bu fonksiyon bir tarih stringini (YYYY-MM-DD veya ISO format) alır ve
+    // gün.ay.yıl (01.11.2025) formatında geri döndürür. Geçersiz tarihler
+    // olduğu gibi döndürülür. Bu fonksiyon liste ve rapor görünümünde
+    // tarihleri kullanıcıya daha okunur şekilde göstermek için kullanılır.
+    function formatTurkishDate(dateStr) {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      // Eğer geçerli bir tarih değilse veya parse edilemiyorsa stringi aynen döndür.
+      if (isNaN(date.getTime())) return dateStr;
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}.${month}.${year}`;
+    }
+
+    // Sayfalama için global değişkenler. Her liste için mevcut sayfayı tutar.
+    // Bir filtre değiştiğinde veya veri yeniden yüklendiğinde bu değişkenler
+    // gerektiğinde güncellenir.
+    let odevCurrentPage = 1;
+    let haftalikCurrentPage = 1;
+
+    // --- Ortak yenile yardımcıları ---
+    function refreshStudents() {
+      ogrenciListele();
+      doldurOgrenciSecimi();       // Ödev ekleme öğrenci select
+      doldurHaftaOgrenciListesi(); // Haftalık değerlendirme öğrenci select
+      raporOgrenciSecDoldur();     // Rapor öğrenci select
+      // Öğrenci değişikliklerinde filtreleri güncelle
+      doldurOdevFiltre();
+      doldurHaftalikFiltre();
+    }
+    function refreshAssignments() {
+      odevListele();
+    }
+    function refreshWeekly() {
+      haftalikKayitlariListele();
+    }
+    function refreshAll() {
+      refreshStudents();
+      refreshAssignments();
+      refreshWeekly();
+      // Rapor seçimi yapılmışsa mesajı tazele
+      const sel = document.getElementById('raporOgrenciSec');
+      if (sel && sel.value) { raporMesajiOlustur(); }
+    }
+
+    // Öğrenci - dizi olarak sakla / getir
+    function getOgrenciler(cb){
+      database.ref("ogrenciler").once("value").then(s => {
+        const val = s.val();
+        const arr = Array.isArray(val) ? (val.filter(Boolean) || []) : (Object.values(val || {}));
+        cb(arr || []);
+      }).catch(_ => cb([]));
+    }
+    function setOgrenciler(arr){
+      return database.ref("ogrenciler").set(arr || []);
+    }
+
+    /************ ÖĞRENCİ ************/
+    function temizleInputlar(){
+      document.getElementById('ogrenciAd').value = '';
+      document.getElementById('ogrenciSinif').value = '';
+    }
+
+    function ogrenciEkle(){
+      const ad = document.getElementById('ogrenciAd').value.trim();
+      const sinif = document.getElementById('ogrenciSinif').value;
+      if(!ad || !sinif){ alert("Lütfen öğrenci adı ve sınıf seçin."); return; }
+
+      getOgrenciler(ogrenciler=>{
+        const id = Date.now();
+        const yeni = { id, ad, sinif };
+        const guncel = [...ogrenciler, yeni];
+        setOgrenciler(guncel).then(()=>{
+          alert("✅ Öğrenci eklendi.");
+          refreshStudents(); // önemli
+          temizleInputlar();
+        }).catch(()=> alert("❌ Öğrenci eklenemedi."));
       });
-    });
-  }
+    }
 
-  function ogrenciSil(id) {
-    if(confirm("Silinsin mi?")) database.ref('ogrenciler/' + id).remove().then(refreshAll);
-  }
+    function ogrenciSil(id){
+      getOgrenciler(ogrenciler=>{
+        const guncel = ogrenciler.filter(o=>o.id !== id);
+        setOgrenciler(guncel).then(()=>{
+          refreshStudents(); // önemli
+        });
+      });
+    }
 
-  function doldurOgrenciSecimleri() {
-    database.ref('ogrenciler').once('value', s => {
-      const ids = ['odevOgrenci', 'haftaOgrenci', 'raporOgrenciSec'];
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        el.innerHTML = '<option value="">Seçiniz...</option>';
-        s.forEach(item => {
-          const o = item.val();
-          el.innerHTML += `<option value="${o.id}">${o.ad}</option>`;
+    function ogrenciGuncelleAc(id){
+      getOgrenciler(ogrenciler=>{
+        const o = ogrenciler.find(x=>x.id===id);
+        if(!o) return;
+        guncellenecekId = id;
+        document.getElementById('guncelleAd').value = o.ad || '';
+        document.getElementById('guncelleSinif').value = o.sinif || '';
+        bsModal('ogrenciGuncelleModal').show();
+      });
+    }
+
+    function ogrenciGuncelleKaydet(){
+      const ad = document.getElementById('guncelleAd').value.trim();
+      const sinif = document.getElementById('guncelleSinif').value;
+      if(!guncellenecekId){ alert("Güncellenecek öğrenci yok."); return; }
+      getOgrenciler(ogrenciler=>{
+        const guncel = ogrenciler.map(o=> o.id===guncellenecekId ? ({...o, ad, sinif}) : o);
+        setOgrenciler(guncel).then(()=>{
+          bsModal('ogrenciGuncelleModal').hide();
+          refreshStudents(); // önemli
+          alert("✅ Öğrenci güncellendi.");
+        });
+      });
+    }
+
+    function ogrenciListele(){
+      const liste = document.getElementById('ogrenciListesi');
+      liste.innerHTML = '<div class="text-center text-muted py-3">Yükleniyor...</div>';
+      getOgrenciler(ogrenciler=>{
+        liste.innerHTML = '';
+        if(!ogrenciler.length){
+          liste.innerHTML = '<div class="text-center text-muted py-3">Kayıtlı öğrenci yok.</div>';
+          return;
+        }
+        ogrenciler.forEach(o=>{
+          const item = document.createElement('div');
+          item.className = 'list-group-item';
+          item.innerHTML = `
+            <div>
+              <div class="fw-medium">${o.ad}</div>
+              <div class="small-muted">${o.sinif}</div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-sm btn-outline-primary" onclick="ogrenciGuncelleAc(${o.id})"><i class="bi bi-pencil-square"></i></button>
+              <button class="btn btn-sm btn-outline-danger" onclick="ogrenciSil(${o.id})"><i class="bi bi-trash"></i></button>
+            </div>
+          `;
+          liste.appendChild(item);
+        });
+      });
+    }
+
+    /************ ÖDEVLER ************/
+    function doldurOgrenciSecimi(){
+      const sel = document.getElementById('odevOgrenci');
+      sel.innerHTML = '<option value="">Öğrenci Seçiniz</option>';
+      getOgrenciler(ogrenciler=>{
+        ogrenciler.forEach(o=>{
+          const opt = document.createElement('option');
+          opt.value = o.ad; opt.textContent = o.ad;
+          sel.appendChild(opt);
+        });
+      });
+    }
+
+    function odevListele(){
+      const liste = document.getElementById('odevListesi');
+      liste.innerHTML = '';
+      // Sayfalama kapsayıcısını veya mevcut nav'ı bul. Eğer yoksa oluştur.
+      let paginationContainer = document.getElementById('odevPagination');
+      if (!paginationContainer) {
+        paginationContainer = document.createElement('div');
+        paginationContainer.id = 'odevPagination';
+        paginationContainer.className = 'mt-3';
+        liste.parentNode.appendChild(paginationContainer);
+      }
+      // Veriyi Firebase'den alıp sayfalama ve sıralama uygula.
+      database.ref("odevler").once("value").then(snap => {
+        const val = snap.val() || {};
+        const allEntries = Object.entries(val);
+        const filtreSel = document.getElementById('odevFiltreOgrenci');
+        const filtreDeger = filtreSel ? filtreSel.value : '';
+        // Filtrele
+        let filtered = allEntries.filter(([_, odev]) => {
+          return !filtreDeger || odev.ogrenci === filtreDeger;
+        });
+        // Eğer hiç veri yoksa uygun mesajı göster ve sayfalama temizle.
+        if (filtered.length === 0) {
+          liste.innerHTML = '<div class="text-center text-muted py-3">' +
+            (allEntries.length === 0 ? 'Kayıtlı ödev yok.' : 'Seçilen öğrenci için ödev bulunamadı.') +
+            '</div>';
+          paginationContainer.innerHTML = '';
+          return;
+        }
+        // Tarihe göre azalan sırala
+        filtered.sort((a, b) => {
+          const da = new Date(a[1].tarih);
+          const db = new Date(b[1].tarih);
+          return db - da;
+        });
+        // Sayfalama hesapla
+        const pageSize = 10;
+        const totalPages = Math.ceil(filtered.length / pageSize);
+        // Eğer mevcut sayfa totalPages'den büyükse son sayfaya ayarla
+        if (odevCurrentPage > totalPages) odevCurrentPage = totalPages;
+        if (odevCurrentPage < 1) odevCurrentPage = 1;
+        const startIdx = (odevCurrentPage - 1) * pageSize;
+        const endIdx = startIdx + pageSize;
+        const pageEntries = filtered.slice(startIdx, endIdx);
+        // Liste öğelerini oluştur
+        pageEntries.forEach(([key, odev]) => {
+          const item = document.createElement('div');
+          item.className = 'list-group-item d-flex align-items-start';
+          item.innerHTML = `
+            <div class="me-2 flex-grow-1">
+              <div class="fw-medium">${odev.ogrenci || 'Öğrenci Yok'} — ${formatTurkishDate(odev.tarih) || 'Tarih Yok'}</div>
+              <div class="small-muted">${odev.konu || odev.icerik || 'İçerik Yok'}</div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-sm btn-outline-primary" onclick="odevGuncelleModalAc('${key}')"><i class="bi bi-pencil-square"></i></button>
+              <button class="btn btn-sm btn-outline-danger" onclick="odevSil('${key}')"><i class="bi bi-trash"></i></button>
+            </div>
+          `;
+          liste.appendChild(item);
+        });
+        // Sayfalama kontrollerini oluştur
+        paginationContainer.innerHTML = '';
+        if (totalPages > 1) {
+          const nav = document.createElement('nav');
+          const ul = document.createElement('ul');
+          ul.className = 'pagination justify-content-center';
+          // Önceki butonu
+          const prevLi = document.createElement('li');
+          prevLi.className = 'page-item' + (odevCurrentPage === 1 ? ' disabled' : '');
+          const prevLink = document.createElement('a');
+          prevLink.className = 'page-link';
+          prevLink.href = '#';
+          prevLink.innerText = '«';
+          prevLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (odevCurrentPage > 1) {
+              odevCurrentPage--;
+              odevListele();
+            }
+          });
+          prevLi.appendChild(prevLink);
+          ul.appendChild(prevLi);
+          // Sayfa numaraları
+          for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement('li');
+            li.className = 'page-item' + (i === odevCurrentPage ? ' active' : '');
+            const a = document.createElement('a');
+            a.className = 'page-link';
+            a.href = '#';
+            a.innerText = i;
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              if (i !== odevCurrentPage) {
+                odevCurrentPage = i;
+                odevListele();
+              }
+            });
+            li.appendChild(a);
+            ul.appendChild(li);
+          }
+          // Sonraki butonu
+          const nextLi = document.createElement('li');
+          nextLi.className = 'page-item' + (odevCurrentPage === totalPages ? ' disabled' : '');
+          const nextLink = document.createElement('a');
+          nextLink.className = 'page-link';
+          nextLink.href = '#';
+          nextLink.innerText = '»';
+          nextLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (odevCurrentPage < totalPages) {
+              odevCurrentPage++;
+              odevListele();
+            }
+          });
+          nextLi.appendChild(nextLink);
+          ul.appendChild(nextLi);
+          nav.appendChild(ul);
+          paginationContainer.appendChild(nav);
+        }
+      });
+    }
+
+    function odevFormTemizle(){
+      document.getElementById('odevOgrenci').value = '';
+      document.getElementById('odevTarih').value = '';
+      document.getElementById('odevIcerik').value = '';
+    }
+
+    function pushOdev(odev){
+      const ref = database.ref("odevler").push();
+      return ref.set(odev);
+    }
+
+    function odevEkle(){
+      const ogrenci = document.getElementById('odevOgrenci').value;
+      const konu = (document.getElementById('odevIcerik').value || '').trim();
+      const tarih = document.getElementById('odevTarih').value;
+      if(!ogrenci || !konu || !tarih){ alert("Öğrenci, konu ve tarih boş bırakılamaz."); return; }
+      pushOdev({ogrenci, konu, tarih}).then(()=>{
+        alert("✅ Ödev eklendi.");
+        refreshAssignments(); // önemli
+        odevFormTemizle();
+      }).catch(()=> alert("❌ Ödev eklenemedi."));
+    }
+
+    function odevGuncelleModalAc(key){
+      database.ref("odevler/"+key).once("value").then(s=>{
+        const o = s.val(); if(!o) return;
+        guncellenecekOdevKey = key;
+        document.getElementById('guncelleOdevTarih').value = o.tarih || '';
+        document.getElementById('guncelleOdevIcerik').value = o.konu || o.icerik || '';
+        bsModal('odevGuncelleModal').show();
+      });
+    }
+
+    function odevGuncelleKaydet(){
+      if(!guncellenecekOdevKey){ alert("Güncellenecek ödev yok."); return; }
+      const tarih = document.getElementById('guncelleOdevTarih').value;
+      const konu  = document.getElementById('guncelleOdevIcerik').value.trim();
+      if(!tarih || !konu){ alert("Lütfen tüm alanları doldurun."); return; }
+      database.ref("odevler/"+guncellenecekOdevKey).update({tarih, konu}).then(()=>{
+        bsModal('odevGuncelleModal').hide();
+        refreshAssignments(); // önemli
+        alert("✅ Ödev güncellendi.");
+      }).catch(()=> alert("❌ Ödev güncellenemedi."));
+    }
+
+    function odevSil(key){
+      if(!confirm("Bu ödevi silmek istediğinize emin misiniz?")) return;
+      database.ref("odevler/"+key).remove().then(()=>{
+        refreshAssignments(); // önemli
+      });
+    }
+
+    function tumOdevleriSil(){
+      if(!confirm("Tüm ödevleri silmek istediğinize emin misiniz?")) return;
+      database.ref("odevler").remove().then(()=>{
+        refreshAssignments(); // önemli
+      });
+    }
+
+    /************ HAFTALIK ************/
+    function doldurHaftaOgrenciListesi(){
+      const sel = document.getElementById('haftaOgrenci');
+      sel.innerHTML = '<option value="">Öğrenci Seçin</option>';
+      getOgrenciler(ogrenciler=>{
+        ogrenciler.forEach(o=>{
+          const opt = document.createElement('option');
+          opt.value = o.ad; opt.textContent = o.ad;
+          sel.appendChild(opt);
+        });
+      });
+    }
+
+    // --- Filtre selectlerini doldurur ---
+    function doldurOdevFiltre(){
+      const sel = document.getElementById('odevFiltreOgrenci');
+      if(!sel) return;
+      const prev = sel.value;
+      sel.innerHTML = '<option value="">Tümü</option>';
+      getOgrenciler(arr=>{
+        (arr||[]).forEach(o=>{
+          const opt = document.createElement('option');
+          opt.value = o.ad;
+          opt.textContent = o.ad;
+          sel.appendChild(opt);
+        });
+        if(prev) sel.value = prev;
+      });
+    }
+
+    function doldurHaftalikFiltre(){
+      const sel = document.getElementById('haftalikFiltreOgrenci');
+      if(!sel) return;
+      const prev = sel.value;
+      sel.innerHTML = '<option value="">Tümü</option>';
+      getOgrenciler(arr=>{
+        (arr||[]).forEach(o=>{
+          const opt = document.createElement('option');
+          opt.value = o.ad;
+          opt.textContent = o.ad;
+          sel.appendChild(opt);
+        });
+        if(prev) sel.value = prev;
+      });
+    }
+
+    document.getElementById('haftaOgrenci').addEventListener('change', function(){
+      const secili = this.value;
+      const sel = document.getElementById('haftaOdev');
+      sel.innerHTML = '<option value="">Ödev Seçin</option>';
+      database.ref("odevler").once("value").then(s=>{
+        const val = s.val() || {};
+        Object.values(val)
+  .filter(o => o.ogrenci === secili)
+  .sort((a, b) => new Date(b.tarih) - new Date(a.tarih))
+  .forEach(o => {
+          const opt = document.createElement('option');
+          opt.value = o.konu || o.icerik || '';
+          // Tarihi okunur formata çevir
+          const tarihStr = formatTurkishDate(o.tarih);
+          opt.textContent = `${tarihStr} - ${o.konu || o.icerik}`;
+          sel.appendChild(opt);
         });
       });
     });
-  }
 
-  // --- Ödev İşlemleri ---
-  function odevEkle() {
-    const ogrId = document.getElementById('odevOgrenci').value;
-    const icerik = document.getElementById('odevIcerik').value;
-    const tarih = document.getElementById('odevTarih').value;
-    if(!ogrId || !icerik) return alert("Ödev bilgisi girin!");
-    const key = database.ref('odevler').push().key;
-    database.ref('odevler/' + key).set({ key, ogrId, icerik, tarih }).then(() => {
-      document.getElementById('odevIcerik').value = "";
-      odevListele();
-    });
-  }
+    function haftalikVeriyiEkle(){
+      const ogrenci = document.getElementById('haftaOgrenci').value;
+      const odev    = document.getElementById('haftaOdev').value;
+      const durum   = document.getElementById('odevDurumu').value;
+      const konu    = document.getElementById('buHaftaKonu').value.trim();
+      const gelecekOdev = document.getElementById('gelecekHaftaOdev').value.trim();
+      const tarih   = document.getElementById('gelecekTarih').value;
+      const gelecekKonu = document.getElementById('gelecekHaftaKonu').value.trim();
 
-  function odevListele() {
-    database.ref('odevler').once('value', s => {
-      const list = document.getElementById('odevListesi');
-      list.innerHTML = "";
-      s.forEach(item => {
-        const d = item.val();
-        list.innerHTML += `<div class="list-group-item small">${d.tarih}: ${d.icerik}</div>`;
+      // Motivasyon puanı ve açıklaması
+      const motivasyonInput = document.getElementById('haftaMotivasyon');
+      let motivasyon = 0;
+      if (motivasyonInput && motivasyonInput.value) {
+        motivasyon = parseInt(motivasyonInput.value);
+        if (isNaN(motivasyon) || motivasyon < 0) motivasyon = 0;
+      }
+      const motivasyonAciklama = (document.getElementById('haftaMotivasyonAciklama')?.value || '').trim();
+
+      if(!ogrenci || !tarih){ alert("🚫 Öğrenci ve tarih boş bırakılamaz."); return; }
+
+      const zaman = new Date().toISOString();
+      const haftalikKayit = { ogrenci, odev, durum, konu, gelecekOdev, tarih, gelecekKonu, zaman, motivasyon, motivasyonAciklama };
+      const odevKaydi = { ogrenci, konu: gelecekOdev, tarih };
+
+      const haftalikRef = database.ref("haftalikDegerlendirme").push();
+      const odevRef     = database.ref("odevler").push();
+
+      Promise.all([haftalikRef.set(haftalikKayit), odevRef.set(odevKaydi)]).then(()=>{
+        document.getElementById('haftaDurumMesaji').innerText = '✅ Kayıt ve ödev başarıyla eklendi.';
+        // form alanlarını temizle
+        const motInp = document.getElementById('haftaMotivasyon');
+        if (motInp) motInp.value = '';
+        const motAcikInp = document.getElementById('haftaMotivasyonAciklama');
+        if (motAcikInp) motAcikInp.value = '';
+        refreshWeekly();      // önemli
+        refreshAssignments(); // önemli
+      }).catch(()=>{
+        alert("⚠️ Veri eklenirken hata oluştu.");
       });
-    });
-  }
+    }
 
-  // --- Haftalık & Rapor ---
-  function haftalikVeriyiEkle() {
-    const data = {
-      ogrId: document.getElementById('haftaOgrenci').value,
-      durum: document.getElementById('odevDurumu').value,
-      konu: document.getElementById('buHaftaKonu').value,
-      gelecekOdev: document.getElementById('gelecekHaftaOdev').value,
-      motivasyon: document.getElementById('haftaMotivasyon').value,
-      tarih: new Date().toLocaleDateString('tr-TR')
-    };
-    database.ref('haftalikDegerlendirme').push().set(data).then(() => {
-      alert("Kayıt başarılı!");
-      haftalikKayitlariListele();
-    });
-  }
-
-  function haftalikKayitlariListele() {
-    database.ref('haftalikDegerlendirme').limitToLast(10).once('value', s => {
-      const list = document.getElementById('haftalikKayitListesi');
-      list.innerHTML = "";
-      s.forEach(item => {
-        const v = item.val();
-        list.innerHTML += `<div class="list-group-item small">${v.tarih} - Motivasyon: ${v.motivasyon}/10</div>`;
+    function haftalikKayitlariListele(){
+      const liste = document.getElementById('haftalikKayitListesi');
+      liste.innerHTML = '';
+      // Sayfalama kapsayıcısını bul veya oluştur
+      let paginationContainer = document.getElementById('haftalikPagination');
+      if (!paginationContainer) {
+        paginationContainer = document.createElement('div');
+        paginationContainer.id = 'haftalikPagination';
+        paginationContainer.className = 'mt-3';
+        liste.parentNode.appendChild(paginationContainer);
+      }
+      database.ref("haftalikDegerlendirme").once("value").then(s => {
+        const val = s.val() || {};
+        const filtreSel = document.getElementById('haftalikFiltreOgrenci');
+        const filtreDeger = filtreSel ? filtreSel.value : '';
+        // Kayıt yoksa mesaj göster ve temizle
+        const entries = Object.entries(val);
+        if (entries.length === 0) {
+          liste.innerHTML = '<div class="text-center text-muted py-3">Kayıt bulunamadı.</div>';
+          paginationContainer.innerHTML = '';
+          const ozetEl = document.getElementById('haftalikOzet');
+          if (ozetEl) ozetEl.innerText = '';
+          return;
+        }
+        // Filtre uygula
+        let filtered = entries.filter(([_, veri]) => {
+          return !filtreDeger || veri.ogrenci === filtreDeger;
+        });
+        // Eğer filtre sonrasında veri kalmadıysa mesaj göster ve temizle
+        if (filtered.length === 0) {
+          liste.innerHTML = '<div class="text-center text-muted py-3">Seçilen öğrenci için kayıt bulunamadı.</div>';
+          paginationContainer.innerHTML = '';
+          const ozetEl = document.getElementById('haftalikOzet');
+          if (ozetEl) ozetEl.innerText = '';
+          return;
+        }
+        // Tarihe göre azalan sırala (veri.tarih veya veri.zaman)
+        filtered.sort((a, b) => {
+          const da = new Date(a[1].tarih || a[1].zaman);
+          const db = new Date(b[1].tarih || b[1].zaman);
+          return db - da;
+        });
+        // Sayfalama hesapla
+        const pageSize = 10;
+        const totalPages = Math.ceil(filtered.length / pageSize);
+        if (haftalikCurrentPage > totalPages) haftalikCurrentPage = totalPages;
+        if (haftalikCurrentPage < 1) haftalikCurrentPage = 1;
+        const startIdx = (haftalikCurrentPage - 1) * pageSize;
+        const endIdx = startIdx + pageSize;
+        const pageEntries = filtered.slice(startIdx, endIdx);
+        // Liste öğelerini oluştur
+        pageEntries.forEach(([key, veri]) => {
+          const metin = `${veri.ogrenci || '???'} — ${formatTurkishDate(veri.tarih || veri.zaman) || '???'} — ${veri.konu || '???'}`;
+          const nextLine = veri.gelecekOdev ? `<div class="fw-bold mt-1">${veri.gelecekOdev}</div>` : '';
+          const item = document.createElement('div');
+          item.className = 'list-group-item d-flex align-items-start';
+          item.innerHTML = `
+            <div class="me-2 flex-grow-1">
+              <div class="fw-medium">${metin}</div>
+              <div class="small-muted">${(veri.odev ? 'Ödev: ' + veri.odev + ' → ' : '') + durumIcon(veri.durum)}</div>
+              ${nextLine}
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-sm btn-outline-primary" onclick='haftalikKaydiGuncelle("${key}")'><i class="bi bi-pencil-square"></i></button>
+              <button class="btn btn-sm btn-outline-danger" onclick='haftalikKaydiSil("${key}")'><i class="bi bi-trash"></i></button>
+            </div>
+          `;
+          liste.appendChild(item);
+        });
+        // Özet alanını güncelle
+        const ozetEl = document.getElementById('haftalikOzet');
+        if (ozetEl) {
+          if (filtreDeger) {
+            ozetEl.innerText = `Toplam ${filtered.length} ders kaydı bulundu.`;
+          } else {
+            ozetEl.innerText = '';
+          }
+        }
+        // Sayfalama kontrolleri
+        paginationContainer.innerHTML = '';
+        if (totalPages > 1) {
+          const nav = document.createElement('nav');
+          const ul = document.createElement('ul');
+          ul.className = 'pagination justify-content-center';
+          // Önceki
+          const prevLi = document.createElement('li');
+          prevLi.className = 'page-item' + (haftalikCurrentPage === 1 ? ' disabled' : '');
+          const prevLink = document.createElement('a');
+          prevLink.className = 'page-link';
+          prevLink.href = '#';
+          prevLink.innerText = '«';
+          prevLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (haftalikCurrentPage > 1) {
+              haftalikCurrentPage--;
+              haftalikKayitlariListele();
+            }
+          });
+          prevLi.appendChild(prevLink);
+          ul.appendChild(prevLi);
+          // Numaralar
+          for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement('li');
+            li.className = 'page-item' + (i === haftalikCurrentPage ? ' active' : '');
+            const a = document.createElement('a');
+            a.className = 'page-link';
+            a.href = '#';
+            a.innerText = i;
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              if (i !== haftalikCurrentPage) {
+                haftalikCurrentPage = i;
+                haftalikKayitlariListele();
+              }
+            });
+            li.appendChild(a);
+            ul.appendChild(li);
+          }
+          // Sonraki
+          const nextLi = document.createElement('li');
+          nextLi.className = 'page-item' + (haftalikCurrentPage === totalPages ? ' disabled' : '');
+          const nextLink = document.createElement('a');
+          nextLink.className = 'page-link';
+          nextLink.href = '#';
+          nextLink.innerText = '»';
+          nextLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (haftalikCurrentPage < totalPages) {
+              haftalikCurrentPage++;
+              haftalikKayitlariListele();
+            }
+          });
+          nextLi.appendChild(nextLink);
+          ul.appendChild(nextLi);
+          nav.appendChild(ul);
+          paginationContainer.appendChild(nav);
+        }
       });
+    }
+
+    function haftalikKaydiSil(key){
+      if(!confirm("Bu haftalık kaydı silmek istiyor musunuz?")) return;
+      database.ref("haftalikDegerlendirme/"+key).remove().then(()=>{
+        refreshWeekly(); // önemli
+      });
+    }
+
+    function haftalikKaydiGuncelle(key){
+      guncellenecekHaftaKey = key;
+      database.ref("haftalikDegerlendirme/"+key).once("value").then(s=>{
+        const v = s.val() || {};
+        document.getElementById('guncelleHaftaOgrenci').value = v.ogrenci || '';
+        document.getElementById('guncelleHaftaOdev').value    = v.odev || '';
+        document.getElementById('guncelleHaftaDurum').value   = v.durum || '';
+        document.getElementById('guncelleHaftaKonu').value    = v.konu || '';
+        document.getElementById('guncelleHaftaTarih').value   = v.tarih || '';
+        document.getElementById('guncelleGelecekOdev').value  = v.gelecekOdev || '';
+        document.getElementById('guncelleGelecekKonu').value  = v.gelecekKonu || '';
+        // Motivasyon puanı ve açıklama değerlerini doldur
+        const motEl = document.getElementById('guncelleHaftaMotivasyon');
+        if (motEl) motEl.value = v.motivasyon || '';
+        const motAcikEl = document.getElementById('guncelleHaftaMotivasyonAciklama');
+        if (motAcikEl) motAcikEl.value = v.motivasyonAciklama || '';
+        bsModal('haftalikGuncelleModal').show();
+      });
+    }
+
+    function haftalikKaydiGuncelleKaydet(){
+      if(!guncellenecekHaftaKey){ alert("Güncellenecek kayıt yok."); return; }
+      // Güncellenen veri objesi
+      // Motivasyon verileri de dahil ediliyor
+      const motVal = parseInt(document.getElementById('guncelleHaftaMotivasyon')?.value) || 0;
+      const motAcik = document.getElementById('guncelleHaftaMotivasyonAciklama')?.value || '';
+      const veri = {
+        ogrenci: document.getElementById('guncelleHaftaOgrenci').value,
+        odev: document.getElementById('guncelleHaftaOdev').value,
+        durum: document.getElementById('guncelleHaftaDurum').value,
+        konu: document.getElementById('guncelleHaftaKonu').value,
+        tarih: document.getElementById('guncelleHaftaTarih').value,
+        gelecekOdev: document.getElementById('guncelleGelecekOdev').value,
+        gelecekKonu: document.getElementById('guncelleGelecekKonu').value,
+        motivasyon: motVal,
+        motivasyonAciklama: motAcik.trim(),
+        zaman: new Date().toISOString()
+      };
+      database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).update(veri).then(()=>{
+        // Modalı güvenli bir şekilde kapat
+        const modalEl = document.getElementById('haftalikGuncelleModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+        refreshWeekly(); // önemli
+        alert("✅ Kayıt güncellendi.");
+      }).catch(()=> alert("❌ Güncelleme başarısız."));
+    }
+
+    function tumHaftalikKayitlariSil(){
+      if(!confirm("Tüm haftalık kayıtları silmek istediğinize emin misiniz?")) return;
+      database.ref("haftalikDegerlendirme").remove().then(()=>{
+        refreshWeekly(); // önemli
+        alert("✅ Tüm haftalık kayıtlar silindi.");
+      }).catch(()=> alert("❌ Kayıtlar silinemedi."));
+    }
+
+    /************ RAPOR ************/
+    function raporFormYenile(){
+      document.getElementById('raporTipi').value = 'haftalik';
+      document.getElementById('raporOgrenciSec').value = '';
+      document.getElementById('raporMesaj').value = '';
+    }
+
+    function raporTipiDegisti(){ raporMesajiOlustur(); }
+
+    function raporOgrenciSecDoldur(){
+      const select = document.getElementById("raporOgrenciSec");
+      if(!select) return;
+      database.ref("ogrenciler").once("value").then(s=>{
+        const val = s.val() || [];
+        const arr = Array.isArray(val) ? (val.filter(Boolean) || []) : Object.values(val);
+        select.innerHTML = '<option value="">Öğrenci Seçiniz</option>';
+        (arr||[]).forEach(o=>{
+          const opt = document.createElement('option');
+          opt.value = o.id || o.ad;
+          opt.textContent = o.ad;
+          select.appendChild(opt);
+        });
+      });
+    }
+
+    function whatsappMesajGonder(){
+      const mesaj = (document.getElementById('raporMesaj').value || '').trim();
+      if(!mesaj) return alert('Gönderilecek mesaj boş.');
+      const url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
+      window.open(url, '_blank');
+    }
+
+    function raporMesajiOlustur(){
+      const tip = document.getElementById('raporTipi').value;
+      const secilenId = document.getElementById('raporOgrenciSec').value;
+      if(!secilenId) return;
+
+      const ayAdlari = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+      const formatTarih = (date) => `${date.getDate()} ${ayAdlari[date.getMonth()]} ${date.getFullYear()}`;
+      const toShortDateStr = (d) => new Date(d).toISOString().split('T')[0];
+
+      const bugun = new Date();
+      const bugunStr = toShortDateStr(bugun);
+      const birAyOnce = new Date(bugun); birAyOnce.setMonth(birAyOnce.getMonth() - 1);
+      const birAyOnceStr = toShortDateStr(birAyOnce);
+
+      Promise.all([
+        database.ref("ogrenciler").once("value"),
+        database.ref("haftalikDegerlendirme").once("value")
+      ]).then(([ogrenciSnap, haftalikSnap])=>{
+        const ogrVal = ogrenciSnap.val() || [];
+        const ogrArr = Array.isArray(ogrVal) ? (ogrVal.filter(Boolean)||[]) : Object.values(ogrVal||{});
+        const haftVal = haftalikSnap.val() || {};
+        const kayitlar = Object.values(haftVal);
+
+        const ogrenci = ogrArr.find(o => (o.id == secilenId) || (o.ad == secilenId));
+        if(!ogrenci) return;
+
+        const ogrenciAdi = ogrenci.ad;
+
+        if(tip === 'haftalik'){
+          const ogrKay = kayitlar.filter(k=>k.ogrenci === ogrenciAdi);
+          const sonKayit = ogrKay[ogrKay.length - 1];
+          // Motivasyon bilgilerini hazırla
+          const mot = parseInt(sonKayit?.motivasyon) || 0;
+          const motAcik = (sonKayit?.motivasyonAciklama || '').trim();
+          const yildizStr = mot > 0 ? '⭐'.repeat(mot) : '';
+          const motMetni = mot ? `${mot}/10 ${yildizStr}` : 'Bilgi Yok';
+          const motAcikMetni = motAcik || 'Bilgi Yok';
+
+          const mesaj = `📘 Özel Ders Takip Sistemi
+📅 *Tarih:* ${formatTarih(bugun)}
+👤 *Öğrenci:* ${ogrenciAdi}
+🎓 *Öğretmen:* Ferhat Karagöz
+
+📌 *Bu Hafta Yapılanlar*
+📚 *İşlenen Konu:* ${sonKayit?.konu || 'Bilgi Yok'}
+📝 *Geçen Haftaki Ödev:* ${sonKayit?.odev || 'Ödev Yok'} → ${durumIcon(sonKayit?.durum)}
+⭐ *Motivasyon:* ${motMetni}
+🗒️ *Genel Ders Durumu:* ${motAcikMetni}
+
+📖 *Gelecek Hafta Yapılacaklar*
+📝 *Ödev:* ${sonKayit?.gelecekOdev || 'Ödev Yok'}
+⏰ *Teslim Tarihi:* ${sonKayit?.tarih ? formatTarih(new Date(sonKayit.tarih)) : 'Tarih Yok'}
+📚 *İşlenecek Konular:* ${sonKayit?.gelecekKonu || 'Konu Yok'}
+
+Saygılarımızla, bilginize.`;
+          document.getElementById('raporMesaj').value = mesaj;
+        } else {
+          const tarihAraligindakiKayitlar = kayitlar
+            .filter(k=>{
+              const ogr = k.ogrenci === ogrenciAdi;
+              const tStr = toShortDateStr(k.zaman || k.tarih);
+              return ogr && tStr >= birAyOnceStr && tStr <= bugunStr;
+            })
+            .sort((a,b)=> new Date(b.zaman || b.tarih) - new Date(a.zaman || a.tarih));
+
+          const konular = tarihAraligindakiKayitlar.map(k=>{
+            const t = new Date(k.zaman || k.tarih);
+            return `- ${formatTarih(t)} → ${k.konu || 'Konu girilmemiş'}`;
+          });
+          const odevSatirlari = tarihAraligindakiKayitlar.map(k=>{
+            const t = new Date(k.zaman || k.tarih);
+            return `- ${formatTarih(t)} → ${k.odev || 'Ödev Yok'} → ${durumIcon(k.durum)}`;
+          });
+          const toplamOdev = tarihAraligindakiKayitlar.filter(k=>k.odev).length;
+          const yapilanOdev = tarihAraligindakiKayitlar.filter(k=>(k.durum||'').toLowerCase()==='yapti').length;
+          const oran = toplamOdev ? Math.round((yapilanOdev / toplamOdev) * 100) : 0;
+
+          const mesaj = `📘 Özel Ders Takip Sistemi
+📅 *Tarih:* ${formatTarih(bugun)}
+👤 *Öğrenci:* ${ogrenciAdi}
+🎓 *Öğretmen:* Ferhat Karagöz
+
+📅 *Son 1 Ayda Yapılanlar* (${formatTarih(birAyOnce)} - ${formatTarih(bugun)})
+
+📚 *İşlenen Konular:*
+${konular.length ? konular.join("\n") : '- Veri yok'}
+
+📝 *Verilen Ödevler ve Kontrolleri:*
+${odevSatirlari.length ? odevSatirlari.join("\n") : '- Veri yok'}
+
+📊 *Ödev Performansı*
+- *Toplam Ödev:* ${toplamOdev}
+- *Tamamlanan:* ${yapilanOdev}
+- *Başarı Oranı:* %${oran}
+
+*Bu rapor, son bir ay içinde işlenen tüm konuları ve ödev takibini içermektedir.*
+
+Saygılarımızla, bilginize.`;
+          document.getElementById('raporMesaj').value = mesaj;
+        }
+      });
+    }
+
+    function qrKodModalAc(){
+      const mesaj = (document.getElementById('raporMesaj').value || '').trim();
+      if(!mesaj){ alert("Mesaj boş."); return; }
+      const url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
+      const container = document.getElementById('qrModalCanvas');
+      container.innerHTML = '';
+      new QRCode(container, { text:url, width:250, height:250, correctLevel: QRCode.CorrectLevel.M });
+      bsModal('qrModal').show();
+    }
+
+    /************ INIT ************/
+    window.addEventListener('load', ()=>{
+      refreshAll(); // başlangıç
+      // ---- Gerçek zamanlı otomatik yenileme istersen alttakileri aktif et:
+      // database.ref("ogrenciler").on("value", ()=> refreshStudents());
+      // database.ref("odevler").on("value",   ()=> refreshAssignments());
+      // database.ref("haftalikDegerlendirme").on("value", ()=> refreshWeekly());
+      // -----------------------------------------
+      // Rapor alanı tetikleyicileri
+      document.getElementById('raporTipi').addEventListener('change', raporMesajiOlustur);
+      document.getElementById('raporOgrenciSec').addEventListener('change', raporMesajiOlustur);
+      // Haftalıkta öğrenci değişince ödev seçeneklerini dolduruyoruz (yukarıda eklendi)
+      // Filtre select değişince listeleri yeniden oluştur
+      const odevFiltreSelect = document.getElementById('odevFiltreOgrenci');
+      if (odevFiltreSelect) {
+        odevFiltreSelect.addEventListener('change', () => {
+          // Filtre değiştirildiğinde sayfalama sıfırlanır ve liste yeniden çizilir
+          odevCurrentPage = 1;
+          odevListele();
+        });
+      }
+      const haftalikFiltreSelect = document.getElementById('haftalikFiltreOgrenci');
+      if (haftalikFiltreSelect) {
+        haftalikFiltreSelect.addEventListener('change', () => {
+          // Filtre değişince sayfa 1'den başlat
+          haftalikCurrentPage = 1;
+          haftalikKayitlariListele();
+        });
+      }
     });
-  }
-
-  function raporMesajiOlustur() {
-    const ogrId = document.getElementById('raporOgrenciSec').value;
-    if(!ogrId) return;
-    database.ref('ogrenciler/' + ogrId).once('value', s => {
-      const o = s.val();
-      document.getElementById('raporMesaj').value = `Sayın Velimiz, \n\nÖğrencimiz *${o.ad}* için bu haftaki ders değerlendirmesi sonuçlanmıştır...`;
-    });
-  }
-
-  function whatsappMesajGonder() {
-    const msg = encodeURIComponent(document.getElementById('raporMesaj').value);
-    window.open(`https://wa.me/?text=${msg}`, '_blank');
-  }
-
-  window.onload = refreshAll;
-</script>
-
+  </script>
 </body>
 </html>
