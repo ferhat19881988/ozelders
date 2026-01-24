@@ -219,172 +219,6 @@
     h2.h4{ font-size: 1.45rem; }
     h3.h5{ font-size: 1.15rem; }
 
-  
-    /* Logo büyütme modalı */
-    .brand-logo{ cursor:pointer; }
-    #logoModal .modal-dialog{ max-width: 980px; }
-    .logo-modal-img{
-      max-width: 92vw;
-      max-height: 80vh;
-      width: auto;
-      height: auto;
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-    }
-
-    /* Haftalık Değerlendirme Wizard */
-    .wizard-shell{
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.92);
-      box-shadow: var(--shadow);
-      padding: 1.1rem 1.1rem 1rem;
-    }
-    .wizard-top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-bottom: .9rem;
-    }
-    .wizard-steps{
-      display:flex;
-      align-items:center;
-      gap:.45rem;
-      flex-wrap: wrap;
-    }
-    .wizard-chip{
-      display:inline-flex;
-      align-items:center;
-      gap:.45rem;
-      padding:.42rem .72rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.80);
-      color:#334155;
-      font-weight: 600;
-      box-shadow: var(--shadow-sm);
-      user-select:none;
-    }
-    .wizard-chip .num{
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      background: rgba(79,70,229,.10);
-      color: var(--primary);
-      font-weight: 700;
-      font-size: .95rem;
-    }
-    .wizard-chip.active{
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      color:#fff;
-      border-color: transparent;
-      box-shadow: 0 18px 44px rgba(79,70,229,.18);
-    }
-    .wizard-chip.active .num{
-      background: rgba(255,255,255,.22);
-      color:#fff;
-    }
-    .wizard-progress{
-      flex: 1 1 260px;
-      min-width: 220px;
-    }
-    .wizard-progress .progress{
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(15,23,42,.08);
-      border: 1px solid var(--border);
-      overflow:hidden;
-    }
-    .wizard-progress .progress-bar{
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-    }
-    .wizard-step{ display:none; }
-    .wizard-step.active{ display:block; }
-
-    .readonly-note{
-      border: 1px dashed rgba(15,23,42,.18);
-      background: rgba(255,255,255,.75);
-    }
-    .prewrap{ white-space: pre-wrap; word-break: break-word; }
-
-    /* Kayıtlı Haftalık Değerlendirmeler: kart görünümü */
-    .weekly-grid{ margin-top: .25rem; }
-    .weekly-card{
-      background: rgba(255,255,255,.94);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      height: 100%;
-      overflow:hidden;
-      transition: transform .18s ease, box-shadow .18s ease;
-    }
-    .weekly-card:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 18px 44px rgba(15,23,42,.10);
-    }
-    .weekly-card .card-header{
-      background: rgba(246,248,255,.65);
-      border-bottom: 1px solid var(--border);
-    }
-    .weekly-meta{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: .75rem;
-    }
-    .weekly-title{
-      font-weight: 700;
-      letter-spacing: .1px;
-      margin: 0;
-    }
-    .weekly-sub{
-      color: var(--muted);
-      font-size: .95rem;
-      margin-top: .15rem;
-    }
-    .badge-soft{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.80);
-      color:#334155;
-      font-weight: 700;
-      padding: .35rem .6rem;
-      border-radius: 999px;
-      box-shadow: var(--shadow-sm);
-      white-space: nowrap;
-    }
-    .badge-soft.primary{
-      background: rgba(79,70,229,.10);
-      color: #3730a3;
-      border-color: rgba(79,70,229,.18);
-    }
-    .badge-soft.warn{
-      background: rgba(245,158,11,.12);
-      color: #92400e;
-      border-color: rgba(245,158,11,.20);
-    }
-    .badge-soft.danger{
-      background: rgba(239,68,68,.10);
-      color: #991b1b;
-      border-color: rgba(239,68,68,.18);
-    }
-    .badge-soft.ok{
-      background: rgba(34,197,94,.12);
-      color: #166534;
-      border-color: rgba(34,197,94,.20);
-    }
-    .weekly-kv{ display:flex; gap:.55rem; }
-    .weekly-kv .k{ color: var(--muted); min-width: 132px; }
-    @media (max-width: 575.98px){
-      .weekly-kv{ flex-direction: column; gap:.15rem; }
-      .weekly-kv .k{ min-width: 0; }
-    }
-
   </style>
 
   <script>
@@ -409,7 +243,7 @@
 <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
   <div class="container">
     <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="#">
-      <img id="brandLogo" src="https://i.ibb.co/F4cDX7MX/logom.jpg" alt="Logo" height="32" class="rounded brand-logo" role="button" tabindex="0" />
+      <img src="https://i.ibb.co/F4cDX7MX/logom.jpg" alt="Logo" height="32" class="rounded" />
       📘 Özel Ders Takip Sistemi
     </a>
   </div>
@@ -513,160 +347,90 @@
         </div>
       </div>
 
-      
-<!-- HAFTALIK DEĞERLENDİRME -->
+      <!-- HAFTALIK DEĞERLENDİRME -->
       <div class="tab-pane fade" id="pnl-haftalik" role="tabpanel" aria-labelledby="tab-haftalik">
         <div class="app-card p-4 p-md-5">
-          <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
-            <div>
-              <h2 class="h4 mb-1">📅 Haftalık Değerlendirme</h2>
-              <div class="small-muted">Daha hızlı ve hatasız giriş için adım adım (wizard) form</div>
+          <h2 class="h4 mb-4">📅 Haftalık Değerlendirme</h2>
+
+          <div class="row g-3 form-row-gap">
+            <div class="col-md-4">
+              <label class="form-label">Öğrenci</label>
+              <select id="haftaOgrenci" class="form-select">
+                <option value="">Öğrenci Seçin</option>
+              </select>
             </div>
-            <div class="d-flex gap-2 flex-wrap">
-              <button class="btn btn-outline-secondary" type="button" onclick="haftalikFormYenile()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
-              <button class="btn btn-outline-danger" type="button" onclick="tumHaftalikKayitlariSil()"><i class="bi bi-trash"></i> Tüm Kayıtları Sil</button>
+            <div class="col-md-4">
+              <label class="form-label">Ödev</label>
+              <select id="haftaOdev" class="form-select">
+                <option value="">Ödev Seçin</option>
+              </select>
             </div>
+            <div class="col-md-4">
+              <label class="form-label">Ödev Durumu</label>
+              <select id="odevDurumu" class="form-select">
+                <option value="">Ödev Durumu</option>
+                <option value="yapti">✅ Yaptı</option>
+                <option value="yapmadi">❌ Yapmadı</option>
+                <option value="eksik">⚠️ Eksik</option>
+                <option value="getirmedi">📭 Getirmedi</option>
+              </select>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Bu hafta işlenen konu</label>
+              <textarea id="buHaftaKonu" class="form-control" rows="2"></textarea>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Gelecek haftanın ödevi</label>
+              <textarea id="gelecekHaftaOdev" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Teslim Tarihi</label>
+              <input type="date" id="gelecekTarih" class="form-control" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Gelecek hafta konusu</label>
+              <textarea id="gelecekHaftaKonu" class="form-control" rows="1"></textarea>
+            </div>
+
+          <!-- Motivasyon ve Açıklama alanları -->
+          <div class="col-md-3">
+            <label class="form-label">Motivasyon (1‑10)</label>
+            <input type="number" id="haftaMotivasyon" class="form-control" min="1" max="10" />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Genel Ders Durumu</label>
+            <textarea id="haftaMotivasyonAciklama" class="form-control" rows="2"></textarea>
           </div>
 
-          <div class="wizard-shell">
-            <div class="wizard-top">
-              <div class="wizard-steps" id="weeklyWizardSteps">
-                <div class="wizard-chip" data-step="1"><span class="num">1</span> Seçim</div>
-                <div class="wizard-chip" data-step="2"><span class="num">2</span> Bu Hafta</div>
-                <div class="wizard-chip" data-step="3"><span class="num">3</span> Gelecek Hafta</div>
-              </div>
-              <div class="wizard-progress">
-                <div class="progress" aria-label="Wizard ilerleme">
-                  <div class="progress-bar" id="weeklyWizardBar" role="progressbar" style="width: 33%"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- STEP 1 -->
-            <div class="wizard-step active" data-step="1">
-              <div class="row g-3 form-row-gap">
-                <div class="col-md-4">
-                  <label class="form-label">Öğrenci</label>
-                  <select id="haftaOgrenci" class="form-select">
-                    <option value="">Öğrenci Seçin</option>
-                  </select>
-                </div>
-                <div class="col-md-5">
-                  <label class="form-label">Geçen haftaki ödev</label>
-                  <select id="haftaOdev" class="form-select">
-                    <option value="">Ödev Seçin</option>
-                  </select>
-                </div>
-                <div class="col-md-3">
-                  <label class="form-label">Ödev Durumu</label>
-                  <select id="odevDurumu" class="form-select">
-                    <option value="">Ödev Durumu</option>
-                    <option value="yapti">✅ Yaptı</option>
-                    <option value="yapmadi">❌ Yapmadı</option>
-                    <option value="eksik">⚠️ Eksik</option>
-                    <option value="getirmedi">📭 Getirmedi</option>
-                  </select>
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label">Seçili ödev içeriği (tam metin)</label>
-                  <textarea id="seciliOdevDetay" class="form-control readonly-note prewrap" rows="3" readonly placeholder="Ödev seçtiğinizde burada tam metin görünecek."></textarea>
-                </div>
-
-                <div class="col-12 d-flex justify-content-end gap-2 flex-wrap">
-                  <button class="btn btn-primary" type="button" onclick="weeklyWizardNext()">
-                    Devam <i class="bi bi-arrow-right"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- STEP 2 -->
-            <div class="wizard-step" data-step="2">
-              <div class="row g-3 form-row-gap">
-                <div class="col-12">
-                  <label class="form-label">Bu hafta işlenen konu</label>
-                  <textarea id="buHaftaKonu" class="form-control prewrap" rows="3" placeholder="Bu hafta işlenen kazanımlar / konu başlıkları..."></textarea>
-                </div>
-
-                <div class="col-md-3">
-                  <label class="form-label">Motivasyon (1‑10)</label>
-                  <input type="number" id="haftaMotivasyon" class="form-control" min="1" max="10" />
-                </div>
-                <div class="col-md-9">
-                  <label class="form-label">Genel Ders Durumu</label>
-                  <textarea id="haftaMotivasyonAciklama" class="form-control prewrap" rows="2" placeholder="Kısa değerlendirme / odak / eksik kazanımlar..."></textarea>
-                </div>
-
-                <div class="col-12 d-flex justify-content-between gap-2 flex-wrap">
-                  <button class="btn btn-outline-secondary" type="button" onclick="weeklyWizardPrev()">
-                    <i class="bi bi-arrow-left"></i> Geri
-                  </button>
-                  <button class="btn btn-primary" type="button" onclick="weeklyWizardNext()">
-                    Devam <i class="bi bi-arrow-right"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- STEP 3 -->
-            <div class="wizard-step" data-step="3">
-              <div class="row g-3 form-row-gap">
-                <div class="col-md-7">
-                  <label class="form-label">Gelecek haftanın ödevi</label>
-                  <textarea id="gelecekHaftaOdev" class="form-control prewrap" rows="3" placeholder="Tam metin ödev (sayfa / soru / kaynak vb.)"></textarea>
-                </div>
-                <div class="col-md-2">
-                  <label class="form-label">Teslim Tarihi</label>
-                  <input type="date" id="gelecekTarih" class="form-control" />
-                </div>
-                <div class="col-md-3">
-                  <label class="form-label">Gelecek hafta konusu</label>
-                  <textarea id="gelecekHaftaKonu" class="form-control prewrap" rows="3" placeholder="Kısa konu başlığı / kazanımlar"></textarea>
-                </div>
-
-                <div class="col-12 d-flex justify-content-between gap-2 flex-wrap">
-                  <button class="btn btn-outline-secondary" type="button" onclick="weeklyWizardPrev()">
-                    <i class="bi bi-arrow-left"></i> Geri
-                  </button>
-                  <div class="d-flex gap-2 flex-wrap">
-                    <button class="btn btn-outline-secondary" type="button" onclick="haftalikFormYenile()">
-                      <i class="bi bi-arrow-clockwise"></i> Formu Sıfırla
-                    </button>
-                    <button class="btn btn-primary" type="button" onclick="haftalikVeriyiEkle()">
-                      <i class="bi bi-plus-circle"></i> Kaydı Oluştur
-                    </button>
-                  </div>
-                </div>
-
-                <p id="haftaDurumMesaji" class="mt-3 small-muted mb-0"></p>
-              </div>
+            <div class="col-12 d-flex flex-wrap gap-2">
+              <button class="btn btn-primary" type="button" onclick="haftalikVeriyiEkle()"><i class="bi bi-plus-circle"></i> Ödevi Sisteme Ekle</button>
+              <button class="btn btn-outline-secondary" onclick="haftalikFormYenile()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
+              <button class="btn btn-outline-danger ms-auto" type="button" onclick="tumHaftalikKayitlariSil()"><i class="bi bi-trash"></i> Tüm Kayıtları Sil</button>
             </div>
           </div>
 
           <hr class="my-4" />
 
-          <div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-2">
-            <div>
-              <h3 class="h5 mb-1">📋 Kayıtlı Haftalık Değerlendirmeler</h3>
-              <div id="haftalikOzet" class="small-muted"></div>
-            </div>
-
-            <div class="row g-2 align-items-end">
-              <div class="col-12 col-md-auto">
-                <label class="form-label mb-1">Öğrenci Filtrele</label>
-                <select id="haftalikFiltreOgrenci" class="form-select">
-                  <option value="">Tümü</option>
-                </select>
-              </div>
+          <h3 class="h5 mb-3">📋 Kayıtlı Haftalık Değerlendirmeler</h3>
+          <!-- Haftalık değerlendirme için öğrenci filtreleme -->
+          <div class="row g-2 mb-3">
+            <div class="col-md-4">
+              <label class="form-label">Öğrenci Filtrele</label>
+              <select id="haftalikFiltreOgrenci" class="form-select">
+                <option value="">Tümü</option>
+              </select>
             </div>
           </div>
-
-          <div id="haftalikKayitListesi" class="row g-3 weekly-grid"></div>
+          <div id="haftalikKayitListesi" class="list-group list-fit"></div>
+          <!-- Filtre uygulandığında toplam ders sayısını göstermek için özet alanı -->
+          <div id="haftalikOzet" class="mt-2 small-muted"></div>
+          <p id="haftaDurumMesaji" class="mt-3 small-muted"></p>
         </div>
       </div>
 
-<!-- WHATSAPP RAPOR -->
+      <!-- WHATSAPP RAPOR -->
       <div class="tab-pane fade" id="pnl-rapor" role="tabpanel" aria-labelledby="tab-rapor">
         <div class="app-card p-4 p-md-5">
           <h2 class="h4 mb-4">📤 WhatsApp Raporları</h2>
@@ -800,19 +564,6 @@
         <div class="modal-body">
           <div id="qrModalCanvas" class="qr-center"></div>
           <p class="small-muted text-center mt-3">QR’ı telefon kameranızla okutarak WhatsApp mesajını açabilirsiniz.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- Logo Büyütme Modal -->
-  <div class="modal fade" id="logoModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-body text-center p-3">
-          <img id="logoModalImg" class="logo-modal-img" src="https://i.ibb.co/F4cDX7MX/logom.jpg" alt="Logo (Büyük)" />
-          <div class="small-muted mt-2">Kapatmak için herhangi bir yere tıklayın.</div>
         </div>
       </div>
     </div>
@@ -1177,84 +928,6 @@
     }
 
     /************ HAFTALIK ************/
-
-    // Wizard (Haftalık) - adım yönetimi
-    let weeklyWizardStep = 1;
-
-    function weeklyWizardSyncUI(){
-      const steps = Array.from(document.querySelectorAll('.wizard-step'));
-      const chips = Array.from(document.querySelectorAll('#weeklyWizardSteps .wizard-chip'));
-      steps.forEach(el => el.classList.toggle('active', parseInt(el.dataset.step) === weeklyWizardStep));
-      chips.forEach(chip => chip.classList.toggle('active', parseInt(chip.dataset.step) === weeklyWizardStep));
-
-      const bar = document.getElementById('weeklyWizardBar');
-      if (bar){
-        const pct = Math.round((weeklyWizardStep / 3) * 100);
-        bar.style.width = pct + '%';
-        bar.setAttribute('aria-valuenow', String(pct));
-      }
-    }
-
-    function weeklyWizardGo(step){
-      const s = Math.max(1, Math.min(3, parseInt(step || 1)));
-      weeklyWizardStep = s;
-      weeklyWizardSyncUI();
-      // Kullanıcı deneyimi: adım değişiminde üstteki karta kaydır
-      const shell = document.querySelector('.wizard-shell');
-      if (shell) shell.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    function weeklyWizardNext(){
-      // Hafif doğrulama: 1. adımda öğrenci seçilmediyse ilerletme
-      if (weeklyWizardStep === 1){
-        const ogr = document.getElementById('haftaOgrenci')?.value;
-        if (!ogr){ alert('Lütfen önce öğrenci seçin.'); return; }
-      }
-      weeklyWizardGo(weeklyWizardStep + 1);
-    }
-
-    function weeklyWizardPrev(){
-      weeklyWizardGo(weeklyWizardStep - 1);
-    }
-
-    function haftalikFormYenile(){
-      // Form alanlarını temizle
-      const ids = ['haftaOgrenci','haftaOdev','odevDurumu','buHaftaKonu','gelecekHaftaOdev','gelecekTarih','gelecekHaftaKonu','haftaMotivasyon','haftaMotivasyonAciklama'];
-      ids.forEach(id=>{
-        const el = document.getElementById(id);
-        if(!el) return;
-        if (el.tagName === 'SELECT') el.value = '';
-        else el.value = '';
-      });
-
-      const detay = document.getElementById('seciliOdevDetay');
-      if (detay){
-        detay.value = '';
-        detay.style.height = '';
-      }
-
-      const msgEl = document.getElementById('haftaDurumMesaji');
-      if (msgEl) msgEl.innerText = '';
-
-      // Wizard'ı ilk adıma al
-      weeklyWizardGo(1);
-
-      // Ödev seçeneklerini sıfırla
-      const sel = document.getElementById('haftaOdev');
-      if (sel) sel.innerHTML = '<option value="">Ödev Seçin</option>';
-    }
-
-    function updateSelectedHomeworkDetail(){
-      const sel = document.getElementById('haftaOdev');
-      const out = document.getElementById('seciliOdevDetay');
-      if(!sel || !out) return;
-      out.value = sel.value || '';
-      // Otomatik yükseklik (tam metin rahat görünsün)
-      out.style.height = 'auto';
-      out.style.height = Math.min(out.scrollHeight, 360) + 'px';
-    }
-
-
     function doldurHaftaOgrenciListesi(){
       const sel = document.getElementById('haftaOgrenci');
       sel.innerHTML = '<option value="">Öğrenci Seçin</option>';
@@ -1304,47 +977,25 @@
       const secili = this.value;
       const sel = document.getElementById('haftaOdev');
       sel.innerHTML = '<option value="">Ödev Seçin</option>';
-      const detay = document.getElementById('seciliOdevDetay');
-      if (detay){ detay.value = ''; detay.style.height = ''; }
-
-      if(!secili) return;
-
       database.ref("odevler").once("value").then(s=>{
         const val = s.val() || {};
-        Object.entries(val)
-          .map(([key, o]) => ({ key, ...(o||{}) }))
-          .filter(o => o.ogrenci === secili)
-          .sort((a, b) => new Date(b.tarih) - new Date(a.tarih))
-          .forEach(o => {
-            const opt = document.createElement('option');
-            opt.value = o.konu || o.icerik || '';
-            opt.dataset.key = o.key || '';
-            const tarihStr = formatTurkishDate(o.tarih);
-            // Select satırında okunabilir, kısa gösterim; tam metin altta gösterilir
-            const shortText = (opt.value || '').length > 70 ? (opt.value.slice(0, 70) + '…') : (opt.value || 'İçerik Yok');
-            opt.textContent = `${tarihStr} - ${shortText}`;
-            sel.appendChild(opt);
-          });
-
-        // Ödev select değişince tam metni göster
-        sel.removeEventListener('change', updateSelectedHomeworkDetail);
-        sel.addEventListener('change', updateSelectedHomeworkDetail);
+        Object.values(val)
+  .filter(o => o.ogrenci === secili)
+  .sort((a, b) => new Date(b.tarih) - new Date(a.tarih))
+  .forEach(o => {
+          const opt = document.createElement('option');
+          opt.value = o.konu || o.icerik || '';
+          // Tarihi okunur formata çevir
+          const tarihStr = formatTurkishDate(o.tarih);
+          opt.textContent = `${tarihStr} - ${o.konu || o.icerik}`;
+          sel.appendChild(opt);
+        });
       });
     });
 
-      });
-    });
-
-    
     function haftalikVeriyiEkle(){
       const ogrenci = document.getElementById('haftaOgrenci').value;
-
-      const odevSelEl = document.getElementById('haftaOdev');
-      const odev = odevSelEl ? (odevSelEl.value || '') : '';
-      const odevKaynakKey = (odevSelEl && odevSelEl.selectedOptions && odevSelEl.selectedOptions[0])
-        ? (odevSelEl.selectedOptions[0].dataset.key || '')
-        : '';
-
+      const odev    = document.getElementById('haftaOdev').value;
       const durum   = document.getElementById('odevDurumu').value;
       const konu    = document.getElementById('buHaftaKonu').value.trim();
       const gelecekOdev = document.getElementById('gelecekHaftaOdev').value.trim();
@@ -1360,52 +1011,32 @@
       }
       const motivasyonAciklama = (document.getElementById('haftaMotivasyonAciklama')?.value || '').trim();
 
-      if(!ogrenci || !tarih){
-        alert("🚫 Öğrenci ve teslim tarihi boş bırakılamaz.");
-        weeklyWizardGo(1);
-        return;
-      }
+      if(!ogrenci || !tarih){ alert("🚫 Öğrenci ve tarih boş bırakılamaz."); return; }
 
       const zaman = new Date().toISOString();
+      const haftalikKayit = { ogrenci, odev, durum, konu, gelecekOdev, tarih, gelecekKonu, zaman, motivasyon, motivasyonAciklama };
+      const odevKaydi = { ogrenci, konu: gelecekOdev, tarih };
 
-      // Gelecek haftanın ödevi -> Ödevler listesine de kaydedilir ve key ilişkilendirilir
       const haftalikRef = database.ref("haftalikDegerlendirme").push();
       const odevRef     = database.ref("odevler").push();
 
-      const haftalikKayit = {
-        ogrenci,
-        odev,
-        odevKaynakKey,   // geçmiş ödev seçimi (varsa)
-        durum,
-        konu,
-        gelecekOdev,
-        tarih,
-        gelecekKonu,
-        zaman,
-        motivasyon,
-        motivasyonAciklama,
-        odevKey: odevRef.key // gelecek ödev kaydı ile ilişki
-      };
-
-      const odevKaydi = { ogrenci, konu: gelecekOdev, tarih };
-
-      Promise.all([odevRef.set(odevKaydi), haftalikRef.set(haftalikKayit)]).then(()=>{
-        const msgEl = document.getElementById('haftaDurumMesaji');
-        if (msgEl) msgEl.innerText = '✅ Kayıt ve ödev başarıyla eklendi.';
-        refreshWeekly();
-        refreshAssignments();
-        // Wizard'ı ve formu sıfırla
-        haftalikFormYenile();
+      Promise.all([haftalikRef.set(haftalikKayit), odevRef.set(odevKaydi)]).then(()=>{
+        document.getElementById('haftaDurumMesaji').innerText = '✅ Kayıt ve ödev başarıyla eklendi.';
+        // form alanlarını temizle
+        const motInp = document.getElementById('haftaMotivasyon');
+        if (motInp) motInp.value = '';
+        const motAcikInp = document.getElementById('haftaMotivasyonAciklama');
+        if (motAcikInp) motAcikInp.value = '';
+        refreshWeekly();      // önemli
+        refreshAssignments(); // önemli
       }).catch(()=>{
         alert("⚠️ Veri eklenirken hata oluştu.");
       });
     }
 
-    
     function haftalikKayitlariListele(){
       const liste = document.getElementById('haftalikKayitListesi');
       liste.innerHTML = '';
-
       // Sayfalama kapsayıcısını bul veya oluştur
       let paginationContainer = document.getElementById('haftalikPagination');
       if (!paginationContainer) {
@@ -1414,143 +1045,80 @@
         paginationContainer.className = 'mt-3';
         liste.parentNode.appendChild(paginationContainer);
       }
-
-      const statusBadgeClass = (durum) => {
-        const d = (durum || '').toLowerCase();
-        if (d === 'yapti') return 'ok';
-        if (d === 'yapmadi') return 'danger';
-        if (d === 'eksik' || d === 'getirmedi') return 'warn';
-        return 'primary';
-      };
-
       database.ref("haftalikDegerlendirme").once("value").then(s => {
         const val = s.val() || {};
         const filtreSel = document.getElementById('haftalikFiltreOgrenci');
         const filtreDeger = filtreSel ? filtreSel.value : '';
-
+        // Kayıt yoksa mesaj göster ve temizle
         const entries = Object.entries(val);
         if (entries.length === 0) {
-          liste.innerHTML = '<div class="col-12"><div class="text-center text-muted py-3">Kayıt bulunamadı.</div></div>';
+          liste.innerHTML = '<div class="text-center text-muted py-3">Kayıt bulunamadı.</div>';
           paginationContainer.innerHTML = '';
           const ozetEl = document.getElementById('haftalikOzet');
           if (ozetEl) ozetEl.innerText = '';
           return;
         }
-
-        let filtered = entries.filter(([_, veri]) => !filtreDeger || veri.ogrenci === filtreDeger);
-
+        // Filtre uygula
+        let filtered = entries.filter(([_, veri]) => {
+          return !filtreDeger || veri.ogrenci === filtreDeger;
+        });
+        // Eğer filtre sonrasında veri kalmadıysa mesaj göster ve temizle
         if (filtered.length === 0) {
-          liste.innerHTML = '<div class="col-12"><div class="text-center text-muted py-3">Seçilen öğrenci için kayıt bulunamadı.</div></div>';
+          liste.innerHTML = '<div class="text-center text-muted py-3">Seçilen öğrenci için kayıt bulunamadı.</div>';
           paginationContainer.innerHTML = '';
           const ozetEl = document.getElementById('haftalikOzet');
           if (ozetEl) ozetEl.innerText = '';
           return;
         }
-
-        // Tarihe göre azalan sırala (teslim tarihi varsa onu, yoksa zaman)
+        // Tarihe göre azalan sırala (veri.tarih veya veri.zaman)
         filtered.sort((a, b) => {
           const da = new Date(a[1].tarih || a[1].zaman);
           const db = new Date(b[1].tarih || b[1].zaman);
           return db - da;
         });
-
-        // Sayfalama
-        const pageSize = 9; // kart görünümünde daha dengeli
+        // Sayfalama hesapla
+        const pageSize = 10;
         const totalPages = Math.ceil(filtered.length / pageSize);
         if (haftalikCurrentPage > totalPages) haftalikCurrentPage = totalPages;
         if (haftalikCurrentPage < 1) haftalikCurrentPage = 1;
         const startIdx = (haftalikCurrentPage - 1) * pageSize;
         const endIdx = startIdx + pageSize;
         const pageEntries = filtered.slice(startIdx, endIdx);
-
-        // Kartları oluştur
+        // Liste öğelerini oluştur
         pageEntries.forEach(([key, veri]) => {
-          const col = document.createElement('div');
-          col.className = 'col-12 col-md-6 col-lg-4';
-
-          const tarihGoster = formatTurkishDate(veri.tarih || veri.zaman) || '';
-          const durumText = durumIcon(veri.durum);
-          const badgeCls = statusBadgeClass(veri.durum);
-
-          const mot = parseInt(veri.motivasyon) || 0;
-          const motText = mot ? `${mot}/10` : 'Bilgi Yok';
-          const motAcik = (veri.motivasyonAciklama || '').trim();
-
-          col.innerHTML = `
-            <div class="card weekly-card">
-              <div class="card-header p-3">
-                <div class="weekly-meta">
-                  <div class="me-2">
-                    <div class="weekly-title">${veri.ogrenci || '???'}</div>
-                    <div class="weekly-sub">${tarihGoster}</div>
-                  </div>
-                  <div class="d-flex flex-column align-items-end gap-2">
-                    <span class="badge-soft ${badgeCls}">${durumText}</span>
-                    <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-primary" onclick='haftalikKaydiGuncelle("${key}")' title="Düzenle"><i class="bi bi-pencil-square"></i></button>
-                      <button class="btn btn-sm btn-outline-danger" onclick='haftalikKaydiSil("${key}")' title="Sil"><i class="bi bi-trash"></i></button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card-body p-3">
-                <div class="weekly-kv mb-2">
-                  <div class="k">Bu hafta konusu</div>
-                  <div class="v prewrap">${(veri.konu || '—')}</div>
-                </div>
-
-                <div class="weekly-kv mb-2">
-                  <div class="k">Geçen ödev</div>
-                  <div class="v prewrap">${(veri.odev || '—')}</div>
-                </div>
-
-                <hr class="my-3"/>
-
-                <div class="weekly-kv mb-2">
-                  <div class="k">Gelecek ödev</div>
-                  <div class="v prewrap">${(veri.gelecekOdev || '—')}</div>
-                </div>
-
-                <div class="weekly-kv mb-2">
-                  <div class="k">Teslim</div>
-                  <div class="v">${veri.tarih ? formatTurkishDate(veri.tarih) : '—'}</div>
-                </div>
-
-                <div class="weekly-kv">
-                  <div class="k">Gelecek konu</div>
-                  <div class="v prewrap">${(veri.gelecekKonu || '—')}</div>
-                </div>
-
-                <hr class="my-3"/>
-
-                <div class="weekly-kv mb-2">
-                  <div class="k">Motivasyon</div>
-                  <div class="v">${motText}</div>
-                </div>
-                <div class="weekly-kv">
-                  <div class="k">Genel durum</div>
-                  <div class="v prewrap">${motAcik || '—'}</div>
-                </div>
-              </div>
+          const metin = `${veri.ogrenci || '???'} — ${formatTurkishDate(veri.tarih || veri.zaman) || '???'} — ${veri.konu || '???'}`;
+          const nextLine = veri.gelecekOdev ? `<div class="fw-bold mt-1">${veri.gelecekOdev}</div>` : '';
+          const item = document.createElement('div');
+          item.className = 'list-group-item d-flex align-items-start';
+          item.innerHTML = `
+            <div class="me-2 flex-grow-1">
+              <div class="fw-medium">${metin}</div>
+              <div class="small-muted">${(veri.odev ? 'Ödev: ' + veri.odev + ' → ' : '') + durumIcon(veri.durum)}</div>
+              ${nextLine}
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-sm btn-outline-primary" onclick='haftalikKaydiGuncelle("${key}")'><i class="bi bi-pencil-square"></i></button>
+              <button class="btn btn-sm btn-outline-danger" onclick='haftalikKaydiSil("${key}")'><i class="bi bi-trash"></i></button>
             </div>
           `;
-          liste.appendChild(col);
+          liste.appendChild(item);
         });
-
-        // Özet
+        // Özet alanını güncelle
         const ozetEl = document.getElementById('haftalikOzet');
         if (ozetEl) {
-          ozetEl.innerText = filtreDeger ? `Toplam ${filtered.length} ders kaydı bulundu.` : '';
+          if (filtreDeger) {
+            ozetEl.innerText = `Toplam ${filtered.length} ders kaydı bulundu.`;
+          } else {
+            ozetEl.innerText = '';
+          }
         }
-
         // Sayfalama kontrolleri
         paginationContainer.innerHTML = '';
         if (totalPages > 1) {
           const nav = document.createElement('nav');
           const ul = document.createElement('ul');
           ul.className = 'pagination justify-content-center';
-
+          // Önceki
           const prevLi = document.createElement('li');
           prevLi.className = 'page-item' + (haftalikCurrentPage === 1 ? ' disabled' : '');
           const prevLink = document.createElement('a');
@@ -1559,11 +1127,14 @@
           prevLink.innerText = '«';
           prevLink.addEventListener('click', (e) => {
             e.preventDefault();
-            if (haftalikCurrentPage > 1) { haftalikCurrentPage--; haftalikKayitlariListele(); }
+            if (haftalikCurrentPage > 1) {
+              haftalikCurrentPage--;
+              haftalikKayitlariListele();
+            }
           });
           prevLi.appendChild(prevLink);
           ul.appendChild(prevLi);
-
+          // Numaralar
           for (let i = 1; i <= totalPages; i++) {
             const li = document.createElement('li');
             li.className = 'page-item' + (i === haftalikCurrentPage ? ' active' : '');
@@ -1573,12 +1144,15 @@
             a.innerText = i;
             a.addEventListener('click', (e) => {
               e.preventDefault();
-              if (i !== haftalikCurrentPage) { haftalikCurrentPage = i; haftalikKayitlariListele(); }
+              if (i !== haftalikCurrentPage) {
+                haftalikCurrentPage = i;
+                haftalikKayitlariListele();
+              }
             });
             li.appendChild(a);
             ul.appendChild(li);
           }
-
+          // Sonraki
           const nextLi = document.createElement('li');
           nextLi.className = 'page-item' + (haftalikCurrentPage === totalPages ? ' disabled' : '');
           const nextLink = document.createElement('a');
@@ -1587,18 +1161,20 @@
           nextLink.innerText = '»';
           nextLink.addEventListener('click', (e) => {
             e.preventDefault();
-            if (haftalikCurrentPage < totalPages) { haftalikCurrentPage++; haftalikKayitlariListele(); }
+            if (haftalikCurrentPage < totalPages) {
+              haftalikCurrentPage++;
+              haftalikKayitlariListele();
+            }
           });
           nextLi.appendChild(nextLink);
           ul.appendChild(nextLi);
-
           nav.appendChild(ul);
           paginationContainer.appendChild(nav);
         }
       });
     }
 
-function haftalikKaydiSil(key){
+    function haftalikKaydiSil(key){
       if(!confirm("Bu haftalık kaydı silmek istiyor musunuz?")) return;
       database.ref("haftalikDegerlendirme/"+key).remove().then(()=>{
         refreshWeekly(); // önemli
@@ -1625,90 +1201,35 @@ function haftalikKaydiSil(key){
       });
     }
 
-    
     function haftalikKaydiGuncelleKaydet(){
       if(!guncellenecekHaftaKey){ alert("Güncellenecek kayıt yok."); return; }
-
-      // Motivasyon verileri
+      // Güncellenen veri objesi
+      // Motivasyon verileri de dahil ediliyor
       const motVal = parseInt(document.getElementById('guncelleHaftaMotivasyon')?.value) || 0;
       const motAcik = document.getElementById('guncelleHaftaMotivasyonAciklama')?.value || '';
-
-      const modalEl = document.getElementById('haftalikGuncelleModal');
-      const afterDone = (msgOk=true) => {
+      const veri = {
+        ogrenci: document.getElementById('guncelleHaftaOgrenci').value,
+        odev: document.getElementById('guncelleHaftaOdev').value,
+        durum: document.getElementById('guncelleHaftaDurum').value,
+        konu: document.getElementById('guncelleHaftaKonu').value,
+        tarih: document.getElementById('guncelleHaftaTarih').value,
+        gelecekOdev: document.getElementById('guncelleGelecekOdev').value,
+        gelecekKonu: document.getElementById('guncelleGelecekKonu').value,
+        motivasyon: motVal,
+        motivasyonAciklama: motAcik.trim(),
+        zaman: new Date().toISOString()
+      };
+      database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).update(veri).then(()=>{
+        // Modalı güvenli bir şekilde kapat
+        const modalEl = document.getElementById('haftalikGuncelleModal');
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) modalInstance.hide();
-        refreshWeekly();
-        refreshAssignments();
-        if (msgOk) alert("✅ Kayıt güncellendi.");
-      };
-
-      // Önce eski kaydı al: odevKey ilişkilendirmesi ve eşleştirme için
-      database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).once("value").then(snap=>{
-        const old = snap.val() || {};
-        const prevOdevKey = old.odevKey || '';
-        const prevGelecekOdev = old.gelecekOdev || '';
-        const prevTarih = old.tarih || '';
-
-        const veri = {
-          ogrenci: document.getElementById('guncelleHaftaOgrenci').value,
-          odev: document.getElementById('guncelleHaftaOdev').value,
-          durum: document.getElementById('guncelleHaftaDurum').value,
-          konu: document.getElementById('guncelleHaftaKonu').value,
-          tarih: document.getElementById('guncelleHaftaTarih').value,
-          gelecekOdev: document.getElementById('guncelleGelecekOdev').value,
-          gelecekKonu: document.getElementById('guncelleGelecekKonu').value,
-          motivasyon: motVal,
-          motivasyonAciklama: motAcik.trim(),
-          zaman: new Date().toISOString()
-        };
-
-        // İlişkilendirmeleri koru
-        if (old.odevKaynakKey) veri.odevKaynakKey = old.odevKaynakKey;
-        if (prevOdevKey) veri.odevKey = prevOdevKey;
-
-        database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).update(veri).then(()=>{
-          // Haftalık kayıtta "gelecek ödev" değiştiyse -> Kayıtlı Ödevler'de de güncelle
-          const newOdevKaydi = { ogrenci: veri.ogrenci, konu: veri.gelecekOdev, tarih: veri.tarih };
-
-          // 1) Doğrudan odevKey varsa güncelle
-          if (prevOdevKey){
-            database.ref("odevler/"+prevOdevKey).update(newOdevKaydi).then(()=> afterDone(true)).catch(()=> afterDone(true));
-            return;
-          }
-
-          // 2) Eski kayıtlarda odevKey yoksa: eşleştirme dene (ogrenci + tarih + eski gelecekOdev)
-          database.ref("odevler").once("value").then(s2=>{
-            const all = s2.val() || {};
-            const found = Object.entries(all).find(([_, o])=>{
-              const text = (o?.konu || o?.icerik || '');
-              const sameStudent = (o?.ogrenci || '') === (veri.ogrenci || '');
-              const sameText = text === (prevGelecekOdev || '');
-              const sameDate = (o?.tarih || '') === (prevTarih || '') || (o?.tarih || '') === (veri.tarih || '');
-              return sameStudent && sameText && sameDate;
-            });
-
-            if (found){
-              const [k] = found;
-              database.ref("odevler/"+k).update(newOdevKaydi).then(()=>{
-                // Link'i geri yaz
-                database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).update({ odevKey: k });
-                afterDone(true);
-              }).catch(()=> afterDone(true));
-              return;
-            }
-
-            // 3) Eşleşme bulunamadıysa yeni ödev oluştur ve ilişkilendir
-            const newRef = database.ref("odevler").push();
-            newRef.set(newOdevKaydi).then(()=>{
-              database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).update({ odevKey: newRef.key });
-              afterDone(true);
-            }).catch(()=> afterDone(true));
-          }).catch(()=> afterDone(true));
-        }).catch(()=> alert("❌ Güncelleme başarısız."));
-      }).catch(()=> alert("❌ Güncelleme için kayıt okunamadı."));
+        refreshWeekly(); // önemli
+        alert("✅ Kayıt güncellendi.");
+      }).catch(()=> alert("❌ Güncelleme başarısız."));
     }
 
-function tumHaftalikKayitlariSil(){
+    function tumHaftalikKayitlariSil(){
       if(!confirm("Tüm haftalık kayıtları silmek istediğinize emin misiniz?")) return;
       database.ref("haftalikDegerlendirme").remove().then(()=>{
         refreshWeekly(); // önemli
@@ -1864,30 +1385,6 @@ Saygılarımızla, bilginize.`;
     /************ INIT ************/
     window.addEventListener('load', ()=>{
       refreshAll(); // başlangıç
-
-      // Logo tıklanınca büyük göster (herhangi bir tıklamada kapanır)
-      const logo = document.getElementById('brandLogo');
-      if (logo){
-        const openLogo = () => {
-          const modalImg = document.getElementById('logoModalImg');
-          if (modalImg) modalImg.src = logo.getAttribute('src') || modalImg.src;
-          bsModal('logoModal').show();
-        };
-        logo.addEventListener('click', openLogo);
-        logo.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') openLogo(); });
-      }
-      const logoModalEl = document.getElementById('logoModal');
-      if (logoModalEl){
-        logoModalEl.addEventListener('click', ()=> bsModal('logoModal').hide());
-      }
-
-      // Wizard adımlarını tıklanabilir yap
-      document.querySelectorAll('#weeklyWizardSteps .wizard-chip').forEach(chip=>{
-        chip.addEventListener('click', ()=> weeklyWizardGo(parseInt(chip.dataset.step)));
-      });
-      weeklyWizardGo(1);
-
-
       // ---- Gerçek zamanlı otomatik yenileme istersen alttakileri aktif et:
       // database.ref("ogrenciler").on("value", ()=> refreshStudents());
       // database.ref("odevler").on("value",   ()=> refreshAssignments());
