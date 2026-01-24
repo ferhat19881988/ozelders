@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Özel Ders Takip Sistemi</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-  
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -17,210 +18,136 @@
 
   <style>
     :root {
-      --primary-color: #4361ee;
-      --secondary-color: #3f37c9;
-      --accent-color: #4895ef;
-      --bg-color: #f8f9fa;
+      --primary-color: #4f46e5; /* Indigo 600 */
+      --primary-hover: #4338ca;
+      --bg-color: #f3f4f6;
       --card-bg: #ffffff;
-      --text-main: #2b2d42;
-      --text-muted: #8d99ae;
-      --border-radius: 16px;
-      --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
-      --shadow-md: 0 8px 24px rgba(67, 97, 238, 0.08);
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border-radius: 1rem;
     }
 
     body {
-      font-family: 'Poppins', sans-serif;
       background-color: var(--bg-color);
+      font-family: 'Inter', sans-serif;
       color: var(--text-main);
-      padding-bottom: 80px; /* Mobil navigasyon için boşluk */
+      padding-bottom: 80px; /* Mobil navbar için boşluk */
     }
 
-    /* Navbar & Header */
-    .main-header {
-      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-      padding-bottom: 3rem;
-      border-bottom-left-radius: 30px;
-      border-bottom-right-radius: 30px;
-      margin-bottom: -2rem;
-      color: white;
-      box-shadow: 0 4px 20px rgba(63, 55, 201, 0.3);
-    }
-
-    .navbar-brand {
-      color: white !important;
-      font-weight: 600;
-      font-size: 1.25rem;
-    }
-    
-    .navbar-brand img {
-      border: 2px solid rgba(255,255,255,0.8);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
-
-    /* Sticky Tabs Navigation */
-    .sticky-tabs {
-      position: sticky;
-      top: 10px;
-      z-index: 1020;
-      margin: 0 auto;
-      max-width: 96%;
-    }
-
-    .nav-pills {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      padding: 0.5rem;
-      border-radius: 50px;
-      box-shadow: var(--shadow-md);
-      display: flex;
-      justify-content: space-between;
-      border: 1px solid rgba(0,0,0,0.05);
-    }
-
-    .nav-pills .nav-item {
-      flex: 1;
-      text-align: center;
-    }
-
-    .nav-pills .nav-link {
-      color: var(--text-muted);
-      font-weight: 500;
-      border-radius: 40px;
-      transition: all 0.3s ease;
-      font-size: 0.9rem;
-      padding: 0.75rem 0.5rem;
-    }
-
-    .nav-pills .nav-link:hover {
-      background-color: rgba(67, 97, 238, 0.05);
-      color: var(--primary-color);
-    }
-
-    .nav-pills .nav-link.active {
-      background-color: var(--primary-color);
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(67, 97, 238, 0.4);
-    }
-    
-    .nav-pills .nav-link i {
-      font-size: 1.1rem;
-      margin-right: 4px;
-      vertical-align: text-bottom;
-    }
-
-    /* Cards */
+    /* Modern Kartlar */
     .app-card {
       background: var(--card-bg);
       border-radius: var(--border-radius);
-      box-shadow: var(--shadow-sm);
-      border: 1px solid rgba(0,0,0,0.03);
-      transition: transform 0.2s;
-      overflow: hidden;
-    }
-    
-    .section-title {
-      font-weight: 600;
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      border: 1px solid rgba(229, 231, 235, 0.5);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       margin-bottom: 1.5rem;
-      font-size: 1.1rem;
-      border-bottom: 2px solid #f0f2f5;
-      padding-bottom: 0.5rem;
+      padding: 1.5rem;
     }
 
-    /* Form Elements */
+    .app-card:hover {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    }
+
+    h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.025em; }
+
+    /* Form Elemanları */
     .form-control, .form-select {
-      border-radius: 12px;
-      border: 1px solid #e0e0e0;
-      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #d1d5db;
+      padding: 0.625rem 0.75rem;
       font-size: 0.95rem;
-      background-color: #fcfcfc;
-      transition: all 0.2s;
     }
-
     .form-control:focus, .form-select:focus {
-      border-color: var(--accent-color);
-      box-shadow: 0 0 0 4px rgba(72, 149, 239, 0.15);
-      background-color: #fff;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     }
+    .form-label { font-weight: 500; font-size: 0.9rem; color: var(--text-main); margin-bottom: 0.4rem; }
 
-    label.form-label {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 0.4rem;
-      margin-left: 0.2rem;
-    }
-
-    /* Buttons */
+    /* Butonlar */
     .btn {
-      border-radius: 12px;
-      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
       font-weight: 500;
+      padding: 0.625rem 1.25rem;
       transition: all 0.2s;
     }
-
-    .btn-primary {
-      background-color: var(--primary-color);
-      border: none;
-      box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
-    }
+    .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
+    .btn-primary:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); }
     
-    .btn-primary:hover {
-      background-color: var(--secondary-color);
-      transform: translateY(-1px);
-    }
-    
-    .btn-success {
-      background-color: #10b981;
-      border: none;
+    /* Navbar & Tabs */
+    .top-navbar {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 1030;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     }
 
-    /* Lists */
+    .nav-pills {
+      background: #e0e7ff;
+      padding: 0.25rem;
+      border-radius: 0.75rem;
+      display: inline-flex;
+    }
+    .nav-pills .nav-link {
+      border-radius: 0.5rem;
+      color: #4338ca;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      transition: all 0.2s;
+    }
+    .nav-pills .nav-link.active {
+      background-color: #fff;
+      color: var(--primary-color);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Listeler */
     .list-group-item {
       border: none;
-      border-bottom: 1px solid #f0f2f5;
-      padding: 1rem;
-      margin-bottom: 0.5rem;
-      background: #fff;
-      border-radius: 12px !important;
-      transition: background 0.2s;
+      border-bottom: 1px solid #f3f4f6;
+      padding: 1rem 0;
+      background: transparent;
     }
+    .list-group-item:last-child { border-bottom: none; }
     
-    .list-group-item:last-child {
-      border-bottom: none;
-    }
-
-    .list-group-item:hover {
-      background-color: #fafafa;
-    }
-
-    .list-fit .list-group-item {
-      display: flex;
+    .status-badge {
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      border: 1px solid #f0f0f0;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status-badge.success { background: #dcfce7; color: #166534; }
+    .status-badge.danger { background: #fee2e2; color: #991b1b; }
+    .status-badge.warning { background: #fef9c3; color: #854d0e; }
+    .status-badge.info { background: #dbeafe; color: #1e40af; }
+
+    /* QR */
+    .qr-container {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 1rem;
+      border: 2px dashed #cbd5e1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
     }
 
-    /* Utilities */
-    .form-row-gap { row-gap: 1rem; }
-    .small-muted { font-size: 0.85rem; color: #9ca3af; }
-    .qr-center { display: flex; align-items: center; justify-content: center; min-height: 240px; background: #f8f9fa; border-radius: 16px; border: 2px dashed #e0e0e0; }
-    
-    /* Mobile Responsive Fixes */
-    @media (max-width: 576px) {
-      .nav-pills .nav-link span { display: none; } /* Sadece ikon göster */
-      .nav-pills .nav-link i { font-size: 1.4rem; margin: 0; }
-      .app-card { padding: 1.5rem !important; }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-pills { width: 100%; display: flex; overflow-x: auto; flex-wrap: nowrap; }
+      .nav-pills .nav-link { white-space: nowrap; flex: 1; text-align: center; }
+      .app-card { padding: 1rem; }
     }
   </style>
 
   <script>
-    // Firebase yapılandırma (Korundu)
+    // --- FIREBASE BAŞLATMA ---
     const firebaseConfig = {
       apiKey: "AIzaSyD4Ctf-F5BSU_4fHK2WgTQUj_okrzyI7OI",
       authDomain: "birebir-1df98.firebaseapp.com",
@@ -237,344 +164,298 @@
 </head>
 <body>
 
-  <header class="main-header">
-    <nav class="navbar navbar-expand-lg">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-          <img src="https://i.ibb.co/F4cDX7MX/logom.jpg" alt="Logo" height="38" class="rounded-circle bg-white p-1" />
-          <span>Özel Ders Takip</span>
-        </a>
-      </div>
-    </nav>
-    <div class="container mt-3 mb-4">
-      <h6 class="text-white-50 mb-1">Hoş Geldiniz,</h6>
-      <h4 class="fw-bold mb-0">Öğrenci Yönetim Paneli</h4>
+  <header class="top-navbar">
+    <div class="container d-flex align-items-center justify-content-between">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <img src="https://i.ibb.co/F4cDX7MX/logom.jpg" alt="Logo" width="36" height="36" class="rounded-circle shadow-sm" />
+        <div>
+          <h1 class="h6 mb-0 fw-bold text-primary">Ders Takip</h1>
+          <span class="small text-muted" style="font-size: 0.75rem;">Yönetim Paneli</span>
+        </div>
+      </a>
+      <ul class="nav nav-pills ms-auto" id="mainTabs" role="tablist">
+        <li class="nav-item">
+          <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pnl-ogrenci" type="button"><i class="bi bi-people-fill"></i> <span class="d-none d-md-inline">Öğrenciler</span></button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pnl-haftalik" type="button"><i class="bi bi-calendar-check-fill"></i> <span class="d-none d-md-inline">Haftalık</span></button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pnl-rapor" type="button"><i class="bi bi-whatsapp"></i> <span class="d-none d-md-inline">Rapor</span></button>
+        </li>
+      </ul>
     </div>
   </header>
 
-  <div class="sticky-tabs">
-    <ul class="nav nav-pills" id="mainTabs" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="tab-ogrenci" data-bs-toggle="pill" data-bs-target="#pnl-ogrenci" type="button" role="tab">
-          <i class="bi bi-people-fill"></i> <span>Öğrenciler</span>
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tab-haftalik" data-bs-toggle="pill" data-bs-target="#pnl-haftalik" type="button" role="tab">
-          <i class="bi bi-calendar-check-fill"></i> <span>Değerlendirme</span>
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tab-rapor" data-bs-toggle="pill" data-bs-target="#pnl-rapor" type="button" role="tab">
-          <i class="bi bi-whatsapp"></i> <span>Raporlar</span>
-        </button>
-      </li>
-    </ul>
-  </div>
-
-  <div class="container mt-5">
+  <main class="container py-4">
     <div class="tab-content">
 
-      <div class="tab-pane fade show active" id="pnl-ogrenci" role="tabpanel">
-        
-        <div class="app-card p-4 mb-4">
-          <h2 class="section-title"><i class="bi bi-person-plus"></i> Öğrenci Kaydı</h2>
-          <div class="row g-3 form-row-gap">
-            <div class="col-md-6">
-              <label class="form-label">Öğrenci Adı</label>
-              <input type="text" id="ogrenciAd" class="form-control" placeholder="Ad Soyad giriniz" />
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Sınıf Seviyesi</label>
-              <select id="ogrenciSinif" class="form-select">
-                <option value="">Seçim Yapınız</option>
-                <option>5. Sınıf</option><option>6. Sınıf</option>
-                <option>7. Sınıf</option><option>8. Sınıf</option>
-              </select>
-            </div>
-            <div class="col-12 d-flex gap-2 pt-2">
-              <button class="btn btn-primary flex-grow-1" onclick="ogrenciEkle()"><i class="bi bi-check-lg"></i> Kaydet</button>
-              <button class="btn btn-light text-muted" onclick="temizleInputlar()"><i class="bi bi-arrow-counterclockwise"></i></button>
-            </div>
-          </div>
-        </div>
-
-        <div class="app-card p-4 mb-4">
-          <h3 class="section-title"><i class="bi bi-list-ul"></i> Öğrenci Listesi</h3>
-          <div class="list-group list-fit" id="ogrenciListesi"></div>
-        </div>
-
-        <div class="app-card p-4 mb-4">
-          <h3 class="section-title"><i class="bi bi-journal-plus"></i> Ödev Atama</h3>
-          <div class="row g-3 form-row-gap">
-            <div class="col-md-6">
-              <label class="form-label">Öğrenci Seçimi</label>
-              <select id="odevOgrenci" class="form-select">
-                <option value="">Listeden seçiniz</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Tarih</label>
-              <input type="date" id="odevTarih" class="form-control"/>
-            </div>
-            <div class="col-12">
-              <label class="form-label">Ödev Detayı</label>
-              <textarea id="odevIcerik" class="form-control" rows="3" placeholder="Örn: Sayfa 45-47 arasındaki problemler çözülecek."></textarea>
-            </div>
-            <div class="col-12 d-flex flex-wrap gap-2 pt-2">
-              <button class="btn btn-success flex-grow-1" onclick="odevEkle()"><i class="bi bi-plus-lg"></i> Ödev Ata</button>
-              <button class="btn btn-light" onclick="odevFormTemizle()"><i class="bi bi-arrow-clockwise"></i></button>
-              <button class="btn btn-outline-danger" onclick="tumOdevleriSil()"><i class="bi bi-trash"></i> Temizle</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="app-card p-4">
-          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-            <h3 class="h6 text-uppercase fw-bold text-muted mb-0">Ödev Geçmişi</h3>
-            <div style="width: 200px;">
-               <select id="odevFiltreOgrenci" class="form-select form-select-sm">
-                  <option value="">Tüm Öğrenciler</option>
-               </select>
-            </div>
-          </div>
-          <div id="odevListesi" class="list-group list-fit"></div>
-        </div>
-      </div>
-
-      <div class="tab-pane fade" id="pnl-haftalik" role="tabpanel">
-        <div class="app-card p-4 mb-4">
-          <h2 class="section-title"><i class="bi bi-calendar-check"></i> Haftalık Değerlendirme</h2>
-
-          <div class="row g-3 form-row-gap">
-            <div class="col-md-4">
-              <label class="form-label">Öğrenci</label>
-              <select id="haftaOgrenci" class="form-select">
-                <option value="">Seçiniz</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Geçen Ödev</label>
-              <select id="haftaOdev" class="form-select">
-                <option value="">Seçiniz</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Ödev Durumu</label>
-              <select id="odevDurumu" class="form-select">
-                <option value="">Durum Seçiniz</option>
-                <option value="yapti">✅ Yaptı</option>
-                <option value="yapmadi">❌ Yapmadı</option>
-                <option value="eksik">⚠️ Eksik</option>
-                <option value="getirmedi">📭 Getirmedi</option>
-              </select>
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">Bu Hafta İşlenen Konu</label>
-              <textarea id="buHaftaKonu" class="form-control" rows="2" placeholder="Konu başlıkları..."></textarea>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Gelecek Hafta Ödevi</label>
-              <textarea id="gelecekHaftaOdev" class="form-control" rows="2" placeholder="Verilecek ödev..."></textarea>
+      <div class="tab-pane fade show active" id="pnl-ogrenci">
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <div class="app-card sticky-lg-top" style="top: 100px;">
+              <h5 class="mb-3 d-flex align-items-center gap-2"><i class="bi bi-person-plus text-primary"></i> Yeni Öğrenci</h5>
+              <div class="d-flex flex-column gap-3">
+                <div>
+                  <label class="form-label">Ad Soyad</label>
+                  <input type="text" id="ogrenciAd" class="form-control" placeholder="Örn: Ali Veli" />
+                </div>
+                <div>
+                  <label class="form-label">Sınıf</label>
+                  <select id="ogrenciSinif" class="form-select">
+                    <option value="">Seçiniz</option>
+                    <option>5. Sınıf</option><option>6. Sınıf</option><option>7. Sınıf</option><option>8. Sınıf</option>
+                  </select>
+                </div>
+                <div class="d-grid gap-2">
+                  <button class="btn btn-primary" onclick="ogrenciEkle()">Kaydet</button>
+                  <button class="btn btn-light text-muted" onclick="temizleInputlar()">Temizle</button>
+                </div>
+              </div>
             </div>
             
-            <div class="col-md-6">
-               <div class="row g-2">
-                 <div class="col-12">
-                    <label class="form-label">Teslim Tarihi</label>
-                    <input type="date" id="gelecekTarih" class="form-control" />
-                 </div>
-                 <div class="col-12">
-                    <label class="form-label">Gelecek Hafta Konusu</label>
-                    <textarea id="gelecekHaftaKonu" class="form-control" rows="1"></textarea>
-                 </div>
-               </div>
+            <div class="app-card mt-3">
+                <h5 class="mb-3">Öğrenci Listesi</h5>
+                <div id="ogrenciListesi" class="list-group list-group-flush"></div>
+             </div>
+          </div>
+
+          <div class="col-lg-8">
+            <div class="app-card">
+              <h5 class="mb-4 d-flex align-items-center gap-2"><i class="bi bi-journal-plus text-primary"></i> Ödev Atama</h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Öğrenci</label>
+                  <select id="odevOgrenci" class="form-select"><option value="">Yükleniyor...</option></select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Tarih</label>
+                  <input type="date" id="odevTarih" class="form-control"/>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Ödev İçeriği</label>
+                  <textarea id="odevIcerik" class="form-control" rows="3" placeholder="Ödev detaylarını buraya yazın..."></textarea>
+                </div>
+                <div class="col-12 d-flex justify-content-end gap-2">
+                  <button class="btn btn-light" onclick="odevFormTemizle()">Temizle</button>
+                  <button class="btn btn-success px-4" onclick="odevEkle()"><i class="bi bi-check-lg"></i> Ödevi Ekle</button>
+                </div>
+              </div>
             </div>
 
-            <div class="col-md-3">
-              <label class="form-label">Motivasyon (1-10)</label>
-              <input type="number" id="haftaMotivasyon" class="form-control text-center fw-bold" min="1" max="10" />
-            </div>
-            <div class="col-md-9">
-              <label class="form-label">Genel Ders Yorumu</label>
-              <textarea id="haftaMotivasyonAciklama" class="form-control" rows="1" placeholder="Ders içi performans notu..."></textarea>
-            </div>
-
-            <div class="col-12 d-flex flex-wrap gap-2 pt-3">
-              <button class="btn btn-primary flex-grow-1" type="button" onclick="haftalikVeriyiEkle()"><i class="bi bi-save"></i> Değerlendirmeyi Kaydet</button>
-              <button class="btn btn-light" onclick="haftalikFormYenile()"><i class="bi bi-arrow-clockwise"></i></button>
-              <button class="btn btn-outline-danger ms-auto" type="button" onclick="tumHaftalikKayitlariSil()"><i class="bi bi-trash"></i> Sil</button>
+            <div class="app-card">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Verilen Ödevler</h5>
+                <button class="btn btn-sm btn-outline-danger" onclick="tumOdevleriSil()">Tümünü Sil</button>
+              </div>
+              <div class="row mb-3">
+                 <div class="col-md-5">
+                   <select id="odevFiltreOgrenci" class="form-select form-select-sm">
+                     <option value="">Tüm Öğrenciler</option>
+                   </select>
+                 </div>
+              </div>
+              <div id="odevListesi" class="list-group list-group-flush"></div>
+              <div id="odevPagination" class="mt-3"></div>
             </div>
           </div>
-        </div>
-
-        <div class="app-card p-4">
-          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-            <h3 class="h6 text-uppercase fw-bold text-muted mb-0">Değerlendirme Geçmişi</h3>
-            <div style="width: 200px;">
-              <select id="haftalikFiltreOgrenci" class="form-select form-select-sm">
-                <option value="">Tümü</option>
-              </select>
-            </div>
-          </div>
-          
-          <div id="haftalikKayitListesi" class="list-group list-fit"></div>
-          <div id="haftalikOzet" class="mt-3 p-2 bg-light rounded text-center small-muted fw-medium"></div>
-          <p id="haftaDurumMesaji" class="text-center small-muted"></p>
         </div>
       </div>
 
-      <div class="tab-pane fade" id="pnl-rapor" role="tabpanel">
-        <div class="app-card p-4 mb-4">
-          <h2 class="section-title"><i class="bi bi-whatsapp"></i> WhatsApp Rapor Oluşturucu</h2>
+      <div class="tab-pane fade" id="pnl-haftalik">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="app-card">
+                    <h5 class="mb-3 text-primary">📋 Haftalık Giriş</h5>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Öğrenci</label>
+                            <select id="haftaOgrenci" class="form-select"><option value="">Seçiniz</option></select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Bu Haftanın Konusu</label>
+                            <textarea id="buHaftaKonu" class="form-control" rows="2"></textarea>
+                        </div>
+                         <div class="col-md-6">
+                            <label class="form-label">Kontrol Edilecek Ödev</label>
+                            <select id="haftaOdev" class="form-select"><option value="">Ödev Seçin</option></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ödev Durumu</label>
+                            <select id="odevDurumu" class="form-select">
+                                <option value="">Seçiniz</option>
+                                <option value="yapti">✅ Yaptı</option>
+                                <option value="yapmadi">❌ Yapmadı</option>
+                                <option value="eksik">⚠️ Eksik</option>
+                                <option value="getirmedi">📭 Getirmedi</option>
+                            </select>
+                        </div>
+                        <div class="col-12"><hr class="text-muted"></div>
+                        <div class="col-12">
+                            <label class="form-label">Gelecek Hafta Ödevi</label>
+                            <textarea id="gelecekHaftaOdev" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                             <label class="form-label">Teslim Tarihi</label>
+                             <input type="date" id="gelecekTarih" class="form-control" />
+                        </div>
+                         <div class="col-md-6">
+                             <label class="form-label">Gelecek Konu</label>
+                             <input type="text" id="gelecekHaftaKonu" class="form-control" />
+                        </div>
+                        <div class="col-12"><hr class="text-muted"></div>
+                        <div class="col-4">
+                            <label class="form-label">Motivasyon</label>
+                            <input type="number" id="haftaMotivasyon" class="form-control text-center" min="1" max="10" value="10" />
+                        </div>
+                         <div class="col-8">
+                            <label class="form-label">Genel Durum</label>
+                            <input type="text" id="haftaMotivasyonAciklama" class="form-control" placeholder="Ders durumu hakkında not..." />
+                        </div>
+                        <div class="col-12 d-grid mt-3">
+                            <button class="btn btn-primary" onclick="haftalikVeriyiEkle()">Kaydet ve Listele</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-7">
+                <div class="app-card">
+                     <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Geçmiş Değerlendirmeler</h5>
+                        <button class="btn btn-sm btn-outline-danger" onclick="tumHaftalikKayitlariSil()">Temizle</button>
+                      </div>
+                      <div class="mb-3">
+                         <select id="haftalikFiltreOgrenci" class="form-select form-select-sm w-50">
+                             <option value="">Tümü</option>
+                         </select>
+                      </div>
+                      <div id="haftalikKayitListesi" class="list-group list-group-flush"></div>
+                      <div id="haftalikOzet" class="mt-2 small text-muted fst-italic"></div>
+                      <div id="haftalikPagination" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+      </div>
 
-          <div class="row g-3 form-row-gap">
-            <div class="col-md-4">
-              <label class="form-label">Rapor Türü</label>
-              <select id="raporTipi" class="form-select" onchange="raporTipiDegisti()">
-                <option value="haftalik">📅 Haftalık Rapor</option>
-                <option value="aylik">📆 Aylık Rapor</option>
-              </select>
-            </div>
-            <div class="col-md-8">
-              <label class="form-label">Öğrenci Seç</label>
-              <select id="raporOgrenciSec" class="form-select"></select>
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">Otomatik Oluşturulan Mesaj</label>
-              <textarea id="raporMesaj" rows="10" class="form-control font-monospace fs-6 bg-light" style="border:1px dashed #ccc;"></textarea>
-            </div>
-
-            <div class="col-12 d-flex flex-wrap gap-2 pt-2">
-              <button class="btn btn-success py-2 flex-grow-1" onclick="whatsappMesajGonder()"><i class="bi bi-whatsapp"></i> WhatsApp'ta Aç</button>
-              <button class="btn btn-dark py-2" onclick="qrKodModalAc()"><i class="bi bi-qr-code"></i> QR Kod</button>
-              <button class="btn btn-outline-secondary" onclick="raporFormYenile()"><i class="bi bi-arrow-clockwise"></i></button>
-            </div>
-          </div>
-          
-          <div id="qrCanvasContainer" class="d-none"></div> </div>
+      <div class="tab-pane fade" id="pnl-rapor">
+        <div class="app-card mw-800 mx-auto">
+             <h4 class="mb-4 text-center text-success"><i class="bi bi-whatsapp"></i> Veli Bilgilendirme Sihirbazı</h4>
+             <div class="row g-3 justify-content-center">
+                 <div class="col-md-5">
+                     <label class="form-label">Öğrenci Seçin</label>
+                     <select id="raporOgrenciSec" class="form-select form-select-lg shadow-sm" onchange="raporMesajiOlustur()">
+                         <option value="">Seçiniz</option>
+                     </select>
+                 </div>
+                 <div class="col-md-5">
+                     <label class="form-label">Rapor Tipi</label>
+                     <select id="raporTipi" class="form-select form-select-lg shadow-sm" onchange="raporTipiDegisti()">
+                        <option value="haftalik">📅 Haftalık Rapor</option>
+                        <option value="aylik">📆 Aylık Rapor</option>
+                     </select>
+                 </div>
+                 
+                 <div class="col-12">
+                     <div class="p-3 bg-light rounded border mt-2">
+                         <label class="form-label text-muted small text-uppercase fw-bold">Mesaj Önizleme</label>
+                         <textarea id="raporMesaj" class="form-control border-0 bg-transparent" rows="12" style="font-family: monospace; font-size: 0.9rem;"></textarea>
+                     </div>
+                 </div>
+                 
+                 <div class="col-12 d-flex justify-content-center gap-3 mt-3">
+                     <button class="btn btn-success btn-lg px-5" onclick="whatsappMesajGonder()">
+                         <i class="bi bi-send-fill"></i> WhatsApp'a Aktar
+                     </button>
+                     <button class="btn btn-dark btn-lg px-4" onclick="qrKodModalAc()">
+                         <i class="bi bi-qr-code"></i> QR Kod
+                     </button>
+                 </div>
+                 <div class="col-12 text-center">
+                    <button class="btn btn-link text-muted btn-sm" onclick="raporMesajiOlustur()"><i class="bi bi-arrow-clockwise"></i> Mesajı Yeniden Oluştur</button>
+                 </div>
+             </div>
+             
+             <div id="qrCanvasContainer" class="d-none justify-content-center mt-4 p-3 bg-white border rounded"></div>
+        </div>
       </div>
 
     </div>
-  </div>
+  </main>
 
-  <div class="modal fade" id="ogrenciGuncelleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" id="ogrenciGuncelleModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-light">
-          <h5 class="modal-title fw-bold">✏️ Öğrenci Düzenle</h5>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Öğrenci Düzenle</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Ad Soyad</label>
-            <input type="text" id="guncelleAd" class="form-control"/>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Sınıf</label>
+            <input type="text" id="guncelleAd" class="form-control mb-3" placeholder="Ad Soyad">
             <select id="guncelleSinif" class="form-select">
-              <option value="">Seçiniz</option>
-              <option>5. Sınıf</option><option>6. Sınıf</option>
-              <option>7. Sınıf</option><option>8. Sınıf</option>
+                <option>5. Sınıf</option><option>6. Sınıf</option><option>7. Sınıf</option><option>8. Sınıf</option>
             </select>
-          </div>
         </div>
-        <div class="modal-footer border-0">
-          <button class="btn btn-light" data-bs-dismiss="modal">İptal</button>
-          <button class="btn btn-primary" onclick="ogrenciGuncelleKaydet()">Değişiklikleri Kaydet</button>
+        <div class="modal-footer">
+          <button class="btn btn-primary" onclick="ogrenciGuncelleKaydet()">Kaydet</button>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="modal fade" id="odevGuncelleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" id="odevGuncelleModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-light">
-          <h5 class="modal-title fw-bold">✏️ Ödev Düzenle</h5>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Ödev Düzenle</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Tarih</label>
-            <input type="date" id="guncelleOdevTarih" class="form-control"/>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">İçerik</label>
+            <label class="small text-muted">Tarih</label>
+            <input type="date" id="guncelleOdevTarih" class="form-control mb-3">
+            <label class="small text-muted">İçerik</label>
             <textarea id="guncelleOdevIcerik" rows="4" class="form-control"></textarea>
-          </div>
         </div>
-        <div class="modal-footer border-0">
-          <button class="btn btn-light" data-bs-dismiss="modal">İptal</button>
+        <div class="modal-footer">
           <button class="btn btn-primary" onclick="odevGuncelleKaydet()">Kaydet</button>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="modal fade" id="haftalikGuncelleModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-light">
-          <h5 class="modal-title fw-bold">✏️ Haftalık Kayıt Düzenle</h5>
+  <div class="modal fade" id="haftalikGuncelleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Haftalık Kayıt Düzenle</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body">
-          <label class="form-label small text-muted">Öğrenci</label>
-          <input type="text" id="guncelleHaftaOgrenci" class="form-control mb-3" disabled readonly>
-          
-          <label class="form-label small text-muted">Tarih</label>
-          <input type="date" id="guncelleHaftaTarih" class="form-control mb-3">
-
-          <label class="form-label small text-muted">İşlenen Konu</label>
-          <input type="text" id="guncelleHaftaKonu" class="form-control mb-3">
-          
-          <label class="form-label small text-muted">Ödev</label>
-          <input type="text" id="guncelleHaftaOdev" class="form-control mb-3">
-          
-          <label class="form-label small text-muted">Durum (yapti, yapmadi, eksik...)</label>
-          <input type="text" id="guncelleHaftaDurum" class="form-control mb-3">
-          
-          <hr>
-          <label class="form-label small text-muted">Gelecek Konu</label>
-          <input type="text" id="guncelleGelecekKonu" class="form-control mb-3">
-          
-          <label class="form-label small text-muted">Gelecek Ödev</label>
-          <input type="text" id="guncelleGelecekOdev" class="form-control mb-3">
-
-          <div class="row">
-             <div class="col-4">
-               <label class="form-label small text-muted">Motivasyon</label>
-               <input type="number" id="guncelleHaftaMotivasyon" class="form-control" min="1" max="10">
-             </div>
-             <div class="col-8">
-               <label class="form-label small text-muted">Açıklama</label>
-               <textarea id="guncelleHaftaMotivasyonAciklama" class="form-control" rows="1"></textarea>
-             </div>
-          </div>
+        <div class="modal-body row g-2">
+           <div class="col-6"><small>Öğrenci</small><input type="text" id="guncelleHaftaOgrenci" class="form-control" readonly></div>
+           <div class="col-6"><small>Tarih</small><input type="date" id="guncelleHaftaTarih" class="form-control"></div>
+           <div class="col-12"><small>Bu Hafta Konusu</small><input type="text" id="guncelleHaftaKonu" class="form-control"></div>
+           <div class="col-6"><small>Ödev</small><input type="text" id="guncelleHaftaOdev" class="form-control"></div>
+           <div class="col-6"><small>Durum (yapti,yapmadi..)</small><input type="text" id="guncelleHaftaDurum" class="form-control"></div>
+           <div class="col-12"><small>Gelecek Konu</small><input type="text" id="guncelleGelecekKonu" class="form-control"></div>
+           <div class="col-12"><small>Gelecek Ödev</small><input type="text" id="guncelleGelecekOdev" class="form-control"></div>
+           <div class="col-4"><small>Motivasyon</small><input type="number" id="guncelleHaftaMotivasyon" class="form-control"></div>
+           <div class="col-8"><small>Açıklama</small><input type="text" id="guncelleHaftaMotivasyonAciklama" class="form-control"></div>
         </div>
-        <div class="modal-footer border-0">
-          <button class="btn btn-light" data-bs-dismiss="modal">İptal</button>
-          <button class="btn btn-primary" onclick="haftalikKaydiGuncelleKaydet()">Güncelle</button>
+        <div class="modal-footer">
+          <button class="btn btn-primary" onclick="haftalikKaydiGuncelleKaydet()">Kaydet</button>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" id="qrModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-success text-white">
-          <h5 class="modal-title">📱 WhatsApp QR</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body text-center p-4">
-          <div id="qrModalCanvas" class="d-flex justify-content-center mb-3"></div>
-          <p class="text-muted small">Mesajı göndermek için kameranızı okutun.</p>
-        </div>
+      <div class="modal-content">
+         <div class="modal-body text-center p-4">
+            <h5 class="mb-3">WhatsApp QR Kod</h5>
+            <div id="qrModalCanvas" class="d-flex justify-content-center"></div>
+            <p class="text-muted mt-3 small">Telefon kamerasını okutarak mesajı açabilirsiniz.</p>
+         </div>
       </div>
     </div>
   </div>
@@ -582,20 +463,20 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    /************ Yardımcılar ************/
-    let guncellenecekId = null;            // Öğrenci güncelle
-    let guncellenecekOdevKey = null;       // Ödev güncelle
-    let guncellenecekHaftaKey = null;      // Haftalık kayıt güncelle
+    /************ YARDIMCILAR ************/
+    let guncellenecekId = null;
+    let guncellenecekOdevKey = null;
+    let guncellenecekHaftaKey = null;
 
     const bsModal = (id) => bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
 
     const durumIcon = (durum) => {
       switch ((durum || '').toLowerCase()) {
-        case 'yapti': return '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">✅ Yaptı</span>';
-        case 'yapmadi': return '<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1">❌ Yapmadı</span>';
-        case 'eksik': return '<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1">⚠️ Eksik</span>';
-        case 'getirmedi': return '<span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-2 py-1">📭 Getirmedi</span>';
-        default: return '<span class="badge bg-light text-muted border px-2 py-1">➖ Bilgi Yok</span>';
+        case 'yapti': return '<span class="status-badge success">✅ Yaptı</span>';
+        case 'yapmadi': return '<span class="status-badge danger">❌ Yapmadı</span>';
+        case 'eksik': return '<span class="status-badge warning">⚠️ Eksik</span>';
+        case 'getirmedi': return '<span class="status-badge info">📭 Getirmedi</span>';
+        default: return '<span class="badge bg-secondary">➖ Belirsiz</span>';
       }
     };
 
@@ -612,30 +493,34 @@
     let odevCurrentPage = 1;
     let haftalikCurrentPage = 1;
 
-    // --- Ortak yenile yardımcıları ---
+    // --- REFRESH FONKSİYONLARI ---
+    window.addEventListener('load', ()=>{
+        refreshAll();
+        // Event Listeners for Filters
+        const odevFiltre = document.getElementById('odevFiltreOgrenci');
+        if(odevFiltre) odevFiltre.addEventListener('change', () => { odevCurrentPage=1; odevListele(); });
+
+        const haftalikFiltre = document.getElementById('haftalikFiltreOgrenci');
+        if(haftalikFiltre) haftalikFiltre.addEventListener('change', () => { haftalikCurrentPage=1; haftalikKayitlariListele(); });
+    });
+
     function refreshStudents() {
       ogrenciListele();
-      doldurOgrenciSecimi();       
-      doldurHaftaOgrenciListesi(); 
-      raporOgrenciSecDoldur();     
+      doldurOgrenciSecimi(); 
+      doldurHaftaOgrenciListesi();
+      raporOgrenciSecDoldur();
       doldurOdevFiltre();
       doldurHaftalikFiltre();
     }
-    function refreshAssignments() {
-      odevListele();
-    }
-    function refreshWeekly() {
-      haftalikKayitlariListele();
-    }
+    function refreshAssignments() { odevListele(); }
+    function refreshWeekly() { haftalikKayitlariListele(); }
     function refreshAll() {
       refreshStudents();
       refreshAssignments();
       refreshWeekly();
-      const sel = document.getElementById('raporOgrenciSec');
-      if (sel && sel.value) { raporMesajiOlustur(); }
     }
 
-    // Öğrenci - dizi olarak sakla / getir
+    // --- VERİTABANI İŞLEMLERİ ---
     function getOgrenciler(cb){
       database.ref("ogrenciler").once("value").then(s => {
         const val = s.val();
@@ -643,11 +528,8 @@
         cb(arr || []);
       }).catch(_ => cb([]));
     }
-    function setOgrenciler(arr){
-      return database.ref("ogrenciler").set(arr || []);
-    }
+    function setOgrenciler(arr){ return database.ref("ogrenciler").set(arr || []); }
 
-    /************ ÖĞRENCİ ************/
     function temizleInputlar(){
       document.getElementById('ogrenciAd').value = '';
       document.getElementById('ogrenciSinif').value = '';
@@ -656,27 +538,25 @@
     function ogrenciEkle(){
       const ad = document.getElementById('ogrenciAd').value.trim();
       const sinif = document.getElementById('ogrenciSinif').value;
-      if(!ad || !sinif){ alert("Lütfen öğrenci adı ve sınıf seçin."); return; }
+      if(!ad || !sinif){ alert("Lütfen ad ve sınıf giriniz."); return; }
 
       getOgrenciler(ogrenciler=>{
         const id = Date.now();
         const yeni = { id, ad, sinif };
         const guncel = [...ogrenciler, yeni];
         setOgrenciler(guncel).then(()=>{
-          alert("✅ Öğrenci eklendi.");
-          refreshStudents();
+          // alert("Öğrenci eklendi."); // Modern yapıda alert yerine sessiz güncelleme daha şıktır ama orijinali koruduk.
           temizleInputlar();
-        }).catch(()=> alert("❌ Öğrenci eklenemedi."));
+          refreshStudents();
+        });
       });
     }
 
     function ogrenciSil(id){
-      if(!confirm("Bu öğrenciyi silmek istediğinize emin misiniz?")) return;
+      if(!confirm("Silmek istediğinize emin misiniz?")) return;
       getOgrenciler(ogrenciler=>{
         const guncel = ogrenciler.filter(o=>o.id !== id);
-        setOgrenciler(guncel).then(()=>{
-          refreshStudents(); 
-        });
+        setOgrenciler(guncel).then(()=>{ refreshStudents(); });
       });
     }
 
@@ -685,682 +565,417 @@
         const o = ogrenciler.find(x=>x.id===id);
         if(!o) return;
         guncellenecekId = id;
-        document.getElementById('guncelleAd').value = o.ad || '';
-        document.getElementById('guncelleSinif').value = o.sinif || '';
+        document.getElementById('guncelleAd').value = o.ad;
+        document.getElementById('guncelleSinif').value = o.sinif;
         bsModal('ogrenciGuncelleModal').show();
       });
     }
 
     function ogrenciGuncelleKaydet(){
-      const ad = document.getElementById('guncelleAd').value.trim();
-      const sinif = document.getElementById('guncelleSinif').value;
-      if(!guncellenecekId){ alert("Güncellenecek öğrenci yok."); return; }
-      getOgrenciler(ogrenciler=>{
-        const guncel = ogrenciler.map(o=> o.id===guncellenecekId ? ({...o, ad, sinif}) : o);
-        setOgrenciler(guncel).then(()=>{
-          bsModal('ogrenciGuncelleModal').hide();
-          refreshStudents();
-          alert("✅ Öğrenci güncellendi.");
-        });
-      });
+       const ad = document.getElementById('guncelleAd').value.trim();
+       const sinif = document.getElementById('guncelleSinif').value;
+       getOgrenciler(ogrenciler=>{
+           const guncel = ogrenciler.map(o=> o.id === guncellenecekId ? {...o, ad, sinif} : o);
+           setOgrenciler(guncel).then(()=>{
+               bsModal('ogrenciGuncelleModal').hide();
+               refreshStudents();
+           });
+       });
     }
 
     function ogrenciListele(){
       const liste = document.getElementById('ogrenciListesi');
-      liste.innerHTML = '<div class="text-center text-muted py-3"><div class="spinner-border text-primary spinner-border-sm"></div> Yükleniyor...</div>';
+      liste.innerHTML = '<div class="text-muted p-3">Yükleniyor...</div>';
       getOgrenciler(ogrenciler=>{
         liste.innerHTML = '';
-        if(!ogrenciler.length){
-          liste.innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-person-x fs-1 d-block mb-2"></i>Kayıtlı öğrenci yok.</div>';
-          return;
-        }
+        if(!ogrenciler.length) { liste.innerHTML = '<div class="text-muted p-3">Kayıt yok.</div>'; return; }
         ogrenciler.forEach(o=>{
-          const item = document.createElement('div');
-          item.className = 'list-group-item';
-          item.innerHTML = `
-            <div class="d-flex align-items-center gap-3">
-              <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
-                <i class="bi bi-person-fill fs-5"></i>
-              </div>
-              <div>
-                <div class="fw-semibold text-dark">${o.ad}</div>
-                <div class="small text-muted">${o.sinif}</div>
-              </div>
-            </div>
-            <div class="d-flex gap-2">
-              <button class="btn btn-sm btn-light text-primary border" onclick="ogrenciGuncelleAc(${o.id})"><i class="bi bi-pencil-square"></i></button>
-              <button class="btn btn-sm btn-light text-danger border" onclick="ogrenciSil(${o.id})"><i class="bi bi-trash"></i></button>
-            </div>
-          `;
-          liste.appendChild(item);
+            const div = document.createElement('div');
+            div.className = 'list-group-item d-flex justify-content-between align-items-center';
+            div.innerHTML = `
+               <div><span class="fw-bold">${o.ad}</span> <span class="badge bg-light text-dark border ms-2">${o.sinif}</span></div>
+               <div class="btn-group">
+                 <button class="btn btn-sm btn-outline-primary" onclick="ogrenciGuncelleAc(${o.id})"><i class="bi bi-pencil"></i></button>
+                 <button class="btn btn-sm btn-outline-danger" onclick="ogrenciSil(${o.id})"><i class="bi bi-trash"></i></button>
+               </div>
+            `;
+            liste.appendChild(div);
         });
       });
     }
 
-    /************ ÖDEVLER ************/
+    // --- ÖDEV İŞLEMLERİ ---
     function doldurOgrenciSecimi(){
-      const sel = document.getElementById('odevOgrenci');
-      sel.innerHTML = '<option value="">Öğrenci Seçiniz</option>';
-      getOgrenciler(ogrenciler=>{
-        ogrenciler.forEach(o=>{
-          const opt = document.createElement('option');
-          opt.value = o.ad; 
-          opt.textContent = o.ad;
-          sel.appendChild(opt);
+        const sel = document.getElementById('odevOgrenci');
+        sel.innerHTML = '<option value="">Öğrenci Seçiniz</option>';
+        getOgrenciler(ogrenciler=>{
+            ogrenciler.forEach(o => {
+                const opt = document.createElement('option');
+                opt.value = o.ad; opt.textContent = o.ad;
+                sel.appendChild(opt);
+            });
         });
-      });
-    }
-
-    function odevListele(){
-      const liste = document.getElementById('odevListesi');
-      liste.innerHTML = '';
-      let paginationContainer = document.getElementById('odevPagination');
-      if (!paginationContainer) {
-        paginationContainer = document.createElement('div');
-        paginationContainer.id = 'odevPagination';
-        paginationContainer.className = 'mt-3 d-flex justify-content-center';
-        liste.parentNode.appendChild(paginationContainer);
-      }
-      database.ref("odevler").once("value").then(snap => {
-        const val = snap.val() || {};
-        const allEntries = Object.entries(val);
-        const filtreSel = document.getElementById('odevFiltreOgrenci');
-        const filtreDeger = filtreSel ? filtreSel.value : '';
-        
-        let filtered = allEntries.filter(([_, odev]) => {
-          return !filtreDeger || odev.ogrenci === filtreDeger;
-        });
-
-        if (filtered.length === 0) {
-          liste.innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-journal-x fs-1 d-block mb-2"></i>' + (allEntries.length === 0 ? 'Kayıtlı ödev yok.' : 'Bu kriterde ödev bulunamadı.') + '</div>';
-          paginationContainer.innerHTML = '';
-          return;
-        }
-
-        filtered.sort((a, b) => {
-          const da = new Date(a[1].tarih);
-          const db = new Date(b[1].tarih);
-          return db - da; 
-        });
-
-        const itemsPerPage = 5;
-        const totalPages = Math.ceil(filtered.length / itemsPerPage);
-        if (odevCurrentPage > totalPages) odevCurrentPage = totalPages;
-        if (odevCurrentPage < 1) odevCurrentPage = 1;
-
-        const start = (odevCurrentPage - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-        const pageItems = filtered.slice(start, end);
-
-        pageItems.forEach(([key, odev]) => {
-          const item = document.createElement('div');
-          item.className = 'list-group-item';
-          item.innerHTML = `
-            <div class="flex-grow-1">
-              <div class="d-flex justify-content-between mb-1">
-                 <span class="fw-bold text-primary">${odev.ogrenci}</span>
-                 <span class="badge bg-light text-dark border">${formatTurkishDate(odev.tarih)}</span>
-              </div>
-              <div class="text-secondary small mb-1">${odev.icerik}</div>
-            </div>
-            <div class="d-flex gap-2 align-items-center ms-2">
-              <button class="btn btn-sm btn-light text-primary" onclick="odevGuncelleAc('${key}')"><i class="bi bi-pencil"></i></button>
-              <button class="btn btn-sm btn-light text-danger" onclick="tekOdevSil('${key}')"><i class="bi bi-trash"></i></button>
-            </div>
-          `;
-          liste.appendChild(item);
-        });
-
-        renderPagination(paginationContainer, totalPages, odevCurrentPage, (newPage) => {
-          odevCurrentPage = newPage;
-          odevListele();
-        });
-      });
-    }
-
-    function renderPagination(container, totalPages, currentPage, onPageChange) {
-      container.innerHTML = '';
-      if (totalPages <= 1) return;
-
-      const nav = document.createElement('nav');
-      const ul = document.createElement('ul');
-      ul.className = 'pagination pagination-sm mb-0';
-
-      // Önceki
-      const liPrev = document.createElement('li');
-      liPrev.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-      liPrev.innerHTML = `<button class="page-link" type="button">&laquo;</button>`;
-      liPrev.onclick = () => { if(currentPage > 1) onPageChange(currentPage - 1); };
-      ul.appendChild(liPrev);
-
-      // Sayfa numaraları
-      for (let i = 1; i <= totalPages; i++) {
-        const li = document.createElement('li');
-        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
-        li.innerHTML = `<button class="page-link" type="button">${i}</button>`;
-        li.onclick = () => onPageChange(i);
-        ul.appendChild(li);
-      }
-
-      // Sonraki
-      const liNext = document.createElement('li');
-      liNext.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-      liNext.innerHTML = `<button class="page-link" type="button">&raquo;</button>`;
-      liNext.onclick = () => { if(currentPage < totalPages) onPageChange(currentPage + 1); };
-      ul.appendChild(liNext);
-
-      nav.appendChild(ul);
-      container.appendChild(nav);
-    }
-
-    function odevEkle(){
-      const ogrenci = document.getElementById('odevOgrenci').value;
-      const tarih = document.getElementById('odevTarih').value;
-      const icerik = document.getElementById('odevIcerik').value.trim();
-
-      if(!ogrenci || !tarih || !icerik){ alert("Tüm alanları doldurun."); return; }
-
-      const yeniOdev = { ogrenci, tarih, icerik };
-      database.ref("odevler").push(yeniOdev).then(()=>{
-        alert("✅ Ödev eklendi.");
-        refreshAssignments();
-        odevFormTemizle();
-      }).catch(()=> alert("❌ Hata oluştu."));
-    }
-
-    function odevFormTemizle(){
-      document.getElementById('odevOgrenci').value = '';
-      document.getElementById('odevTarih').value = '';
-      document.getElementById('odevIcerik').value = '';
-    }
-
-    function tekOdevSil(key){
-      if(!confirm("Bu ödevi silmek istiyor musunuz?")) return;
-      database.ref("odevler/"+key).remove().then(()=> refreshAssignments());
-    }
-    
-    function tumOdevleriSil(){
-      if(!confirm("⚠️ DİKKAT: Tüm ödev kayıtları silinecek!")) return;
-      database.ref("odevler").remove().then(()=> refreshAssignments());
     }
 
     function doldurOdevFiltre(){
-      const sel = document.getElementById('odevFiltreOgrenci');
-      const currentVal = sel.value;
-      sel.innerHTML = '<option value="">Tümü</option>';
-      getOgrenciler(ogrenciler=>{
-        ogrenciler.forEach(o=>{
-          const opt = document.createElement('option');
-          opt.value = o.ad; 
-          opt.textContent = o.ad;
-          sel.appendChild(opt);
+        const sel = document.getElementById('odevFiltreOgrenci');
+        const val = sel.value;
+        sel.innerHTML = '<option value="">Tümü</option>';
+        getOgrenciler(ogrenciler=>{
+            ogrenciler.forEach(o => {
+                const opt = document.createElement('option');
+                opt.value = o.ad; opt.textContent = o.ad;
+                sel.appendChild(opt);
+            });
+            sel.value = val;
         });
-        sel.value = currentVal;
-      });
     }
 
-    function odevGuncelleAc(key){
-      database.ref("odevler/"+key).once("value").then(s=>{
-        const val = s.val();
-        if(!val) return;
-        guncellenecekOdevKey = key;
-        document.getElementById('guncelleOdevTarih').value = val.tarih || '';
-        document.getElementById('guncelleOdevIcerik').value = val.icerik || '';
-        bsModal('odevGuncelleModal').show();
-      });
+    function odevEkle(){
+        const ogrenci = document.getElementById('odevOgrenci').value;
+        const tarih = document.getElementById('odevTarih').value;
+        const icerik = document.getElementById('odevIcerik').value;
+        if(!ogrenci || !tarih){ alert("Öğrenci ve Tarih seçiniz."); return; }
+        
+        const yeniOdev = { ogrenci, tarih, icerik };
+        database.ref("odevler").push(yeniOdev).then(()=>{
+            alert("Ödev eklendi.");
+            odevFormTemizle();
+            refreshAssignments();
+        });
     }
 
+    function odevFormTemizle(){
+        document.getElementById('odevIcerik').value = '';
+        document.getElementById('odevTarih').value = '';
+    }
+    
+    function tumOdevleriSil(){
+        if(confirm("Tüm ödev kayıtları silinecek! Emin misiniz?")){
+            database.ref("odevler").remove().then(()=> refreshAssignments());
+        }
+    }
+    
+    function odevSil(key){
+        if(confirm("Bu ödevi silmek istiyor musunuz?")){
+            database.ref("odevler/"+key).remove().then(()=> refreshAssignments());
+        }
+    }
+
+    function odevGuncelleModalAc(key){
+        database.ref("odevler/"+key).once("value").then(s=>{
+            const o = s.val();
+            guncellenecekOdevKey = key;
+            document.getElementById('guncelleOdevTarih').value = o.tarih;
+            document.getElementById('guncelleOdevIcerik').value = o.icerik;
+            bsModal('odevGuncelleModal').show();
+        });
+    }
+    
     function odevGuncelleKaydet(){
-      if(!guncellenecekOdevKey) return;
-      const tarih = document.getElementById('guncelleOdevTarih').value;
-      const icerik = document.getElementById('guncelleOdevIcerik').value;
-      database.ref("odevler/"+guncellenecekOdevKey).update({ tarih, icerik }).then(()=>{
-        bsModal('odevGuncelleModal').hide();
-        refreshAssignments();
-        alert("✅ Ödev güncellendi.");
-      });
+        const tarih = document.getElementById('guncelleOdevTarih').value;
+        const icerik = document.getElementById('guncelleOdevIcerik').value;
+        database.ref("odevler/"+guncellenecekOdevKey).update({ tarih, icerik }).then(()=>{
+            bsModal('odevGuncelleModal').hide();
+            refreshAssignments();
+        });
     }
 
-    /************ HAFTALIK DEĞERLENDİRME ************/
+    function odevListele(){
+        const liste = document.getElementById('odevListesi');
+        const paginationContainer = document.getElementById('odevPagination');
+        
+        database.ref("odevler").once("value").then(snap => {
+            const val = snap.val() || {};
+            const allEntries = Object.entries(val);
+            const filterVal = document.getElementById('odevFiltreOgrenci')?.value;
+            
+            let filtered = allEntries.filter(([_, odev]) => !filterVal || odev.ogrenci === filterVal);
+            filtered.sort((a,b) => new Date(b[1].tarih) - new Date(a[1].tarih)); // Tarihe göre azalan
+            
+            // Pagination Logic
+            const pageSize = 5;
+            const totalPages = Math.ceil(filtered.length / pageSize);
+            if(odevCurrentPage > totalPages) odevCurrentPage = totalPages || 1;
+            
+            const pageEntries = filtered.slice((odevCurrentPage-1)*pageSize, odevCurrentPage*pageSize);
+            
+            liste.innerHTML = '';
+            if(filtered.length === 0){ liste.innerHTML = '<div class="text-muted text-center py-4">Kayıt bulunamadı.</div>'; return; }
+
+            pageEntries.forEach(([key, odev])=>{
+                const item = document.createElement('div');
+                item.className = 'list-group-item d-flex justify-content-between align-items-start mb-2 border rounded bg-white';
+                item.innerHTML = `
+                  <div class="ms-2 me-auto">
+                    <div class="fw-bold text-primary">${odev.ogrenci} <span class="text-muted fw-normal small ms-2"><i class="bi bi-clock"></i> ${formatTurkishDate(odev.tarih)}</span></div>
+                    <p class="mb-0 small text-secondary mt-1">${odev.icerik}</p>
+                  </div>
+                  <div class="d-flex gap-1">
+                     <button class="btn btn-sm btn-light text-primary" onclick="odevGuncelleModalAc('${key}')"><i class="bi bi-pencil-square"></i></button>
+                     <button class="btn btn-sm btn-light text-danger" onclick="odevSil('${key}')"><i class="bi bi-trash"></i></button>
+                  </div>
+                `;
+                liste.appendChild(item);
+            });
+            
+            // Basit Pagination Kontrolleri
+            let html = '<nav><ul class="pagination justify-content-center pagination-sm">';
+            html += `<li class="page-item ${odevCurrentPage===1?'disabled':''}"><button class="page-link" onclick="if(odevCurrentPage>1){odevCurrentPage--; odevListele();}">«</button></li>`;
+            html += `<li class="page-item disabled"><span class="page-link">${odevCurrentPage} / ${totalPages || 1}</span></li>`;
+            html += `<li class="page-item ${odevCurrentPage===totalPages?'disabled':''}"><button class="page-link" onclick="if(odevCurrentPage<${totalPages}){odevCurrentPage++; odevListele();}">»</button></li>`;
+            html += '</ul></nav>';
+            paginationContainer.innerHTML = html;
+        });
+    }
+
+    // --- HAFTALIK DEĞERLENDİRME ---
     function doldurHaftaOgrenciListesi(){
-      const sel = document.getElementById('haftaOgrenci');
-      sel.innerHTML = '<option value="">Öğrenci Seçin</option>';
-      getOgrenciler(ogrenciler=>{
-        ogrenciler.forEach(o=>{
-          const opt = document.createElement('option');
-          opt.value = o.ad;
-          opt.textContent = o.ad;
-          sel.appendChild(opt);
+        const sel = document.getElementById('haftaOgrenci');
+        sel.innerHTML = '<option value="">Öğrenci Seçin</option>';
+        getOgrenciler(ogrenciler=>{
+            ogrenciler.forEach(o=>{
+                const opt = document.createElement('option');
+                opt.value = o.ad; opt.textContent = o.ad;
+                sel.appendChild(opt);
+            });
         });
-      });
-      // Öğrenci seçince son ödevi bul
-      sel.onchange = () => {
-        const ogr = sel.value;
-        doldurOgrenciSonOdev(ogr);
-      };
-    }
-
-    function doldurOgrenciSonOdev(ogrAd){
-      const odevSel = document.getElementById('haftaOdev');
-      odevSel.innerHTML = '<option value="">Ödev Seçin</option>';
-      if(!ogrAd) return;
-
-      database.ref("odevler").once("value").then(s=>{
-        const val = s.val() || {};
-        const list = Object.values(val).filter(x => x.ogrenci === ogrAd);
-        // Tarihe göre sırala (en yeni üstte)
-        list.sort((a,b)=> new Date(b.tarih) - new Date(a.tarih));
-        // Son 5 ödevi getir
-        list.slice(0,5).forEach(o=>{
-          const opt = document.createElement('option');
-          // value olarak içeriği koyuyoruz (basitlik adına)
-          opt.value = o.icerik; 
-          opt.textContent = `${formatTurkishDate(o.tarih)} - ${o.icerik.substring(0,30)}...`;
-          odevSel.appendChild(opt);
+        
+        // Ödev listesini de doldurmak için listener (Basitçe, seçilen öğrencinin ödevlerini getirir)
+        sel.addEventListener('change', function(){
+             const ogrenciAdi = this.value;
+             const odevSel = document.getElementById('haftaOdev');
+             odevSel.innerHTML = '<option value="">Yükleniyor...</option>';
+             database.ref("odevler").once("value").then(snap=>{
+                 odevSel.innerHTML = '<option value="">Ödev Seçin</option>';
+                 const val = snap.val()||{};
+                 Object.values(val).filter(x=>x.ogrenci===ogrenciAdi).forEach(od=>{
+                     const opt = document.createElement('option');
+                     opt.value = od.icerik; 
+                     opt.textContent = `${formatTurkishDate(od.tarih)} - ${od.icerik.substring(0,30)}...`;
+                     odevSel.appendChild(opt);
+                 });
+             });
         });
-      });
-    }
-
-    function haftalikVeriyiEkle(){
-      const ogrenci = document.getElementById('haftaOgrenci').value;
-      const odev = document.getElementById('haftaOdev').value;
-      const durum = document.getElementById('odevDurumu').value;
-      const konu = document.getElementById('buHaftaKonu').value;
-      const gelOdev = document.getElementById('gelecekHaftaOdev').value;
-      const gelKonu = document.getElementById('gelecekHaftaKonu').value;
-      const gelTarih = document.getElementById('gelecekTarih').value;
-      const motivasyon = document.getElementById('haftaMotivasyon').value;
-      const motivasyonAciklama = document.getElementById('haftaMotivasyonAciklama').value;
-
-      if(!ogrenci){ alert("Lütfen öğrenci seçin."); return; }
-
-      const id = Date.now().toString(); 
-      const veri = {
-        id, ogrenci, odev, durum, konu, gelOdev, gelKonu, gelTarih,
-        tarih: new Date().toISOString().split('T')[0], // Kayıt tarihi (bugün)
-        motivasyon, motivasyonAciklama
-      };
-
-      database.ref("haftalikDegerlendirme").push(veri).then(()=>{
-        alert("✅ Haftalık kayıt eklendi.");
-        refreshWeekly();
-        haftalikFormYenile();
-      });
-    }
-
-    function haftalikFormYenile(){
-      document.getElementById('haftaOgrenci').value = '';
-      document.getElementById('haftaOdev').innerHTML = '<option value="">Ödev Seçin</option>';
-      document.getElementById('odevDurumu').value = '';
-      document.getElementById('buHaftaKonu').value = '';
-      document.getElementById('gelecekHaftaOdev').value = '';
-      document.getElementById('gelecekHaftaKonu').value = '';
-      document.getElementById('gelecekTarih').value = '';
-      document.getElementById('haftaMotivasyon').value = '';
-      document.getElementById('haftaMotivasyonAciklama').value = '';
     }
 
     function doldurHaftalikFiltre(){
-      const sel = document.getElementById('haftalikFiltreOgrenci');
-      const currentVal = sel.value;
-      sel.innerHTML = '<option value="">Tümü</option>';
-      getOgrenciler(ogrenciler=>{
-        ogrenciler.forEach(o=>{
-          const opt = document.createElement('option');
-          opt.value = o.ad; 
-          opt.textContent = o.ad;
-          sel.appendChild(opt);
+         const sel = document.getElementById('haftalikFiltreOgrenci');
+         const current = sel.value;
+         sel.innerHTML = '<option value="">Tümü</option>';
+         getOgrenciler(ogrenciler=>{
+             ogrenciler.forEach(o=>{
+                 const opt = document.createElement('option');
+                 opt.value = o.ad; opt.textContent = o.ad;
+                 sel.appendChild(opt);
+             });
+             sel.value = current;
+         });
+    }
+
+    function haftalikVeriyiEkle(){
+        const veri = {
+            ogrenci: document.getElementById('haftaOgrenci').value,
+            konu: document.getElementById('buHaftaKonu').value,
+            odev: document.getElementById('haftaOdev').value,
+            durum: document.getElementById('odevDurumu').value,
+            gelecekOdev: document.getElementById('gelecekHaftaOdev').value,
+            teslimTarihi: document.getElementById('gelecekTarih').value,
+            gelecekKonu: document.getElementById('gelecekHaftaKonu').value,
+            motivasyon: document.getElementById('haftaMotivasyon').value,
+            aciklama: document.getElementById('haftaMotivasyonAciklama').value,
+            tarih: new Date().toISOString().split('T')[0] // Kayıt tarihi
+        };
+        
+        if(!veri.ogrenci){ alert("Öğrenci seçmelisiniz."); return; }
+        
+        database.ref("haftalikDegerlendirme").push(veri).then(()=>{
+            alert("Haftalık kayıt eklendi.");
+            // Formu temizle
+            document.getElementById('buHaftaKonu').value = '';
+            document.getElementById('gelecekHaftaOdev').value = '';
+            document.getElementById('haftaMotivasyonAciklama').value = '';
+            refreshWeekly();
         });
-        sel.value = currentVal;
-      });
+    }
+    
+    function tumHaftalikKayitlariSil(){
+        if(confirm("TÜM haftalık kayıtlar silinecek. Emin misiniz?")){
+            database.ref("haftalikDegerlendirme").remove().then(()=>refreshWeekly());
+        }
+    }
+    
+    function haftalikSil(key){
+        if(confirm("Silinsin mi?")){
+            database.ref("haftalikDegerlendirme/"+key).remove().then(()=>refreshWeekly());
+        }
+    }
+    
+    function haftalikGuncelleModalAc(key){
+        database.ref("haftalikDegerlendirme/"+key).once("value").then(s=>{
+             const d = s.val();
+             guncellenecekHaftaKey = key;
+             document.getElementById('guncelleHaftaOgrenci').value = d.ogrenci;
+             document.getElementById('guncelleHaftaTarih').value = d.tarih;
+             document.getElementById('guncelleHaftaKonu').value = d.konu;
+             document.getElementById('guncelleHaftaOdev').value = d.odev;
+             document.getElementById('guncelleHaftaDurum').value = d.durum;
+             document.getElementById('guncelleGelecekKonu').value = d.gelecekKonu || '';
+             document.getElementById('guncelleGelecekOdev').value = d.gelecekOdev || '';
+             document.getElementById('guncelleHaftaMotivasyon').value = d.motivasyon || '';
+             document.getElementById('guncelleHaftaMotivasyonAciklama').value = d.aciklama || '';
+             bsModal('haftalikGuncelleModal').show();
+        });
+    }
+    
+    function haftalikKaydiGuncelleKaydet(){
+        const updates = {
+             ogrenci: document.getElementById('guncelleHaftaOgrenci').value,
+             tarih: document.getElementById('guncelleHaftaTarih').value,
+             konu: document.getElementById('guncelleHaftaKonu').value,
+             odev: document.getElementById('guncelleHaftaOdev').value,
+             durum: document.getElementById('guncelleHaftaDurum').value,
+             gelecekKonu: document.getElementById('guncelleGelecekKonu').value,
+             gelecekOdev: document.getElementById('guncelleGelecekOdev').value,
+             motivasyon: document.getElementById('guncelleHaftaMotivasyon').value,
+             aciklama: document.getElementById('guncelleHaftaMotivasyonAciklama').value
+        };
+        database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).update(updates).then(()=>{
+             bsModal('haftalikGuncelleModal').hide();
+             refreshWeekly();
+        });
     }
 
     function haftalikKayitlariListele(){
-      const liste = document.getElementById('haftalikKayitListesi');
-      const ozetDiv = document.getElementById('haftalikOzet');
-      const durumMsg = document.getElementById('haftaDurumMesaji');
-      
-      liste.innerHTML = '';
-      ozetDiv.innerHTML = '';
-      durumMsg.textContent = 'Yükleniyor...';
-
-      let paginationContainer = document.getElementById('haftalikPagination');
-      if (!paginationContainer) {
-        paginationContainer = document.createElement('div');
-        paginationContainer.id = 'haftalikPagination';
-        paginationContainer.className = 'mt-3 d-flex justify-content-center';
-        liste.parentNode.appendChild(paginationContainer);
-      }
-
-      database.ref("haftalikDegerlendirme").once("value").then(snap => {
-        durumMsg.textContent = '';
-        const val = snap.val() || {};
-        const entries = Object.entries(val);
-        const filtreSel = document.getElementById('haftalikFiltreOgrenci');
-        const filtreOgrenci = filtreSel ? filtreSel.value : '';
-
-        let filtered = entries.filter(([_, item]) => {
-          return !filtreOgrenci || item.ogrenci === filtreOgrenci;
-        });
-
-        // Toplam ders sayısı özeti
-        if (filtreOgrenci && filtered.length > 0) {
-           ozetDiv.innerHTML = `<span>${filtreOgrenci}</span> için toplam <strong>${filtered.length}</strong> ders kaydı bulundu.`;
-        } else if (!filtreOgrenci && filtered.length > 0) {
-           ozetDiv.innerHTML = `Toplam <strong>${filtered.length}</strong> değerlendirme kaydı mevcut.`;
-        } else {
-           ozetDiv.innerHTML = '';
-        }
-
-        if(filtered.length === 0){
-          liste.innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-clipboard-x fs-1 d-block mb-2"></i>Kayıt bulunamadı.</div>';
-          paginationContainer.innerHTML = '';
-          return;
-        }
-
-        filtered.sort((a,b)=> new Date(b[1].tarih) - new Date(a[1].tarih));
-
-        // Sayfalama
-        const itemsPerPage = 5;
-        const totalPages = Math.ceil(filtered.length / itemsPerPage);
-        if (haftalikCurrentPage > totalPages) haftalikCurrentPage = totalPages;
-        if (haftalikCurrentPage < 1) haftalikCurrentPage = 1;
-
-        const start = (haftalikCurrentPage - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-        const pageItems = filtered.slice(start, end);
-
-        pageItems.forEach(([key, item]) => {
-          const div = document.createElement('div');
-          div.className = 'list-group-item';
-          
-          // Kart içeriği
-          let html = `
-            <div class="d-flex w-100 justify-content-between align-items-start mb-2">
-              <div>
-                <h6 class="mb-1 text-primary fw-bold">${item.ogrenci} <small class="text-muted fw-normal ms-2">${formatTurkishDate(item.tarih)}</small></h6>
-                <div class="mb-1">${durumIcon(item.durum)}</div>
-              </div>
-              <div class="d-flex gap-2">
-                 <button class="btn btn-sm btn-light text-primary border" onclick="haftalikGuncelleAc('${key}')"><i class="bi bi-pencil"></i></button>
-                 <button class="btn btn-sm btn-light text-danger border" onclick="tekHaftalikSil('${key}')"><i class="bi bi-trash"></i></button>
-              </div>
-            </div>
-            <div class="row g-2 small">
-              <div class="col-md-6"><strong class="text-dark">İşlenen:</strong> <span class="text-muted">${item.konu || '-'}</span></div>
-              <div class="col-md-6"><strong class="text-dark">Ödev:</strong> <span class="text-muted">${item.odev || '-'}</span></div>
-              <div class="col-md-6"><strong class="text-dark">Gel. Konu:</strong> <span class="text-muted">${item.gelKonu || '-'}</span></div>
-              <div class="col-md-6"><strong class="text-dark">Gel. Ödev:</strong> <span class="text-muted">${item.gelOdev || '-'}</span></div>
-          `;
-          if(item.motivasyon || item.motivasyonAciklama){
-             html += `<div class="col-12 mt-2 pt-2 border-top"><strong class="text-dark">Not:</strong> <span class="badge bg-warning text-dark me-1">${item.motivasyon || '-'}</span> <span class="text-muted fst-italic">${item.motivasyonAciklama || ''}</span></div>`;
-          }
-          html += `</div>`;
-          
-          div.innerHTML = html;
-          liste.appendChild(div);
-        });
-
-        renderPagination(paginationContainer, totalPages, haftalikCurrentPage, (newPage) => {
-          haftalikCurrentPage = newPage;
-          haftalikKayitlariListele();
-        });
-      });
-    }
-
-    function tekHaftalikSil(key){
-      if(!confirm("Kayıt silinsin mi?")) return;
-      database.ref("haftalikDegerlendirme/"+key).remove().then(()=> refreshWeekly());
-    }
-
-    function tumHaftalikKayitlariSil(){
-      if(!confirm("⚠️ TÜM haftalık kayıtlar silinecek!")) return;
-      database.ref("haftalikDegerlendirme").remove().then(()=> refreshWeekly());
-    }
-
-    function haftalikGuncelleAc(key){
-      database.ref("haftalikDegerlendirme/"+key).once("value").then(s=>{
-        const val = s.val();
-        if(!val) return;
-        guncellenecekHaftaKey = key;
-        // Modal alanlarını doldur
-        document.getElementById('guncelleHaftaOgrenci').value = val.ogrenci || '';
-        document.getElementById('guncelleHaftaKonu').value = val.konu || '';
-        document.getElementById('guncelleHaftaOdev').value = val.odev || '';
-        document.getElementById('guncelleHaftaDurum').value = val.durum || '';
-        document.getElementById('guncelleHaftaTarih').value = val.tarih || ''; // YYYY-MM-DD
-        document.getElementById('guncelleGelecekKonu').value = val.gelKonu || '';
-        document.getElementById('guncelleGelecekOdev').value = val.gelOdev || '';
-        document.getElementById('guncelleHaftaMotivasyon').value = val.motivasyon || '';
-        document.getElementById('guncelleHaftaMotivasyonAciklama').value = val.motivasyonAciklama || '';
+        const liste = document.getElementById('haftalikKayitListesi');
+        const ozet = document.getElementById('haftalikOzet');
+        const pagination = document.getElementById('haftalikPagination');
         
-        bsModal('haftalikGuncelleModal').show();
-      });
-    }
+        database.ref("haftalikDegerlendirme").once("value").then(snap=>{
+            const val = snap.val() || {};
+            const all = Object.entries(val);
+            const filter = document.getElementById('haftalikFiltreOgrenci')?.value;
+            
+            let filtered = all.filter(([_, d]) => !filter || d.ogrenci === filter);
+            filtered.sort((a,b) => new Date(b[1].tarih) - new Date(a[1].tarih));
 
-    function haftalikKaydiGuncelleKaydet(){
-      if(!guncellenecekHaftaKey) return;
-      const updates = {};
-      updates.konu = document.getElementById('guncelleHaftaKonu').value;
-      updates.odev = document.getElementById('guncelleHaftaOdev').value;
-      updates.durum = document.getElementById('guncelleHaftaDurum').value;
-      updates.tarih = document.getElementById('guncelleHaftaTarih').value;
-      updates.gelKonu = document.getElementById('guncelleGelecekKonu').value;
-      updates.gelOdev = document.getElementById('guncelleGelecekOdev').value;
-      updates.motivasyon = document.getElementById('guncelleHaftaMotivasyon').value;
-      updates.motivasyonAciklama = document.getElementById('guncelleHaftaMotivasyonAciklama').value;
+            ozet.textContent = filter ? `Toplam ${filtered.length} kayıt bulundu.` : '';
 
-      database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).update(updates).then(()=>{
-        bsModal('haftalikGuncelleModal').hide();
-        refreshWeekly();
-        alert("✅ Kayıt güncellendi.");
-      });
-    }
+            // Pagination
+            const pageSize = 5;
+            const totalPages = Math.ceil(filtered.length / pageSize);
+            if(haftalikCurrentPage > totalPages) haftalikCurrentPage = totalPages || 1;
+            const pageEntries = filtered.slice((haftalikCurrentPage-1)*pageSize, haftalikCurrentPage*pageSize);
 
-    /************ RAPOR (WHATSAPP) ************/
-    function raporOgrenciSecDoldur(){
-      const sel = document.getElementById('raporOgrenciSec');
-      sel.innerHTML = '';
-      getOgrenciler(ogrenciler=>{
-        if(!ogrenciler.length){
-           const opt = document.createElement('option');
-           opt.text = "Öğrenci Yok";
-           sel.add(opt);
-           return;
-        }
-        ogrenciler.forEach(o=>{
-          const opt = document.createElement('option');
-          opt.value = o.ad;
-          opt.textContent = o.ad;
-          sel.appendChild(opt);
+            liste.innerHTML = '';
+            if(!filtered.length){ liste.innerHTML = '<div class="text-center text-muted p-3">Kayıt Yok</div>'; return; }
+
+            pageEntries.forEach(([key, d])=>{
+                const item = document.createElement('div');
+                item.className = 'list-group-item bg-white border rounded mb-2 shadow-sm p-3';
+                item.innerHTML = `
+                   <div class="d-flex justify-content-between">
+                      <h6 class="fw-bold mb-1 text-primary">${d.ogrenci}</h6>
+                      <small class="text-muted">${formatTurkishDate(d.tarih)}</small>
+                   </div>
+                   <div class="row g-2 mt-2 font-monospace small">
+                      <div class="col-12"><span class="fw-bold text-dark">Konu:</span> ${d.konu}</div>
+                      <div class="col-12"><span class="fw-bold text-dark">Ödev:</span> ${durumIcon(d.durum)} <span class="text-muted">${d.odev||''}</span></div>
+                      ${d.aciklama ? `<div class="col-12 text-secondary fst-italic">"${d.aciklama}"</div>` : ''}
+                   </div>
+                   <div class="d-flex justify-content-end mt-2 gap-2">
+                       <button class="btn btn-sm btn-outline-primary" onclick="haftalikGuncelleModalAc('${key}')">Düzenle</button>
+                       <button class="btn btn-sm btn-outline-danger" onclick="haftalikSil('${key}')">Sil</button>
+                   </div>
+                `;
+                liste.appendChild(item);
+            });
+            
+             // Pagination Controls
+            let html = '<nav><ul class="pagination justify-content-center pagination-sm">';
+            html += `<li class="page-item ${haftalikCurrentPage===1?'disabled':''}"><button class="page-link" onclick="if(haftalikCurrentPage>1){haftalikCurrentPage--; haftalikKayitlariListele();}">«</button></li>`;
+            html += `<li class="page-item disabled"><span class="page-link">${haftalikCurrentPage} / ${totalPages || 1}</span></li>`;
+            html += `<li class="page-item ${haftalikCurrentPage===totalPages?'disabled':''}"><button class="page-link" onclick="if(haftalikCurrentPage<${totalPages}){haftalikCurrentPage++; haftalikKayitlariListele();}">»</button></li>`;
+            html += '</ul></nav>';
+            pagination.innerHTML = html;
         });
-        // İlk açılışta tetikle
-        if(ogrenciler.length > 0) {
-            sel.selectedIndex = 0;
-            raporMesajiOlustur();
-        }
-      });
-      sel.onchange = raporMesajiOlustur;
+    }
+
+    // --- RAPORLAMA ---
+    function raporOgrenciSecDoldur(){
+         const sel = document.getElementById('raporOgrenciSec');
+         sel.innerHTML = '<option value="">Öğrenci Seçiniz</option>';
+         getOgrenciler(ogrenciler=>{
+             ogrenciler.forEach(o=>{
+                 const opt = document.createElement('option');
+                 opt.value = o.ad; opt.textContent = o.ad;
+                 sel.appendChild(opt);
+             });
+         });
     }
 
     function raporTipiDegisti(){
-      raporMesajiOlustur();
+        raporMesajiOlustur();
     }
     
-    // Mesaj Oluşturucu: Haftalık veya Aylık
+    // YENİ FORMATLI MESAJ OLUŞTURUCU
     function raporMesajiOlustur(){
-      const tip = document.getElementById('raporTipi').value; // haftalik, aylik
-      const ogrenci = document.getElementById('raporOgrenciSec').value;
-      const txt = document.getElementById('raporMesaj');
-
-      if(!ogrenci) { txt.value = ""; return; }
-
-      database.ref("haftalikDegerlendirme").once("value").then(snap => {
-        const val = snap.val() || {};
-        const entries = Object.values(val).filter(x => x.ogrenci === ogrenci);
-
-        // Tarihe göre sırala (eskiden yeniye)
-        entries.sort((a,b)=> new Date(a.tarih) - new Date(b.tarih));
-
-        if(entries.length === 0){
-          txt.value = `Sayın Velimiz,\n\n${ogrenci} öğrencimiz için henüz sisteme girilmiş bir ders kaydı bulunmamaktadır.`;
-          return;
-        }
-
-        // Filtreleme (Bu hafta veya Bu ay)
-        let raporVerisi = [];
-        const simdi = new Date();
+        const ogrenci = document.getElementById('raporOgrenciSec').value;
+        const tip = document.getElementById('raporTipi').value;
+        if(!ogrenci) { document.getElementById('raporMesaj').value = ''; return; }
         
-        if(tip === 'haftalik'){
-          // Son 7 gün (kabaca son girilen ders de olabilir, ama biz son kaydı alalım veya son 1 haftayı)
-          // Basitlik adına: Son girilen kaydı "Bu haftanın raporu" gibi sunalım.
-          // Veya son 7 güne ait tüm kayıtlar.
-          const birHaftaOnce = new Date();
-          birHaftaOnce.setDate(simdi.getDate() - 7);
-          
-          raporVerisi = entries.filter(e => new Date(e.tarih) >= birHaftaOnce);
-          // Eğer son hafta kayıt yoksa, en son kaydı gösterelim
-          if(raporVerisi.length === 0 && entries.length > 0){
-             raporVerisi = [entries[entries.length - 1]];
-          }
+        // Son kaydı bul
+        database.ref("haftalikDegerlendirme").once("value").then(snap=>{
+            const val = snap.val()||{};
+            const kayitlar = Object.values(val).filter(x=>x.ogrenci === ogrenci);
+            // Tarihe göre en yeni
+            kayitlar.sort((a,b)=> new Date(b.tarih) - new Date(a.tarih));
+            const sonKayit = kayitlar[0];
 
-        } else {
-          // Aylık: Mevcut ayın kayıtları
-          const buAy = simdi.getMonth();
-          const buYil = simdi.getFullYear();
-          raporVerisi = entries.filter(e => {
-            const d = new Date(e.tarih);
-            return d.getMonth() === buAy && d.getFullYear() === buYil;
-          });
-        }
+            let mesaj = `Sayın Velimiz,\n\n`;
+            mesaj += `Öğrencimiz *${ogrenci}* ile bu hafta yapılan çalışmaların özeti aşağıdadır:\n\n`;
 
-        // Metin Hazırlama
-        if(raporVerisi.length === 0){
-           txt.value = `Sayın Velimiz,\n\n${ogrenci} için seçilen dönemde kayıt bulunamadı.`;
-           return;
-        }
-
-        let mesaj = "";
-        
-        if(tip === 'haftalik'){
-           // Tekil veya az sayıda kayıt için detaylı format
-           const sonKayit = raporVerisi[raporVerisi.length - 1]; // En sonuncusu ana odak
-           
-           // Emoji seçimi
-           let durumEmoji = "👍";
-           if(sonKayit.durum === 'yapmadi') durumEmoji = "👎";
-           if(sonKayit.durum === 'eksik') durumEmoji = "⚠️";
-
-           mesaj += `Sayın Velimiz, iyi günler.\n`;
-           mesaj += `Öğrencimiz *${ogrenci}* ile bu hafta yapılan dersimizin değerlendirmesi şöyledir:\n\n`;
-           
-           mesaj += `📅 *Tarih:* ${formatTurkishDate(sonKayit.tarih)}\n`;
-           mesaj += `📚 *İşlenen Konu:* _${sonKayit.konu || 'Belirtilmedi'}_\n`;
-           mesaj += `📝 *Verilen Ödev:* ${sonKayit.odev || 'Yok'}\n`;
-           mesaj += `📊 *Ödev Durumu:* ${durumIconText(sonKayit.durum)} ${durumEmoji}\n`;
-           
-           if(sonKayit.gelKonu) mesaj += `🔜 *Gelecek Konu:* ${sonKayit.gelKonu}\n`;
-           if(sonKayit.gelOdev) mesaj += `📌 *Haftaya Ödev:* ${sonKayit.gelOdev}\n`;
-           if(sonKayit.gelTarih) mesaj += `⏰ *Teslim:* ${formatTurkishDate(sonKayit.gelTarih)}\n`;
-
-           // Motivasyon alanı
-           if(sonKayit.motivasyon){
-              mesaj += `\n🌟 *Ders Performansı:* ${sonKayit.motivasyon}/10\n`;
-           }
-           if(sonKayit.motivasyonAciklama){
-              mesaj += `💬 *Notumuz:* ${sonKayit.motivasyonAciklama}\n`;
-           }
-           
-           mesaj += `\nİlginiz için teşekkür ederiz.`;
-
-        } else {
-           // Aylık özet (Liste formatı)
-           mesaj += `Sayın Velimiz,\n`;
-           mesaj += `Öğrencimiz *${ogrenci}* için bu ayın ders özeti aşağıdadır:\n\n`;
-           
-           raporVerisi.forEach(k => {
-              mesaj += `🔹 *${formatTurkishDate(k.tarih)}* - ${k.konu || 'Konu Yok'}\n`;
-              mesaj += `   Durum: ${durumIconText(k.durum)}\n`;
-              if(k.motivasyon) mesaj += `   Puan: ${k.motivasyon}/10\n`;
-              mesaj += `------------------\n`;
-           });
-           
-           mesaj += `\nToplam ${raporVerisi.length} ders yapılmıştır.\nBaşarılar dileriz.`;
-        }
-
-        txt.value = mesaj;
-        // QR kod otomatik üretilsin
-        qrKodUret(mesaj);
-      });
+            if(sonKayit){
+                mesaj += `📚 *İşlenen Konu:* _${sonKayit.konu || 'Belirtilmedi'}_\n`;
+                mesaj += `📝 *Ödev Durumu:* ${sonKayit.durum === 'yapti' ? '✅ Ödevini eksiksiz yaptı.' : sonKayit.durum === 'eksik' ? '⚠️ Ödevi eksik.' : '❌ Ödevini yapmadı.'}\n`;
+                if(sonKayit.motivasyon) mesaj += `🌟 *Derse Katılım/Motivasyon:* ${sonKayit.motivasyon}/10\n`;
+                if(sonKayit.gelecekOdev) mesaj += `📅 *Gelecek Hafta Ödevi:* _${sonKayit.gelecekOdev}_\n`;
+                if(sonKayit.gelecekKonu) mesaj += `🔜 *Gelecek Hafta Konusu:* ${sonKayit.gelecekKonu}\n`;
+                if(sonKayit.aciklama) mesaj += `\n💬 *Öğretmen Notu:* _${sonKayit.aciklama}_\n`;
+            } else {
+                mesaj += "Henüz bu hafta için veri girişi yapılmamıştır.\n";
+            }
+            
+            mesaj += `\nİlginiz için teşekkür ederiz. 👋`;
+            document.getElementById('raporMesaj').value = mesaj;
+        });
     }
-
-    function durumIconText(durum){
-       switch((durum||'').toLowerCase()){
-         case 'yapti': return 'Yaptı';
-         case 'yapmadi': return 'Yapmadi';
-         case 'eksik': return 'Eksik';
-         case 'getirmedi': return 'Getirmedi';
-         default: return '-';
-       }
-    }
-
+    
     function whatsappMesajGonder(){
-      const msg = document.getElementById('raporMesaj').value;
-      if(!msg) return;
-      const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
+        const mesaj = document.getElementById('raporMesaj').value;
+        if(!mesaj) return;
+        const url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
+        window.open(url, '_blank');
     }
-
-    // QR Kod
-    let qrCodeObj = null;
-    function qrKodUret(metin){
-      const container = document.getElementById('qrModalCanvas'); // Modal içindeki alan
-      container.innerHTML = "";
-      if(!metin) return;
-      qrCodeObj = new QRCode(container, {
-        text: metin,
-        width: 200,
-        height: 200,
-        colorDark : "#000000",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.H
-      });
-    }
-
+    
     function qrKodModalAc(){
-       const msg = document.getElementById('raporMesaj').value;
-       if(!msg){ alert("Mesaj boş, rapor oluşturun."); return; }
-       qrKodUret(msg); // Emin olmak için tekrar üret
-       bsModal('qrModal').show();
+        const mesaj = document.getElementById('raporMesaj').value;
+        if(!mesaj) { alert("Önce mesaj oluşturun."); return; }
+        
+        const container = document.getElementById('qrModalCanvas');
+        container.innerHTML = '';
+        new QRCode(container, {
+            text: `https://wa.me/?text=${encodeURIComponent(mesaj)}`,
+            width: 200,
+            height: 200
+        });
+        bsModal('qrModal').show();
     }
     
     function raporFormYenile(){
-       document.getElementById('raporTipi').value = 'haftalik';
-       raporOgrenciSecDoldur();
+        document.getElementById('raporOgrenciSec').value = '';
+        document.getElementById('raporMesaj').value = '';
     }
-
-    // Başlangıç olayları
-    window.addEventListener('load', ()=>{
-      refreshAll(); 
-      // Otomatik yenilemeler
-      // database.ref("ogrenciler").on("value", ()=> refreshStudents());
-      
-      // Filtre olaylarını bağla
-      const odevFiltre = document.getElementById('odevFiltreOgrenci');
-      if(odevFiltre){
-         odevFiltre.addEventListener('change', ()=>{
-            odevCurrentPage = 1;
-            odevListele();
-         });
-      }
-      const haftalikFiltre = document.getElementById('haftalikFiltreOgrenci');
-      if(haftalikFiltre){
-         haftalikFiltre.addEventListener('change', ()=>{
-            haftalikCurrentPage = 1;
-            haftalikKayitlariListele();
-         });
-      }
-    });
   </script>
 </body>
 </html>
