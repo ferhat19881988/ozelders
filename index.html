@@ -179,6 +179,83 @@
     /* Küçük metinler */
     .small-muted{ font-size: .95rem; color: var(--muted); }
 
+    /* İçerikler tam görünsün (ödev / notlar) */
+    #odevListesi .small-muted,
+    #haftalikKayitListesi .small-muted,
+    .weekly-card .w-value{
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Haftalık kayıtlar için modern kart tasarımı */
+    .weekly-card{
+      position: relative;
+      background: rgba(255,255,255,.94);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 1.05rem 1.1rem;
+      overflow: hidden;
+      margin-bottom: .85rem;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .weekly-card:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 18px 44px rgba(15,23,42,.10);
+    }
+    .weekly-card::before{
+      content:"";
+      position:absolute;
+      inset:0 0 auto 0;
+      height: 5px;
+      background: linear-gradient(90deg, rgba(79,70,229,.95), rgba(99,102,241,.95));
+    }
+    .weekly-card-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: .75rem;
+      padding-top: .15rem;
+    }
+    .weekly-title{
+      font-weight: 700;
+      letter-spacing: .1px;
+      color: #0f172a;
+    }
+    .weekly-sub{
+      margin-top: .15rem;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+    .weekly-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap: .4rem;
+      margin-top: .7rem;
+    }
+    .weekly-grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: .7rem .9rem;
+      margin-top: .85rem;
+    }
+    @media (max-width: 768px){
+      .weekly-grid{ grid-template-columns: 1fr; }
+    }
+    .w-label{
+      font-size: .78rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: rgba(100,116,139,.95);
+      margin-bottom: .25rem;
+    }
+    .w-value{
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .weekly-actions .btn{ box-shadow: none; }
+
+
     /* Ayraç */
     hr{
       border-top: 1px solid var(--border);
@@ -295,8 +372,9 @@
                 <option>7. Sınıf</option><option>8. Sınıf</option>
               </select>
             </div>
-            <div class="col-12 d-flex gap-2">
+            <div class="col-12 d-flex flex-wrap gap-2">
               <button class="btn btn-primary" onclick="ogrenciEkle()"><i class="bi bi-plus-circle"></i> Öğrenci Ekle</button>
+              <button class="btn btn-outline-danger" onclick="tumOgrencileriSilVeSifirla()"><i class="bi bi-trash3"></i> Tüm Öğrencileri Sil</button>
               <button class="btn btn-outline-secondary" onclick="temizleInputlar()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
             </div>
           </div>
@@ -672,7 +750,35 @@
       });
     }
 
-    function ogrenciSil(id){
+    
+
+    // Tüm öğrencileri ve bağlı verileri (ödevler + haftalık değerlendirmeler) sıfırlar
+    function tumOgrencileriSilVeSifirla(){
+      const msg = "TÜM öğrenciler, ödevler ve haftalık değerlendirmeler kalıcı olarak silinecek. Devam etmek istiyor musunuz?";
+      if(!confirm(msg)) return;
+
+      const onay = prompt('Onay için büyük harflerle "SIL" yazın:');
+      if(onay !== "SIL"){
+        alert("İşlem iptal edildi.");
+        return;
+      }
+
+      Promise.all([
+        database.ref("ogrenciler").remove(),
+        database.ref("odevler").remove(),
+        database.ref("haftalikDegerlendirme").remove()
+      ]).then(()=>{
+        // sayfalama sıfırla
+        odevCurrentPage = 1;
+        haftalikCurrentPage = 1;
+        refreshAll();
+        alert("✅ Tüm veriler sıfırlandı.");
+      }).catch(()=>{
+        alert("❌ Veriler sıfırlanamadı. İnternet/Firebase bağlantısını kontrol edin.");
+      });
+    }
+
+function ogrenciSil(id){
       getOgrenciler(ogrenciler=>{
         const guncel = ogrenciler.filter(o=>o.id !== id);
         setOgrenciler(guncel).then(()=>{
@@ -1086,19 +1192,52 @@
         const pageEntries = filtered.slice(startIdx, endIdx);
         // Liste öğelerini oluştur
         pageEntries.forEach(([key, veri]) => {
-          const metin = `${veri.ogrenci || '???'} — ${formatTurkishDate(veri.tarih || veri.zaman) || '???'} — ${veri.konu || '???'}`;
-          const nextLine = veri.gelecekOdev ? `<div class="fw-bold mt-1">${veri.gelecekOdev}</div>` : '';
+          const ogr = veri.ogrenci || '???';
+          const tarihStr = formatTurkishDate(veri.tarih || veri.zaman) || '???';
+          const buHaftaKonu = (veri.konu || '').trim();
+          const gecenOdev = (veri.odev || '').trim();
+          const durumTxt = durumIcon(veri.durum);
+          const gelecekOdev = (veri.gelecekOdev || '').trim();
+          const gelecekKonu = (veri.gelecekKonu || '').trim();
+          const mot = parseInt(veri.motivasyon) || 0;
+          const motAcik = (veri.motivasyonAciklama || '').trim();
+
           const item = document.createElement('div');
-          item.className = 'list-group-item d-flex align-items-start';
+          item.className = 'weekly-card';
           item.innerHTML = `
-            <div class="me-2 flex-grow-1">
-              <div class="fw-medium">${metin}</div>
-              <div class="small-muted">${(veri.odev ? 'Ödev: ' + veri.odev + ' → ' : '') + durumIcon(veri.durum)}</div>
-              ${nextLine}
+            <div class="weekly-card-top">
+              <div class="flex-grow-1">
+                <div class="weekly-title">${ogr} <span class="small-muted">• ${tarihStr}</span></div>
+                <div class="weekly-sub">${buHaftaKonu ? buHaftaKonu : 'Bu hafta konusu girilmemiş.'}</div>
+                <div class="weekly-badges">
+                  <span class="badge rounded-pill text-bg-primary"><i class="bi bi-journal-text"></i> Ödev: ${gecenOdev ? gecenOdev : 'Yok'}</span>
+                  <span class="badge rounded-pill text-bg-secondary"><i class="bi bi-check2-circle"></i> Durum: ${durumTxt}</span>
+                  <span class="badge rounded-pill text-bg-dark"><i class="bi bi-emoji-smile"></i> Motivasyon: ${mot ? (mot + '/10') : 'Yok'}</span>
+                </div>
+              </div>
+              <div class="weekly-actions d-flex gap-2 flex-wrap">
+                <button class="btn btn-sm btn-outline-primary" onclick='haftalikKaydiGuncelle("${key}")'><i class="bi bi-pencil-square"></i></button>
+                <button class="btn btn-sm btn-outline-danger" onclick='haftalikKaydiSil("${key}")'><i class="bi bi-trash"></i></button>
+              </div>
             </div>
-            <div class="d-flex gap-2 flex-wrap">
-              <button class="btn btn-sm btn-outline-primary" onclick='haftalikKaydiGuncelle("${key}")'><i class="bi bi-pencil-square"></i></button>
-              <button class="btn btn-sm btn-outline-danger" onclick='haftalikKaydiSil("${key}")'><i class="bi bi-trash"></i></button>
+
+            <div class="weekly-grid">
+              <div>
+                <div class="w-label">Gelecek hafta ödevi</div>
+                <div class="w-value">${gelecekOdev ? gelecekOdev : 'Ödev yok'}</div>
+              </div>
+              <div>
+                <div class="w-label">Teslim tarihi</div>
+                <div class="w-value">${veri.tarih ? formatTurkishDate(veri.tarih) : 'Tarih yok'}</div>
+              </div>
+              <div>
+                <div class="w-label">Gelecek hafta konusu</div>
+                <div class="w-value">${gelecekKonu ? gelecekKonu : 'Konu yok'}</div>
+              </div>
+              <div>
+                <div class="w-label">Genel ders durumu</div>
+                <div class="w-value">${motAcik ? motAcik : 'Bilgi yok'}</div>
+              </div>
             </div>
           `;
           liste.appendChild(item);
