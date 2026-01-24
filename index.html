@@ -66,7 +66,7 @@
       letter-spacing: .2px;
     }
     .navbar-brand img{
-      height: 46px;
+      height: 36px;
       width: auto;
       object-fit: contain;
       border-radius: 12px;
@@ -219,24 +219,6 @@
     h2.h4{ font-size: 1.45rem; }
     h3.h5{ font-size: 1.15rem; }
 
-    /* Haftalık Değerlendirme modern paneller */
-    .soft-panel{
-      background: rgba(255,255,255,.78);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      padding: 1.15rem 1.2rem;
-    }
-    .preview-box{
-      border: 1px dashed rgba(15,23,42,.20);
-      background: rgba(246,248,255,.75);
-      border-radius: 14px;
-      padding: .78rem .88rem;
-      white-space: pre-wrap;
-      min-height: 64px;
-      color: #0f172a;
-    }
-
   </style>
 
   <script>
@@ -261,7 +243,7 @@
 <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
   <div class="container">
     <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="#">
-      <img src="https://i.ibb.co/F4cDX7MX/logom.jpg" alt="Logo" height="44" class="rounded" />
+      <img src="https://i.ibb.co/F4cDX7MX/logom.jpg" alt="Logo" height="32" class="rounded" />
       📘 Özel Ders Takip Sistemi
     </a>
   </div>
@@ -316,7 +298,6 @@
             <div class="col-12 d-flex gap-2">
               <button class="btn btn-primary" onclick="ogrenciEkle()"><i class="bi bi-plus-circle"></i> Öğrenci Ekle</button>
               <button class="btn btn-outline-secondary" onclick="temizleInputlar()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
-              <button class="btn btn-outline-danger ms-auto" type="button" onclick="tumOgrencileriSil()"><i class="bi bi-trash"></i> Tüm Öğrencileri Sil</button>
             </div>
           </div>
 
@@ -371,94 +352,57 @@
         <div class="app-card p-4 p-md-5">
           <h2 class="h4 mb-4">📅 Haftalık Değerlendirme</h2>
 
-          <div class="row g-4">
-            <div class="col-12 col-lg-6">
-              <div class="soft-panel h-100">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                  <h3 class="h5 mb-0">Bu Hafta</h3>
-                  <span class="badge rounded-pill text-bg-primary">Ders Girişi</span>
-                </div>
-
-                <div class="row g-3">
-                  <div class="col-12">
-                    <label class="form-label">Öğrenci</label>
-                    <select id="haftaOgrenci" class="form-select">
-                      <option value="">Öğrenci Seçin</option>
-                    </select>
-                  </div>
-
-                  <div class="col-12">
-                    <label class="form-label">Ödev</label>
-                    <select id="haftaOdev" class="form-select">
-                      <option value="">Ödev Seçin</option>
-                    </select>
-
-                    <div class="mt-2">
-                      <div class="small-muted mb-1">Seçilen Ödev (tam metin)</div>
-                      <div id="haftaOdevPreview" class="preview-box">Ödev seçiniz…</div>
-                    </div>
-                  </div>
-
-                  <div class="col-12">
-                    <label class="form-label">Ödev Durumu</label>
-                    <select id="odevDurumu" class="form-select">
-                      <option value="">Ödev Durumu</option>
-                      <option value="yapti">✅ Yaptı</option>
-                      <option value="yapmadi">❌ Yapmadı</option>
-                      <option value="eksik">⚠️ Eksik</option>
-                      <option value="getirmedi">📭 Getirmedi</option>
-                    </select>
-
-                    <div class="d-flex flex-wrap gap-2 mt-2">
-                      <button class="btn btn-sm btn-outline-success" type="button" onclick="setOdevDurumu('yapti')">✅ Yaptı</button>
-                      <button class="btn btn-sm btn-outline-danger" type="button" onclick="setOdevDurumu('yapmadi')">❌ Yapmadı</button>
-                      <button class="btn btn-sm btn-outline-warning" type="button" onclick="setOdevDurumu('eksik')">⚠️ Eksik</button>
-                      <button class="btn btn-sm btn-outline-secondary" type="button" onclick="setOdevDurumu('getirmedi')">📭 Getirmedi</button>
-                    </div>
-                  </div>
-
-                  <div class="col-12">
-                    <label class="form-label">Bu hafta işlenen konu</label>
-                    <textarea id="buHaftaKonu" class="form-control" rows="3" placeholder="Kısa ve net şekilde yazınız..."></textarea>
-                  </div>
-
-                  <div class="col-md-4">
-                    <label class="form-label">Motivasyon (1‑10)</label>
-                    <input type="number" id="haftaMotivasyon" class="form-control" min="1" max="10" />
-                  </div>
-                  <div class="col-md-8">
-                    <label class="form-label">Genel Ders Durumu</label>
-                    <textarea id="haftaMotivasyonAciklama" class="form-control" rows="2" placeholder="Dersin genel gidişatı, dikkat, katılım, eksikler..."></textarea>
-                  </div>
-                </div>
-              </div>
+          <div class="row g-3 form-row-gap">
+            <div class="col-md-4">
+              <label class="form-label">Öğrenci</label>
+              <select id="haftaOgrenci" class="form-select">
+                <option value="">Öğrenci Seçin</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Ödev</label>
+              <select id="haftaOdev" class="form-select">
+                <option value="">Ödev Seçin</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Ödev Durumu</label>
+              <select id="odevDurumu" class="form-select">
+                <option value="">Ödev Durumu</option>
+                <option value="yapti">✅ Yaptı</option>
+                <option value="yapmadi">❌ Yapmadı</option>
+                <option value="eksik">⚠️ Eksik</option>
+                <option value="getirmedi">📭 Getirmedi</option>
+              </select>
             </div>
 
-            <div class="col-12 col-lg-6">
-              <div class="soft-panel h-100">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                  <h3 class="h5 mb-0">Gelecek Hafta</h3>
-                  <span class="badge rounded-pill text-bg-success">Ödev Planı</span>
-                </div>
-
-                <div class="row g-3">
-                  <div class="col-12">
-                    <label class="form-label">Gelecek haftanın ödevi</label>
-                    <textarea id="gelecekHaftaOdev" class="form-control" rows="3" placeholder="Ödev metnini burada tam olarak yazınız..."></textarea>
-                  </div>
-
-                  <div class="col-md-6">
-                    <label class="form-label">Teslim Tarihi</label>
-                    <input type="date" id="gelecekTarih" class="form-control" />
-                  </div>
-
-                  <div class="col-md-6">
-                    <label class="form-label">Gelecek hafta konusu</label>
-                    <textarea id="gelecekHaftaKonu" class="form-control" rows="2" placeholder="Gelecek hafta işlenecek konu..."></textarea>
-                  </div>
-                </div>
-              </div>
+            <div class="col-12">
+              <label class="form-label">Bu hafta işlenen konu</label>
+              <textarea id="buHaftaKonu" class="form-control" rows="2"></textarea>
             </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Gelecek haftanın ödevi</label>
+              <textarea id="gelecekHaftaOdev" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Teslim Tarihi</label>
+              <input type="date" id="gelecekTarih" class="form-control" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Gelecek hafta konusu</label>
+              <textarea id="gelecekHaftaKonu" class="form-control" rows="1"></textarea>
+            </div>
+
+          <!-- Motivasyon ve Açıklama alanları -->
+          <div class="col-md-3">
+            <label class="form-label">Motivasyon (1‑10)</label>
+            <input type="number" id="haftaMotivasyon" class="form-control" min="1" max="10" />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Genel Ders Durumu</label>
+            <textarea id="haftaMotivasyonAciklama" class="form-control" rows="2"></textarea>
+          </div>
 
             <div class="col-12 d-flex flex-wrap gap-2">
               <button class="btn btn-primary" type="button" onclick="haftalikVeriyiEkle()"><i class="bi bi-plus-circle"></i> Ödevi Sisteme Ekle</button>
@@ -646,22 +590,6 @@
       }
     };
 
-
-    // Haftalık form yardımcıları
-    function setOdevDurumu(val){
-      const sel = document.getElementById('odevDurumu');
-      if (sel) sel.value = val || '';
-    }
-
-    function updateHaftaOdevPreview(){
-      const sel = document.getElementById('haftaOdev');
-      const box = document.getElementById('haftaOdevPreview');
-      if(!sel || !box) return;
-      const txt = (sel.value || '').trim();
-      box.textContent = txt ? txt : 'Ödev seçiniz…';
-    }
-
-
     // Tarih formatlama yardımcı fonksiyonu
     // Bu fonksiyon bir tarih stringini (YYYY-MM-DD veya ISO format) alır ve
     // gün.ay.yıl (01.11.2025) formatında geri döndürür. Geçersiz tarihler
@@ -752,24 +680,6 @@
         });
       });
     }
-
-
-    function tumOgrencileriSil(){
-      const mesaj = "Tüm öğrencileri silmek istediğinize emin misiniz?
-
-Not: Bu işlem sadece Öğrenci Listesi'ni temizler. Kayıtlı ödevler ve haftalık değerlendirmeler silinmez.";
-      if(!confirm(mesaj)) return;
-      setOgrenciler([]).then(()=>{
-        alert("✅ Tüm öğrenciler silindi.");
-        refreshStudents();
-        // Form ve seçim alanlarını temizle
-        temizleInputlar();
-        document.getElementById('odevOgrenci').value = '';
-        document.getElementById('haftaOgrenci').value = '';
-        document.getElementById('raporOgrenciSec').value = '';
-      }).catch(()=> alert("❌ Öğrenciler silinemedi."));
-    }
-
 
     function ogrenciGuncelleAc(id){
       getOgrenciler(ogrenciler=>{
@@ -1080,39 +990,8 @@ Not: Bu işlem sadece Öğrenci Listesi'ni temizler. Kayıtlı ödevler ve hafta
           opt.textContent = `${tarihStr} - ${o.konu || o.icerik}`;
           sel.appendChild(opt);
         });
-        updateHaftaOdevPreview();
       });
     });
-
-    function haftalikFormYenile(){
-      // Haftalık form alanlarını temizle
-      const haftaOgrenci = document.getElementById('haftaOgrenci');
-      const haftaOdev = document.getElementById('haftaOdev');
-      if (haftaOgrenci) haftaOgrenci.value = '';
-      if (haftaOdev) haftaOdev.innerHTML = '<option value="">Ödev Seçin</option>';
-
-      const durum = document.getElementById('odevDurumu');
-      if (durum) durum.value = '';
-      const konu = document.getElementById('buHaftaKonu');
-      if (konu) konu.value = '';
-
-      const gelecekOdev = document.getElementById('gelecekHaftaOdev');
-      if (gelecekOdev) gelecekOdev.value = '';
-      const gelecekTarih = document.getElementById('gelecekTarih');
-      if (gelecekTarih) gelecekTarih.value = '';
-      const gelecekKonu = document.getElementById('gelecekHaftaKonu');
-      if (gelecekKonu) gelecekKonu.value = '';
-
-      const mot = document.getElementById('haftaMotivasyon');
-      if (mot) mot.value = '';
-      const motAcik = document.getElementById('haftaMotivasyonAciklama');
-      if (motAcik) motAcik.value = '';
-
-      const mesaj = document.getElementById('haftaDurumMesaji');
-      if (mesaj) mesaj.innerText = '';
-
-      updateHaftaOdevPreview();
-    }
 
     function haftalikVeriyiEkle(){
       const ogrenci = document.getElementById('haftaOgrenci').value;
@@ -1514,12 +1393,6 @@ Saygılarımızla, bilginize.`;
       // Rapor alanı tetikleyicileri
       document.getElementById('raporTipi').addEventListener('change', raporMesajiOlustur);
       document.getElementById('raporOgrenciSec').addEventListener('change', raporMesajiOlustur);
-      // Haftalık ödev seçimi tam metin önizleme
-      const haftaOdevSel = document.getElementById('haftaOdev');
-      if (haftaOdevSel) {
-        haftaOdevSel.addEventListener('change', updateHaftaOdevPreview);
-      }
-      updateHaftaOdevPreview();
       // Haftalıkta öğrenci değişince ödev seçeneklerini dolduruyoruz (yukarıda eklendi)
       // Filtre select değişince listeleri yeniden oluştur
       const odevFiltreSelect = document.getElementById('odevFiltreOgrenci');
