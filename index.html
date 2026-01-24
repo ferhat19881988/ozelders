@@ -234,6 +234,11 @@
       display: inline-block;
     }
 
+    /* Küçültülmüş 'Ödev' etiketi */
+    .odev-label{
+      font-size: 0.9rem;
+    }
+
   </style>
 
   <script>
@@ -314,7 +319,7 @@
               <button class="btn btn-primary" onclick="ogrenciEkle()"><i class="bi bi-plus-circle"></i> Öğrenci Ekle</button>
               <button class="btn btn-outline-secondary" onclick="temizleInputlar()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
               <!-- Kullanıcı talebi: tüm öğrencileri ve ilişkili verileri silme butonu. İki aşamalı onay gerektirir. -->
-              <button class="btn btn-outline-danger ms-auto" onclick="tumOgrencileriSil()"><i class="bi bi-trash"></i> Tüm Öğrencileri Sil</button>
+              <button class="btn btn-outline-danger" onclick="tumOgrencileriSil()"><i class="bi bi-trash"></i> Tüm Öğrencileri Sil</button>
             </div>
           </div>
 
@@ -376,12 +381,15 @@
                 <option value="">Öğrenci Seçin</option>
               </select>
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Ödev</label>
+            <!-- Adjusted column width for Ödev to be wider -->
+            <div class="col-md-8">
+              <!-- Smaller label for Ödev field -->
+              <label class="form-label odev-label">Ödev</label>
               <select id="haftaOdev" class="form-select">
                 <option value="">Ödev Seçin</option>
               </select>
             </div>
+            <!-- Keep the following field on its own row -->
             <div class="col-md-4">
               <label class="form-label">Ödev Durumu</label>
               <select id="odevDurumu" class="form-select">
@@ -424,7 +432,7 @@
             <div class="col-12 d-flex flex-wrap gap-2">
               <button class="btn btn-primary" type="button" onclick="haftalikVeriyiEkle()"><i class="bi bi-plus-circle"></i> Ödevi Sisteme Ekle</button>
               <button class="btn btn-outline-secondary" onclick="haftalikFormYenile()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
-              <button class="btn btn-outline-danger ms-auto" type="button" onclick="tumHaftalikKayitlariSil()"><i class="bi bi-trash"></i> Tüm Kayıtları Sil</button>
+              <button class="btn btn-outline-danger" type="button" onclick="tumHaftalikKayitlariSil()"><i class="bi bi-trash"></i> Tüm Kayıtları Sil</button>
             </div>
           </div>
 
