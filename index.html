@@ -389,7 +389,7 @@
     let guncellenecekOdevKey = null;       // Ödev güncelle
     let guncellenecekHaftaKey = null;      // Haftalık kayıt güncelle
 
-    const bsModal = (id) => new bootstrap.Modal(document.getElementById(id));
+    const bsModal = (id) => bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
 
     const durumIcon = (durum) => {
       switch ((durum || '').toLowerCase()) {
