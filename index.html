@@ -219,6 +219,21 @@
     h2.h4{ font-size: 1.45rem; }
     h3.h5{ font-size: 1.15rem; }
 
+    /* Özel Ders Takip Sistemi Güncelleme – Ödev select menüsünde uzun metinlerin okunabilmesi için satır kaydırma sağlanır */
+    #haftaOdev option{
+      white-space: normal;
+    }
+
+    /* Haftalık kayıt listesinde gelecek hafta ödevini vurgulamak için özel bir rozet stili */
+    .gelecek-odev-highlight{
+      background: linear-gradient(135deg, #fce38a, #f38181);
+      color: #7f1d1d;
+      font-weight: 600;
+      padding: .4rem .7rem;
+      border-radius: var(--radius-sm);
+      display: inline-block;
+    }
+
   </style>
 
   <script>
@@ -295,9 +310,11 @@
                 <option>7. Sınıf</option><option>8. Sınıf</option>
               </select>
             </div>
-            <div class="col-12 d-flex gap-2">
+            <div class="col-12 d-flex flex-wrap gap-2">
               <button class="btn btn-primary" onclick="ogrenciEkle()"><i class="bi bi-plus-circle"></i> Öğrenci Ekle</button>
               <button class="btn btn-outline-secondary" onclick="temizleInputlar()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
+              <!-- Kullanıcı talebi: tüm öğrencileri ve ilişkili verileri silme butonu. İki aşamalı onay gerektirir. -->
+              <button class="btn btn-outline-danger ms-auto" onclick="tumOgrencileriSil()"><i class="bi bi-trash"></i> Tüm Öğrencileri Sil</button>
             </div>
           </div>
 
@@ -359,7 +376,7 @@
                 <option value="">Öğrenci Seçin</option>
               </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
               <label class="form-label">Ödev</label>
               <select id="haftaOdev" class="form-select">
                 <option value="">Ödev Seçin</option>
@@ -1087,7 +1104,8 @@
         // Liste öğelerini oluştur
         pageEntries.forEach(([key, veri]) => {
           const metin = `${veri.ogrenci || '???'} — ${formatTurkishDate(veri.tarih || veri.zaman) || '???'} — ${veri.konu || '???'}`;
-          const nextLine = veri.gelecekOdev ? `<div class="fw-bold mt-1">${veri.gelecekOdev}</div>` : '';
+        // Gelecek hafta ödevi kullanıcı isteğine göre dikkat çekici görünmelidir.
+        const nextLine = veri.gelecekOdev ? `<div class="gelecek-odev-highlight mt-1">📌 ${veri.gelecekOdev}</div>` : '';
           const item = document.createElement('div');
           item.className = 'list-group-item d-flex align-items-start';
           item.innerHTML = `
@@ -1235,6 +1253,39 @@
         refreshWeekly(); // önemli
         alert("✅ Tüm haftalık kayıtlar silindi.");
       }).catch(()=> alert("❌ Kayıtlar silinemedi."));
+    }
+
+    /**
+     * Tüm öğrencileri ve ilişkili verileri (ödevler, haftalık değerlendirmeler) sıfırlar.
+     *
+     * Bu fonksiyon iki aşamalı güvenlik kontrolü uygular: İlk olarak kullanıcıya işlem
+     * hakkında genel bir onay sorar; ikinci olarak ise kullanıcıdan "HEPSİNİ SİL" ibaresini
+     * girerek işlemi onaylaması istenir. Bu metin doğru olarak girilmediği takdirde
+     * silme işlemi iptal edilir.
+     */
+    function tumOgrencileriSil(){
+      // Birinci onay: Kullanıcı tüm öğrencileri ve bağlı verileri silmek istediğine emin mi?
+      if(!confirm("Tüm öğrencileri ve ilişkili verileri (ödevler ve haftalık değerlendirmeler dahil) silmek istediğinize emin misiniz?")) return;
+      // İkinci onay: Kullanıcıdan belirli bir kelime yazarak işlem için son onay alınır
+      const onay = prompt('Lütfen silme işlemini onaylamak için "HEPSİNİ SİL" yazınız:');
+      // Girilen değer boşsa veya beklenen ifadelerden farklıysa işlemi iptal et
+      if(!onay || (onay.trim() !== 'HEPSİNİ SİL' && onay.trim() !== 'HEPSINI SIL')){
+        alert('Silme işlemi iptal edildi.');
+        return;
+      }
+      // Silme: Öğrenciler tablosu temizlendikten sonra ödevler ve haftalık değerlendirmeler de temizlenir
+      database.ref("ogrenciler").remove().then(() => {
+        return Promise.all([
+          database.ref("odevler").remove(),
+          database.ref("haftalikDegerlendirme").remove()
+        ]);
+      }).then(() => {
+        // Tüm listeleri ve arayüzü tazele
+        refreshAll();
+        alert('✅ Tüm öğrenciler ve ilişkili veriler silindi.');
+      }).catch(() => {
+        alert('❌ Silme işlemi sırasında hata oluştu.');
+      });
     }
 
     /************ RAPOR ************/
