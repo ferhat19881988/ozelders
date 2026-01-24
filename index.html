@@ -16,20 +16,142 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
-    body { background: #f5f7fb; }
-    .app-card { background:#fff; border-radius:1rem; box-shadow:0 10px 30px rgba(15,23,42,.06); }
-    .sticky-tabs { position: sticky; top: 0; z-index: 1020; background: #f5f7fb; padding-top: .5rem; }
-    .list-fit .list-group-item { display:flex; align-items:center; justify-content:space-between; gap: .5rem; }
-    .qr-center { display:flex; align-items:center; justify-content:center; min-height:240px; }
-    .small-muted { font-size:.9rem; color:#6c757d; }
-    .form-row-gap { row-gap: .75rem; }
-    textarea { resize: vertical; }
+    :root {
+      --primary-color: #4f46e5; /* İndigo */
+      --primary-hover: #4338ca;
+      --bg-color: #f3f4f6;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border-radius: 1rem;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      background: var(--bg-color);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+    }
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--primary-color) !important;
+      letter-spacing: -0.025em;
+    }
     .navbar-brand img {
-  height: 32px;
-  width: auto;
-  object-fit: contain;
-}
+      height: 36px;
+      width: auto;
+      border-radius: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Sticky Tabs */
+    .sticky-tabs {
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+      background: rgba(243, 244, 246, 0.95);
+      backdrop-filter: blur(8px);
+      padding-top: 1rem;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .nav-pills .nav-link {
+      color: var(--text-muted);
+      font-weight: 500;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.75rem;
+      transition: all 0.2s ease;
+    }
+    .nav-pills .nav-link:hover {
+      background-color: #e5e7eb;
+      color: var(--text-main);
+    }
+    .nav-pills .nav-link.active {
+      background-color: var(--primary-color);
+      color: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-pills .nav-link i { margin-right: 0.5rem; }
+
+    /* Kartlar ve Formlar */
+    .app-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255,255,255,0.5);
+      transition: transform 0.2s;
+    }
+    
+    h2.h4 { font-weight: 600; color: #111827; letter-spacing: -0.01em; }
+    h3.h5, h3.h6 { font-weight: 600; color: #374151; }
+
+    .form-control, .form-select {
+      border-radius: 0.75rem;
+      border: 1px solid #d1d5db;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Listeler */
+    .list-group-item {
+      border: none;
+      background: #f9fafb;
+      margin-bottom: 0.5rem;
+      border-radius: 0.75rem !important;
+      padding: 1rem;
+      transition: background 0.2s;
+    }
+    .list-group-item:hover { background: #f3f4f6; }
+    .list-fit .list-group-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+    }
+
+    .form-row-gap { row-gap: 1rem; }
+    .qr-center {
+      background: #f9fafb;
+      border-radius: 1rem;
+      padding: 2rem;
+      border: 2px dashed #e5e7eb;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 240px;
+    }
+    textarea { resize: vertical; }
   </style>
 
   <script>
@@ -50,335 +172,382 @@
 </head>
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
+<nav class="navbar navbar-expand-lg sticky-top shadow-sm">
   <div class="container">
-    <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="#">
-      <img src="https://i.ibb.co/F4cDX7MX/logom.jpg" alt="Logo" height="32" class="rounded" />
-      📘 Özel Ders Takip Sistemi
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <img src="https://i.ibb.co/F4cDX7MX/logom.jpg" alt="Logo" />
+      <span>Özel Ders Takip</span>
     </a>
   </div>
 </nav>
 
-
-  <!-- Sekmeler -->
-  <div class="sticky-tabs border-bottom">
-    <div class="container">
-      <ul class="nav nav-pills my-3" id="mainTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="tab-ogrenci" data-bs-toggle="pill" data-bs-target="#pnl-ogrenci" type="button" role="tab">
-            <i class="bi bi-person"></i> Öğrenci Kaydı
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-haftalik" data-bs-toggle="pill" data-bs-target="#pnl-haftalik" type="button" role="tab">
-            <i class="bi bi-calendar-week"></i> Haftalık Değerlendirme
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-rapor" data-bs-toggle="pill" data-bs-target="#pnl-rapor" type="button" role="tab">
-            <i class="bi bi-whatsapp"></i> WhatsApp Rapor
-          </button>
-        </li>
-      </ul>
-    </div>
+<div class="sticky-tabs">
+  <div class="container">
+    <ul class="nav nav-pills justify-content-center justify-content-md-start" id="mainTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-ogrenci" data-bs-toggle="pill" data-bs-target="#pnl-ogrenci" type="button" role="tab">
+          <i class="bi bi-person-plus-fill"></i> Öğrenci İşlemleri
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-haftalik" data-bs-toggle="pill" data-bs-target="#pnl-haftalik" type="button" role="tab">
+          <i class="bi bi-calendar-check-fill"></i> Haftalık Takip
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-rapor" data-bs-toggle="pill" data-bs-target="#pnl-rapor" type="button" role="tab">
+          <i class="bi bi-whatsapp"></i> Rapor Oluştur
+        </button>
+      </li>
+    </ul>
   </div>
+</div>
 
-  <!-- İçerik -->
-  <div class="container my-4">
-    <div class="tab-content">
+<div class="container my-4">
+  <div class="tab-content">
 
-      <!-- ÖĞRENCİ KAYIT -->
-      <div class="tab-pane fade show active" id="pnl-ogrenci" role="tabpanel" aria-labelledby="tab-ogrenci">
-        <div class="app-card p-4 p-md-5">
-          <h2 class="h4 mb-4">👤 Öğrenci Kaydı</h2>
-
-          <div class="row g-3 form-row-gap">
-            <div class="col-md-6">
-              <label class="form-label">Öğrenci Adı</label>
-              <input type="text" id="ogrenciAd" class="form-control" placeholder="Örn: Ayşe Yılmaz" />
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Sınıf</label>
-              <select id="ogrenciSinif" class="form-select">
-                <option value="">Sınıf Seçiniz</option>
-                <option>5. Sınıf</option><option>6. Sınıf</option>
-                <option>7. Sınıf</option><option>8. Sınıf</option>
-              </select>
-            </div>
-            <div class="col-12 d-flex gap-2">
-              <button class="btn btn-primary" onclick="ogrenciEkle()"><i class="bi bi-plus-circle"></i> Öğrenci Ekle</button>
-              <button class="btn btn-outline-secondary" onclick="temizleInputlar()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
-            </div>
-          </div>
-
-          <hr class="my-4" />
-
-          <h3 class="h5 mb-3">📋 Öğrenci Listesi</h3>
-          <div class="list-group list-fit" id="ogrenciListesi"></div>
-
-          <hr class="my-4" />
-
-          <h3 class="h5 mb-3">📘 Ödev Ekle</h3>
-          <div class="row g-3 form-row-gap">
-            <div class="col-md-4">
-              <label class="form-label">Öğrenci</label>
-              <select id="odevOgrenci" class="form-select">
-                <option value="">Öğrenci Seçiniz</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Tarih</label>
-              <input type="date" id="odevTarih" class="form-control"/>
-            </div>
-            <div class="col-12">
-              <label class="form-label">Ödev İçeriği</label>
-              <textarea id="odevIcerik" class="form-control" rows="3" placeholder="Örn: Sayfa 45-47 problemler..."></textarea>
-            </div>
-            <div class="col-12 d-flex flex-wrap gap-2">
-              <button class="btn btn-success" onclick="odevEkle()"><i class="bi bi-plus-circle"></i> Ödev Ekle</button>
-              <button class="btn btn-outline-secondary" onclick="odevFormTemizle()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
-              <button class="btn btn-outline-danger" onclick="tumOdevleriSil()"><i class="bi bi-trash"></i> Tüm Ödevleri Sil</button>
-            </div>
-          </div>
-
-          <div class="mt-4">
-            <h3 class="h6 text-uppercase text-muted">Kayıtlı Ödevler</h3>
-            <!-- Öğrenci filtreleme alanı -->
-            <div class="row g-2 mb-3">
-              <div class="col-md-4">
-                <label class="form-label">Öğrenci Filtrele</label>
-                <select id="odevFiltreOgrenci" class="form-select">
-                  <option value="">Tümü</option>
-                </select>
-              </div>
-            </div>
-            <div id="odevListesi" class="list-group list-fit"></div>
-          </div>
+    <div class="tab-pane fade show active" id="pnl-ogrenci" role="tabpanel">
+      <div class="app-card p-4 p-md-5 mb-4">
+        <div class="d-flex align-items-center mb-4 gap-2">
+          <div class="bg-primary bg-opacity-10 p-2 rounded-circle text-primary"><i class="bi bi-person-fill fs-4"></i></div>
+          <h2 class="h4 mb-0">Öğrenci Kaydı</h2>
         </div>
-      </div>
 
-      <!-- HAFTALIK DEĞERLENDİRME -->
-      <div class="tab-pane fade" id="pnl-haftalik" role="tabpanel" aria-labelledby="tab-haftalik">
-        <div class="app-card p-4 p-md-5">
-          <h2 class="h4 mb-4">📅 Haftalık Değerlendirme</h2>
-
-          <div class="row g-3 form-row-gap">
-            <div class="col-md-4">
-              <label class="form-label">Öğrenci</label>
-              <select id="haftaOgrenci" class="form-select">
-                <option value="">Öğrenci Seçin</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Ödev</label>
-              <select id="haftaOdev" class="form-select">
-                <option value="">Ödev Seçin</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Ödev Durumu</label>
-              <select id="odevDurumu" class="form-select">
-                <option value="">Ödev Durumu</option>
-                <option value="yapti">✅ Yaptı</option>
-                <option value="yapmadi">❌ Yapmadı</option>
-                <option value="eksik">⚠️ Eksik</option>
-                <option value="getirmedi">📭 Getirmedi</option>
-              </select>
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">Bu hafta işlenen konu</label>
-              <textarea id="buHaftaKonu" class="form-control" rows="2"></textarea>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Gelecek haftanın ödevi</label>
-              <textarea id="gelecekHaftaOdev" class="form-control" rows="2"></textarea>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Teslim Tarihi</label>
-              <input type="date" id="gelecekTarih" class="form-control" />
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Gelecek hafta konusu</label>
-              <textarea id="gelecekHaftaKonu" class="form-control" rows="1"></textarea>
-            </div>
-
-          <!-- Motivasyon ve Açıklama alanları -->
-          <div class="col-md-3">
-            <label class="form-label">Motivasyon (1‑10)</label>
-            <input type="number" id="haftaMotivasyon" class="form-control" min="1" max="10" />
+        <div class="row g-3 form-row-gap">
+          <div class="col-md-6">
+            <label class="form-label text-muted small fw-bold">ÖĞRENCİ ADI SOYADI</label>
+            <input type="text" id="ogrenciAd" class="form-control" placeholder="Ad Soyad giriniz..." />
           </div>
-          <div class="col-12">
-            <label class="form-label">Genel Ders Durumu</label>
-            <textarea id="haftaMotivasyonAciklama" class="form-control" rows="2"></textarea>
-          </div>
-
-            <div class="col-12 d-flex flex-wrap gap-2">
-              <button class="btn btn-primary" type="button" onclick="haftalikVeriyiEkle()"><i class="bi bi-plus-circle"></i> Ödevi Sisteme Ekle</button>
-              <button class="btn btn-outline-secondary" onclick="haftalikFormYenile()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
-              <button class="btn btn-outline-danger ms-auto" type="button" onclick="tumHaftalikKayitlariSil()"><i class="bi bi-trash"></i> Tüm Kayıtları Sil</button>
-            </div>
-          </div>
-
-          <hr class="my-4" />
-
-          <h3 class="h5 mb-3">📋 Kayıtlı Haftalık Değerlendirmeler</h3>
-          <!-- Haftalık değerlendirme için öğrenci filtreleme -->
-          <div class="row g-2 mb-3">
-            <div class="col-md-4">
-              <label class="form-label">Öğrenci Filtrele</label>
-              <select id="haftalikFiltreOgrenci" class="form-select">
-                <option value="">Tümü</option>
-              </select>
-            </div>
-          </div>
-          <div id="haftalikKayitListesi" class="list-group list-fit"></div>
-          <!-- Filtre uygulandığında toplam ders sayısını göstermek için özet alanı -->
-          <div id="haftalikOzet" class="mt-2 small-muted"></div>
-          <p id="haftaDurumMesaji" class="mt-3 small-muted"></p>
-        </div>
-      </div>
-
-      <!-- WHATSAPP RAPOR -->
-      <div class="tab-pane fade" id="pnl-rapor" role="tabpanel" aria-labelledby="tab-rapor">
-        <div class="app-card p-4 p-md-5">
-          <h2 class="h4 mb-4">📤 WhatsApp Raporları</h2>
-
-          <div class="row g-3 form-row-gap">
-            <div class="col-md-4">
-              <label class="form-label">Rapor Türü</label>
-              <select id="raporTipi" class="form-select" onchange="raporTipiDegisti()">
-                <option value="haftalik">📅 Haftalık Rapor</option>
-                <option value="aylik">📆 Aylık Rapor</option>
-              </select>
-            </div>
-            <div class="col-md-8">
-              <label class="form-label">Öğrenci Seç</label>
-              <select id="raporOgrenciSec" class="form-select"></select>
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">Oluşturulan Mesaj</label>
-              <textarea id="raporMesaj" rows="10" class="form-control"></textarea>
-            </div>
-
-            <div class="col-12 d-flex flex-wrap gap-2">
-              <button class="btn btn-success" onclick="whatsappMesajGonder()"><i class="bi bi-send"></i> Gönder</button>
-              <button class="btn btn-outline-secondary" onclick="raporFormYenile()"><i class="bi bi-arrow-clockwise"></i> Yenile</button>
-              <button class="btn btn-outline-dark" onclick="qrKodModalAc()"><i class="bi bi-qr-code"></i> QR Kod ile Göster</button>
-            </div>
-          </div>
-          <div id="qrCanvasContainer" class="qr-center mt-3"></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- MODALS -->
-
-  <!-- Öğrenci Güncelle Modal -->
-  <div class="modal fade" id="ogrenciGuncelleModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">✏️ Öğrenci Güncelle</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Ad</label>
-            <input type="text" id="guncelleAd" class="form-control"/>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Sınıf</label>
-            <select id="guncelleSinif" class="form-select">
-              <option value="">Sınıf Seçiniz</option>
+          <div class="col-md-6">
+            <label class="form-label text-muted small fw-bold">SINIF SEVİYESİ</label>
+            <select id="ogrenciSinif" class="form-select">
+              <option value="">Seçiniz...</option>
               <option>5. Sınıf</option><option>6. Sınıf</option>
               <option>7. Sınıf</option><option>8. Sınıf</option>
+              <option>9. Sınıf</option><option>10. Sınıf</option>
+              <option>11. Sınıf</option><option>12. Sınıf</option>
+              <option>Mezun</option>
             </select>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
-          <button class="btn btn-primary" onclick="ogrenciGuncelleKaydet()"><i class="bi bi-save"></i> Kaydet</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Ödev Güncelle Modal -->
-  <div class="modal fade" id="odevGuncelleModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">✏️ Ödev Güncelle</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Tarih</label>
-            <input type="date" id="guncelleOdevTarih" class="form-control"/>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">İçerik</label>
-            <textarea id="guncelleOdevIcerik" rows="4" class="form-control"></textarea>
+          <div class="col-12 d-flex gap-2 mt-4">
+            <button class="btn btn-primary px-4" onclick="ogrenciEkle()">
+              <i class="bi bi-plus-lg me-1"></i> Kaydet
+            </button>
+            <button class="btn btn-light text-muted border" onclick="temizleInputlar()">
+              <i class="bi bi-arrow-clockwise me-1"></i> Temizle
+            </button>
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
-          <button class="btn btn-primary" onclick="odevGuncelleKaydet()"><i class="bi bi-save"></i> Kaydet</button>
+
+        <div class="my-5 border-top pt-4">
+          <h3 class="h6 text-muted text-uppercase mb-3 fw-bold">📋 Öğrenci Listesi</h3>
+          <div class="list-group list-fit" id="ogrenciListesi"></div>
+        </div>
+
+        <div class="bg-light p-4 rounded-3 border">
+          <h3 class="h5 mb-3 text-primary"><i class="bi bi-journal-bookmark-fill me-2"></i>Hızlı Ödev Girişi</h3>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label small">Öğrenci</label>
+              <select id="odevOgrenci" class="form-select bg-white">
+                <option value="">Seçiniz</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">Tarih</label>
+              <input type="date" id="odevTarih" class="form-control bg-white"/>
+            </div>
+            <div class="col-12">
+              <label class="form-label small">Ödev İçeriği</label>
+              <textarea id="odevIcerik" class="form-control bg-white" rows="2" placeholder="Örn: Matematik test 4 çözülecek..."></textarea>
+            </div>
+            <div class="col-12 d-flex flex-wrap gap-2">
+              <button class="btn btn-success text-white" onclick="odevEkle()"><i class="bi bi-check-lg"></i> Ödev Ekle</button>
+              <button class="btn btn-outline-danger btn-sm ms-auto" onclick="tumOdevleriSil()"><i class="bi bi-trash"></i> Tümünü Sil</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <div class="d-flex justify-content-between align-items-end mb-2">
+             <h3 class="h6 text-uppercase text-muted fw-bold mb-0">Son Kayıtlı Ödevler</h3>
+             <div class="w-25">
+               <select id="odevFiltreOgrenci" class="form-select form-select-sm">
+                  <option value="">Tümünü Göster</option>
+               </select>
+             </div>
+          </div>
+          <div id="odevListesi" class="list-group list-fit shadow-sm"></div>
         </div>
       </div>
     </div>
+
+    <div class="tab-pane fade" id="pnl-haftalik" role="tabpanel">
+      <div class="app-card p-4 p-md-5">
+        <div class="d-flex align-items-center mb-4 gap-2">
+          <div class="bg-warning bg-opacity-10 p-2 rounded-circle text-warning"><i class="bi bi-calendar3 fs-4"></i></div>
+          <h2 class="h4 mb-0">Haftalık Değerlendirme</h2>
+        </div>
+
+        <div class="row g-3 form-row-gap">
+          <div class="col-md-4">
+            <label class="form-label text-muted small fw-bold">ÖĞRENCİ</label>
+            <select id="haftaOgrenci" class="form-select shadow-none">
+              <option value="">Seçiniz</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-muted small fw-bold">İLGİLİ ÖDEV</label>
+            <select id="haftaOdev" class="form-select shadow-none">
+              <option value="">Seçiniz</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-muted small fw-bold">DURUM</label>
+            <select id="odevDurumu" class="form-select shadow-none">
+              <option value="">Seçiniz</option>
+              <option value="yapti">✅ Tamamladı</option>
+              <option value="yapmadi">❌ Yapmadı</option>
+              <option value="eksik">⚠️ Eksik</option>
+              <option value="getirmedi">📭 Getirmedi</option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label text-muted small">Bu Hafta İşlenen Konu</label>
+            <textarea id="buHaftaKonu" class="form-control" rows="2"></textarea>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label text-muted small">Gelecek Haftanın Ödevi</label>
+            <textarea id="gelecekHaftaOdev" class="form-control" rows="2"></textarea>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted small">Teslim Tarihi</label>
+            <input type="date" id="gelecekTarih" class="form-control" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-muted small">Gelecek Hafta Konusu</label>
+            <textarea id="gelecekHaftaKonu" class="form-control" rows="2"></textarea>
+          </div>
+
+          <div class="p-3 bg-light rounded-3 border mt-3">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label fw-bold small text-primary">Motivasyon (1-10)</label>
+                <input type="number" id="haftaMotivasyon" class="form-control text-center fw-bold text-primary" min="1" max="10" />
+              </div>
+              <div class="col-md-9">
+                <label class="form-label fw-bold small text-primary">Genel Ders Değerlendirmesi</label>
+                <textarea id="haftaMotivasyonAciklama" class="form-control" rows="1"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 d-flex flex-wrap gap-2 mt-3">
+            <button class="btn btn-primary flex-grow-1 flex-md-grow-0" type="button" onclick="haftalikVeriyiEkle()">
+              <i class="bi bi-save2 me-1"></i> Kaydı Tamamla
+            </button>
+            <button class="btn btn-outline-secondary" onclick="haftalikFormYenile()">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+            <button class="btn btn-outline-danger ms-auto" type="button" onclick="tumHaftalikKayitlariSil()">
+              <i class="bi bi-trash"></i> Sil
+            </button>
+          </div>
+        </div>
+
+        <hr class="my-5 opacity-10" />
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="h5 mb-0 fw-bold">📋 Geçmiş Değerlendirmeler</h3>
+          <select id="haftalikFiltreOgrenci" class="form-select form-select-sm w-auto">
+            <option value="">Tüm Öğrenciler</option>
+          </select>
+        </div>
+        
+        <div id="haftalikKayitListesi" class="list-group list-fit shadow-sm"></div>
+        <div id="haftalikOzet" class="mt-2 text-end small fw-bold text-primary"></div>
+        <p id="haftaDurumMesaji" class="mt-2 small text-muted text-center"></p>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="pnl-rapor" role="tabpanel">
+      <div class="app-card p-4 p-md-5 text-center">
+        <div class="d-inline-block bg-success bg-opacity-10 p-3 rounded-circle text-success mb-3">
+          <i class="bi bi-whatsapp fs-1"></i>
+        </div>
+        <h2 class="h3 mb-4">WhatsApp Rapor Oluşturucu</h2>
+
+        <div class="row g-3 justify-content-center text-start">
+          <div class="col-md-5">
+            <label class="form-label fw-bold small">RAPOR TÜRÜ</label>
+            <select id="raporTipi" class="form-select" onchange="raporTipiDegisti()">
+              <option value="haftalik">📅 Haftalık Rapor</option>
+              <option value="aylik">📆 Aylık Rapor</option>
+            </select>
+          </div>
+          <div class="col-md-5">
+            <label class="form-label fw-bold small">ÖĞRENCİ SEÇİMİ</label>
+            <select id="raporOgrenciSec" class="form-select"></select>
+          </div>
+
+          <div class="col-md-10">
+            <label class="form-label fw-bold small">MESAJ ÖNİZLEME</label>
+            <textarea id="raporMesaj" rows="8" class="form-control bg-light font-monospace small p-3"></textarea>
+          </div>
+
+          <div class="col-md-10 d-flex gap-2 justify-content-center mt-2">
+            <button class="btn btn-success px-4 py-2 shadow-sm" onclick="whatsappMesajGonder()">
+              <i class="bi bi-whatsapp me-2"></i> WhatsApp ile Gönder
+            </button>
+            <button class="btn btn-outline-dark px-4 py-2" onclick="qrKodModalAc()">
+              <i class="bi bi-qr-code me-2"></i> QR Kod Göster
+            </button>
+            <button class="btn btn-outline-secondary" onclick="raporFormYenile()">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div id="qrCanvasContainer" class="qr-center mt-4 d-none"></div>
+      </div>
+    </div>
+
   </div>
+</div>
 
-  <!-- Haftalık Kayıt Güncelle Modal -->
-  <div class="modal fade" id="haftalikGuncelleModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">✏️ Haftalık Kayıt Güncelle</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+<div class="modal fade" id="ogrenciGuncelleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">✏️ Öğrenci Düzenle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating mb-3">
+          <input type="text" id="guncelleAd" class="form-control" placeholder="Ad">
+          <label>Öğrenci Adı</label>
         </div>
-        <div class="modal-body">
-          <input type="text" id="guncelleHaftaOgrenci" class="form-control mb-2" placeholder="Öğrenci Adı">
-          <input type="text" id="guncelleHaftaKonu" class="form-control mb-2" placeholder="Bu hafta konusu">
-          <input type="text" id="guncelleHaftaOdev" class="form-control mb-2" placeholder="Ödev">
-          <input type="text" id="guncelleHaftaDurum" class="form-control mb-2" placeholder="Ödev durumu (yapti, yapmadi...)">
-          <input type="date" id="guncelleHaftaTarih" class="form-control mb-2">
-          <input type="text" id="guncelleGelecekKonu" class="form-control mb-2" placeholder="Gelecek hafta konusu">
-          <input type="text" id="guncelleGelecekOdev" class="form-control mb-2" placeholder="Gelecek hafta ödevi">
-
-          <!-- Motivasyon ve açıklama güncelleme alanları -->
-          <input type="number" id="guncelleHaftaMotivasyon" class="form-control mb-2" min="1" max="10" placeholder="Motivasyon (1-10)">
-          <textarea id="guncelleHaftaMotivasyonAciklama" class="form-control mb-2" placeholder="Genel ders durumu" rows="2"></textarea>
+        <div class="form-floating">
+          <select id="guncelleSinif" class="form-select">
+            <option value="">Seçiniz</option>
+            <option>5. Sınıf</option><option>6. Sınıf</option>
+            <option>7. Sınıf</option><option>8. Sınıf</option>
+            <option>9. Sınıf</option><option>10. Sınıf</option>
+            <option>11. Sınıf</option><option>12. Sınıf</option>
+            <option>Mezun</option>
+          </select>
+          <label>Sınıf</label>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
-          <button class="btn btn-primary" onclick="haftalikKaydiGuncelleKaydet()"><i class="bi bi-save"></i> Kaydet</button>
-        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button class="btn btn-light" data-bs-dismiss="modal">İptal</button>
+        <button class="btn btn-primary px-4" onclick="ogrenciGuncelleKaydet()">Kaydet</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- QR Kod Modal -->
-  <div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">📱 WhatsApp Mesajı için QR Kod</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+<div class="modal fade" id="odevGuncelleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">✏️ Ödev Düzenle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body pt-0">
+        <div class="mb-3">
+          <label class="small text-muted fw-bold">TARİH</label>
+          <input type="date" id="guncelleOdevTarih" class="form-control"/>
         </div>
-        <div class="modal-body">
-          <div id="qrModalCanvas" class="qr-center"></div>
-          <p class="small-muted text-center mt-3">QR’ı telefon kameranızla okutarak WhatsApp mesajını açabilirsiniz.</p>
+        <div>
+          <label class="small text-muted fw-bold">İÇERİK</label>
+          <textarea id="guncelleOdevIcerik" rows="4" class="form-control"></textarea>
         </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-light" data-bs-dismiss="modal">İptal</button>
+        <button class="btn btn-primary" onclick="odevGuncelleKaydet()">Güncelle</button>
       </div>
     </div>
   </div>
+</div>
+
+<div class="modal fade" id="haftalikGuncelleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 bg-light">
+        <h5 class="modal-title fw-bold text-primary">✏️ Kayıt Detaylarını Düzenle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-grid gap-3">
+          <input type="text" id="guncelleHaftaOgrenci" class="form-control fw-bold bg-white" readonly>
+          
+          <div class="row g-2">
+            <div class="col-6">
+               <label class="small text-muted">Durum</label>
+               <input type="text" id="guncelleHaftaDurum" class="form-control">
+            </div>
+            <div class="col-6">
+               <label class="small text-muted">Tarih</label>
+               <input type="date" id="guncelleHaftaTarih" class="form-control">
+            </div>
+          </div>
+          
+          <div>
+            <label class="small text-muted">Bu Hafta Konusu</label>
+            <input type="text" id="guncelleHaftaKonu" class="form-control">
+          </div>
+          <div>
+            <label class="small text-muted">İlgili Ödev</label>
+            <input type="text" id="guncelleHaftaOdev" class="form-control">
+          </div>
+          <hr class="my-1">
+          <div>
+            <label class="small text-muted">Gelecek Hafta Konusu</label>
+            <input type="text" id="guncelleGelecekKonu" class="form-control">
+          </div>
+           <div>
+            <label class="small text-muted">Gelecek Hafta Ödevi</label>
+            <input type="text" id="guncelleGelecekOdev" class="form-control">
+          </div>
+          
+          <div class="row g-2">
+             <div class="col-4">
+               <label class="small text-muted">Motivasyon</label>
+               <input type="number" id="guncelleHaftaMotivasyon" class="form-control text-center" min="1" max="10">
+             </div>
+             <div class="col-8">
+               <label class="small text-muted">Açıklama</label>
+               <textarea id="guncelleHaftaMotivasyonAciklama" class="form-control" rows="1"></textarea>
+             </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-light" data-bs-dismiss="modal">İptal</button>
+        <button class="btn btn-primary px-4" onclick="haftalikKaydiGuncelleKaydet()">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">📱 WhatsApp QR</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center pb-4">
+        <div id="qrModalCanvas" class="d-inline-block p-3 border rounded-3 bg-white mt-2"></div>
+        <p class="small text-muted mt-3 mb-0">Telefon kamerasını okutarak mesajı açabilirsiniz.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Bootstrap 5.3 (JS) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
