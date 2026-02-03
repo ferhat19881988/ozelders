@@ -234,6 +234,18 @@
       display: inline-block;
     }
 
+
+    /* Haftalık kayıt listesinde gelecek hafta konusunu vurgulamak için özel bir rozet stili */
+    .gelecek-konu-highlight{
+      background: linear-gradient(135deg, #a7f3d0, #60a5fa);
+      color: #0f172a;
+      font-weight: 700;
+      padding: .4rem .7rem;
+      border-radius: var(--radius-sm);
+      display: inline-block;
+    }
+
+
     /* Küçültülmüş 'Ödev' etiketi */
     .odev-label{
       font-size: 0.9rem;
@@ -1112,15 +1124,16 @@
         // Liste öğelerini oluştur
         pageEntries.forEach(([key, veri]) => {
           const metin = `${veri.ogrenci || '???'} — ${formatTurkishDate(veri.tarih || veri.zaman) || '???'} — ${veri.konu || '???'}`;
-        // Gelecek hafta ödevi kullanıcı isteğine göre dikkat çekici görünmelidir.
-        const nextLine = veri.gelecekOdev ? `<div class="gelecek-odev-highlight mt-1">📌 ${veri.gelecekOdev}</div>` : '';
+        // Gelecek hafta konusu ve ödevi kullanıcı isteğine göre dikkat çekici görünmelidir.
+        const nextTopicLine = veri.gelecekKonu ? `<div class="gelecek-konu-highlight mt-1">📚 Gelecek Hafta Konusu: ${veri.gelecekKonu}</div>` : '';
+        const nextHomeworkLine = veri.gelecekOdev ? `<div class="gelecek-odev-highlight mt-1">📌 Gelecek Hafta Ödevi: ${veri.gelecekOdev}</div>` : '';
           const item = document.createElement('div');
           item.className = 'list-group-item d-flex align-items-start';
           item.innerHTML = `
             <div class="me-2 flex-grow-1">
               <div class="fw-medium">${metin}</div>
               <div class="small-muted">${(veri.odev ? 'Ödev: ' + veri.odev + ' → ' : '') + durumIcon(veri.durum)}</div>
-              ${nextLine}
+              ${nextTopicLine}${nextHomeworkLine}
             </div>
             <div class="d-flex gap-2 flex-wrap">
               <button class="btn btn-sm btn-outline-primary" onclick='haftalikKaydiGuncelle("${key}")'><i class="bi bi-pencil-square"></i></button>
