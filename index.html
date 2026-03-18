@@ -848,6 +848,99 @@
       return database.ref("ogrenciler").set(arr || []);
     }
 
+    function yeniRefKey(yol){
+      return database.ref(yol).push().key;
+    }
+
+    function temizMetin(deger){
+      return (deger || '').toString().trim();
+    }
+
+    function linkedOdevPayload(kayit){
+      return {
+        ogrenci: temizMetin(kayit.ogrenci),
+        konu: temizMetin(kayit.gelecekOdev),
+        tarih: kayit.tarih || '',
+        kaynak: 'haftalikDegerlendirme',
+        linkedHaftalikKey: kayit.id || '',
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    async function mevcutVerileriSenkroneEt(){
+      const [haftalikSnap, odevSnap] = await Promise.all([
+        database.ref("haftalikDegerlendirme").once("value"),
+        database.ref("odevler").once("value")
+      ]);
+
+      const haftaliklar = haftalikSnap.val() || {};
+      const odevler = odevSnap.val() || {};
+      const odevEntries = Object.entries(odevler);
+      const islemListesi = [];
+
+      Object.entries(haftaliklar).forEach(([haftaKey, kayit]) => {
+        const mevcutKayit = kayit || {};
+        const haftaId = mevcutKayit.id || haftaKey;
+        const linkedKey = mevcutKayit.linkedOdevKey || '';
+
+        if (!mevcutKayit.id) {
+          islemListesi.push(database.ref("haftalikDegerlendirme/" + haftaKey + "/id").set(haftaId));
+        }
+
+        if (linkedKey) {
+          const linkedOdev = odevler[linkedKey];
+          if (linkedOdev) {
+            islemListesi.push(
+              database.ref("odevler/" + linkedKey).update({
+                ...linkedOdevPayload({ ...mevcutKayit, id: haftaId }),
+                linkedOdevKey: linkedKey
+              })
+            );
+          }
+          return;
+        }
+
+        const eslesen = odevEntries.find(([odevKey, odev]) => {
+          const kayitliOdev = odev || {};
+          if (kayitliOdev.linkedHaftalikKey) return false;
+          return temizMetin(kayitliOdev.ogrenci) === temizMetin(mevcutKayit.ogrenci)
+            && (kayitliOdev.tarih || '') === (mevcutKayit.tarih || '')
+            && temizMetin(kayitliOdev.konu || kayitliOdev.icerik) === temizMetin(mevcutKayit.gelecekOdev);
+        });
+
+        if (eslesen) {
+          const [odevKey] = eslesen;
+          islemListesi.push(database.ref("haftalikDegerlendirme/" + haftaKey).update({
+            id: haftaId,
+            linkedOdevKey: odevKey,
+            updatedAt: new Date().toISOString()
+          }));
+          islemListesi.push(database.ref("odevler/" + odevKey).update({
+            ...linkedOdevPayload({ ...mevcutKayit, id: haftaId }),
+            linkedOdevKey: odevKey
+          }));
+          return;
+        }
+
+        if (temizMetin(mevcutKayit.gelecekOdev) && (mevcutKayit.tarih || '')) {
+          const yeniOdevKey = yeniRefKey("odevler");
+          islemListesi.push(database.ref("haftalikDegerlendirme/" + haftaKey).update({
+            id: haftaId,
+            linkedOdevKey: yeniOdevKey,
+            updatedAt: new Date().toISOString()
+          }));
+          islemListesi.push(database.ref("odevler/" + yeniOdevKey).set({
+            ...linkedOdevPayload({ ...mevcutKayit, id: haftaId }),
+            linkedOdevKey: yeniOdevKey
+          }));
+        }
+      });
+
+      if (islemListesi.length) {
+        await Promise.all(islemListesi);
+      }
+    }
+
     /************ ÖĞRENCİ ************/
     function temizleInputlar(){
       document.getElementById('ogrenciAd').value = '';
@@ -1075,7 +1168,12 @@
 
     function pushOdev(odev){
       const ref = database.ref("odevler").push();
-      return ref.set(odev);
+      const payload = {
+        ...odev,
+        kaynak: odev?.kaynak || 'manuel',
+        updatedAt: new Date().toISOString()
+      };
+      return ref.set(payload);
     }
 
     function odevEkle(){
@@ -1105,17 +1203,46 @@
       const tarih = document.getElementById('guncelleOdevTarih').value;
       const konu  = document.getElementById('guncelleOdevIcerik').value.trim();
       if(!tarih || !konu){ alert("Lütfen tüm alanları doldurun."); return; }
-      database.ref("odevler/"+guncellenecekOdevKey).update({tarih, konu}).then(()=>{
+
+      database.ref("odevler/"+guncellenecekOdevKey).once("value").then(s=>{
+        const mevcut = s.val() || {};
+        const updates = [{
+          ref: database.ref("odevler/"+guncellenecekOdevKey),
+          data: { tarih, konu, updatedAt: new Date().toISOString() }
+        }];
+
+        if (mevcut.linkedHaftalikKey) {
+          updates.push({
+            ref: database.ref("haftalikDegerlendirme/" + mevcut.linkedHaftalikKey),
+            data: {
+              tarih,
+              gelecekOdev: konu,
+              updatedAt: new Date().toISOString()
+            }
+          });
+        }
+
+        return Promise.all(updates.map(item => item.ref.update(item.data)));
+      }).then(()=>{
         bsModal('odevGuncelleModal').hide();
-        refreshAssignments(); // önemli
+        refreshAssignments();
+        refreshWeekly();
         alert("✅ Ödev güncellendi.");
       }).catch(()=> alert("❌ Ödev güncellenemedi."));
     }
 
     function odevSil(key){
       if(!confirm("Bu ödevi silmek istediğinize emin misiniz?")) return;
-      database.ref("odevler/"+key).remove().then(()=>{
-        refreshAssignments(); // önemli
+      database.ref("odevler/"+key).once("value").then(s=>{
+        const odev = s.val() || {};
+        const islemler = [database.ref("odevler/"+key).remove()];
+        if (odev.linkedHaftalikKey) {
+          islemler.push(database.ref("haftalikDegerlendirme/" + odev.linkedHaftalikKey).remove());
+        }
+        return Promise.all(islemler);
+      }).then(()=>{
+        refreshAssignments();
+        refreshWeekly();
       });
     }
 
@@ -1380,15 +1507,34 @@ function haftalikFormYenile(){
       if(!ogrenci || !tarih){ alert("🚫 Öğrenci ve tarih boş bırakılamaz."); return; }
 
       const zaman = new Date().toISOString();
-      const haftalikKayit = { ogrenci, odev, durum, konu, gelecekOdev, tarih, gelecekKonu, zaman, motivasyon, motivasyonAciklama };
-      const odevKaydi = { ogrenci, konu: gelecekOdev, tarih };
+      const haftalikKey = yeniRefKey("haftalikDegerlendirme");
+      const odevKey = yeniRefKey("odevler");
 
-      const haftalikRef = database.ref("haftalikDegerlendirme").push();
-      const odevRef     = database.ref("odevler").push();
+      const haftalikKayit = {
+        id: haftalikKey,
+        ogrenci,
+        odev,
+        durum,
+        konu,
+        gelecekOdev,
+        tarih,
+        gelecekKonu,
+        zaman,
+        motivasyon,
+        motivasyonAciklama,
+        linkedOdevKey: odevKey,
+        updatedAt: zaman
+      };
+      const odevKaydi = {
+        ...linkedOdevPayload(haftalikKayit),
+        linkedOdevKey: odevKey
+      };
 
-      Promise.all([haftalikRef.set(haftalikKayit), odevRef.set(odevKaydi)]).then(()=>{
+      Promise.all([
+        database.ref("haftalikDegerlendirme/" + haftalikKey).set(haftalikKayit),
+        database.ref("odevler/" + odevKey).set(odevKaydi)
+      ]).then(()=>{
         document.getElementById('haftaDurumMesaji').innerText = '✅ Kayıt ve ödev başarıyla eklendi.';
-        // form alanlarını temizle + wizard'ı başa al (mesaj kalsın)
         if (typeof window.haftalikWizardReset === 'function') {
           window.haftalikWizardReset({ clearMessage: false });
         } else {
@@ -1405,8 +1551,8 @@ function haftalikFormYenile(){
           const odevSel = document.getElementById('haftaOdev');
           if(odevSel) odevSel.innerHTML = '<option value="">Ödev Seçin</option>';
         }
-        refreshWeekly();      // önemli
-        refreshAssignments(); // önemli
+        refreshWeekly();
+        refreshAssignments();
       }).catch(()=>{
         alert("⚠️ Veri eklenirken hata oluştu.");
       });
@@ -1556,8 +1702,16 @@ function haftalikFormYenile(){
 
     function haftalikKaydiSil(key){
       if(!confirm("Bu haftalık kaydı silmek istiyor musunuz?")) return;
-      database.ref("haftalikDegerlendirme/"+key).remove().then(()=>{
-        refreshWeekly(); // önemli
+      database.ref("haftalikDegerlendirme/"+key).once("value").then(s=>{
+        const kayit = s.val() || {};
+        const islemler = [database.ref("haftalikDegerlendirme/"+key).remove()];
+        if (kayit.linkedOdevKey) {
+          islemler.push(database.ref("odevler/" + kayit.linkedOdevKey).remove());
+        }
+        return Promise.all(islemler);
+      }).then(()=>{
+        refreshWeekly();
+        refreshAssignments();
       });
     }
 
@@ -1583,28 +1737,38 @@ function haftalikFormYenile(){
 
     function haftalikKaydiGuncelleKaydet(){
       if(!guncellenecekHaftaKey){ alert("Güncellenecek kayıt yok."); return; }
-      // Güncellenen veri objesi
-      // Motivasyon verileri de dahil ediliyor
       const motVal = parseInt(document.getElementById('guncelleHaftaMotivasyon')?.value) || 0;
       const motAcik = document.getElementById('guncelleHaftaMotivasyonAciklama')?.value || '';
-      const veri = {
-        ogrenci: document.getElementById('guncelleHaftaOgrenci').value,
-        odev: document.getElementById('guncelleHaftaOdev').value,
-        durum: document.getElementById('guncelleHaftaDurum').value,
-        konu: document.getElementById('guncelleHaftaKonu').value,
-        tarih: document.getElementById('guncelleHaftaTarih').value,
-        gelecekOdev: document.getElementById('guncelleGelecekOdev').value,
-        gelecekKonu: document.getElementById('guncelleGelecekKonu').value,
-        motivasyon: motVal,
-        motivasyonAciklama: motAcik.trim(),
-        zaman: new Date().toISOString()
-      };
-      database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).update(veri).then(()=>{
-        // Modalı güvenli bir şekilde kapat
+
+      database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).once("value").then(s=>{
+        const mevcut = s.val() || {};
+        const veri = {
+          id: mevcut.id || guncellenecekHaftaKey,
+          ogrenci: document.getElementById('guncelleHaftaOgrenci').value,
+          odev: document.getElementById('guncelleHaftaOdev').value,
+          durum: document.getElementById('guncelleHaftaDurum').value,
+          konu: document.getElementById('guncelleHaftaKonu').value,
+          tarih: document.getElementById('guncelleHaftaTarih').value,
+          gelecekOdev: document.getElementById('guncelleGelecekOdev').value,
+          gelecekKonu: document.getElementById('guncelleGelecekKonu').value,
+          motivasyon: motVal,
+          motivasyonAciklama: motAcik.trim(),
+          zaman: mevcut.zaman || new Date().toISOString(),
+          linkedOdevKey: mevcut.linkedOdevKey || '',
+          updatedAt: new Date().toISOString()
+        };
+
+        const islemler = [database.ref("haftalikDegerlendirme/"+guncellenecekHaftaKey).update(veri)];
+        if (veri.linkedOdevKey) {
+          islemler.push(database.ref("odevler/" + veri.linkedOdevKey).update(linkedOdevPayload(veri)));
+        }
+        return Promise.all(islemler);
+      }).then(()=>{
         const modalEl = document.getElementById('haftalikGuncelleModal');
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) modalInstance.hide();
-        refreshWeekly(); // önemli
+        refreshWeekly();
+        refreshAssignments();
         alert("✅ Kayıt güncellendi.");
       }).catch(()=> alert("❌ Güncelleme başarısız."));
     }
@@ -1796,7 +1960,8 @@ Saygılarımızla, bilginize.`;
     }
 
     /************ INIT ************/
-    window.addEventListener('load', ()=>{
+    window.addEventListener('load', async ()=>{
+      await mevcutVerileriSenkroneEt().catch(()=>{});
       refreshAll(); // başlangıç
       initHaftalikWizard();
       // ---- Gerçek zamanlı otomatik yenileme istersen alttakileri aktif et:
