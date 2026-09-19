@@ -179,6 +179,12 @@
     /* Küçük metinler */
     .small-muted{ font-size: .95rem; color: var(--muted); }
 
+    /* Uygulama sürüm bilgisi */
+    .app-footer{
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
     /* Ayraç */
     hr{
       border-top: 1px solid var(--border);
@@ -406,17 +412,22 @@
           <h2 class="h4 mb-4">👤 Öğrenci Kaydı</h2>
 
           <div class="row g-3 form-row-gap">
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label class="form-label">Öğrenci Adı</label>
               <input type="text" id="ogrenciAd" class="form-control" placeholder="Örn: Ayşe Yılmaz" />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label class="form-label">Sınıf</label>
               <select id="ogrenciSinif" class="form-select">
                 <option value="">Sınıf Seçiniz</option>
                 <option>5. Sınıf</option><option>6. Sınıf</option>
                 <option>7. Sınıf</option><option>8. Sınıf</option>
               </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Veli Telefonu</label>
+              <input type="tel" id="ogrenciVeliTelefon" class="form-control" inputmode="tel" autocomplete="tel" placeholder="Örn: 0532 123 45 67" />
+              <div class="small-muted mt-1">Boş bırakılabilir. WhatsApp gönderiminde kullanılır.</div>
             </div>
             <div class="col-12 d-flex flex-wrap gap-2">
               <button class="btn btn-primary" onclick="ogrenciEkle()"><i class="bi bi-plus-circle"></i> Öğrenci Ekle</button>
@@ -688,6 +699,11 @@
               <option>7. Sınıf</option><option>8. Sınıf</option>
             </select>
           </div>
+          <div class="mb-3">
+            <label class="form-label">Veli Telefonu</label>
+            <input type="tel" id="guncelleVeliTelefon" class="form-control" inputmode="tel" autocomplete="tel" placeholder="Örn: 0532 123 45 67" />
+            <div class="small-muted mt-1">Türkiye numaraları +90 / 0 / 10 haneli biçimlerde girilebilir.</div>
+          </div>
         </div>
         <div class="modal-footer">
           <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Kapat</button>
@@ -768,6 +784,10 @@
     </div>
   </div>
 
+  <footer class="container pb-4 text-center app-footer" aria-label="Uygulama sürümü">
+    Özel Ders Takip Sistemi • Sürüm 1.1.0
+  </footer>
+
   <!-- Bootstrap 5.3 (JS) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -841,6 +861,40 @@
       const raw = record?.tarih || record?.zaman || record?.updatedAt || '';
       const time = raw ? new Date(raw).getTime() : 0;
       return Number.isFinite(time) ? time : 0;
+    }
+
+    // Haftalık raporda "kaydın sisteme eklendiği zamanı" esas almak için ayrı yardımcı.
+    // Teslim tarihi (record.tarih) ile kayıt zamanı birbirine karıştırılmaz.
+    function getSavedRecordTime(record){
+      const raw = record?.zaman || record?.createdAt || record?.updatedAt || '';
+      const time = raw ? new Date(raw).getTime() : 0;
+      return Number.isFinite(time) ? time : 0;
+    }
+
+    function getSavedRecordDate(record){
+      const time = getSavedRecordTime(record);
+      return time ? new Date(time) : null;
+    }
+
+    // Türkiye telefonlarını WhatsApp'ın beklediği ülke kodlu biçime çevirir.
+    // Kabul edilen örnekler: 0532..., 532..., +90 532..., 0090 532...
+    function normalizeTurkeyWhatsappPhone(value){
+      let digits = (value || '').toString().replace(/\D/g, '');
+      if(!digits) return '';
+
+      if(digits.startsWith('0090')) digits = digits.slice(2);
+      if(digits.startsWith('90') && digits.length === 12) return digits;
+      if(digits.startsWith('0') && digits.length === 11) return '90' + digits.slice(1);
+      if(digits.length === 10) return '90' + digits;
+
+      return null;
+    }
+
+    function formatTurkeyPhoneForDisplay(value){
+      const normalized = normalizeTurkeyWhatsappPhone(value);
+      if(!normalized) return (value || '').toString();
+      const n = normalized.slice(2);
+      return `+90 ${n.slice(0,3)} ${n.slice(3,6)} ${n.slice(6,8)} ${n.slice(8,10)}`;
     }
 
     function paginationRange(current, total){
@@ -1094,16 +1148,23 @@
     function temizleInputlar(){
       document.getElementById('ogrenciAd').value = '';
       document.getElementById('ogrenciSinif').value = '';
+      document.getElementById('ogrenciVeliTelefon').value = '';
     }
 
     function ogrenciEkle(){
       const ad = document.getElementById('ogrenciAd').value.trim();
       const sinif = document.getElementById('ogrenciSinif').value;
+      const telefonGirisi = document.getElementById('ogrenciVeliTelefon').value.trim();
+      const veliTelefon = normalizeTurkeyWhatsappPhone(telefonGirisi);
       if(!ad || !sinif){ alert("Lütfen öğrenci adı ve sınıf seçin."); return; }
+      if(telefonGirisi && !veliTelefon){
+        alert("Veli telefonu geçerli bir Türkiye numarası olmalıdır. Örn: 0532 123 45 67");
+        return;
+      }
 
       getOgrenciler(ogrenciler=>{
         const id = Date.now();
-        const yeni = { id, ad, sinif };
+        const yeni = { id, ad, sinif, veliTelefon: veliTelefon || '' };
         const guncel = [...ogrenciler, yeni];
         setOgrenciler(guncel).then(()=>{
           alert("✅ Öğrenci eklendi.");
@@ -1129,6 +1190,7 @@
         guncellenecekId = id;
         document.getElementById('guncelleAd').value = o.ad || '';
         document.getElementById('guncelleSinif').value = o.sinif || '';
+        document.getElementById('guncelleVeliTelefon').value = o.veliTelefon ? formatTurkeyPhoneForDisplay(o.veliTelefon) : '';
         bsModal('ogrenciGuncelleModal').show();
       });
     }
@@ -1136,9 +1198,16 @@
     function ogrenciGuncelleKaydet(){
       const ad = document.getElementById('guncelleAd').value.trim();
       const sinif = document.getElementById('guncelleSinif').value;
+      const telefonGirisi = document.getElementById('guncelleVeliTelefon').value.trim();
+      const veliTelefon = normalizeTurkeyWhatsappPhone(telefonGirisi);
       if(!guncellenecekId){ alert("Güncellenecek öğrenci yok."); return; }
+      if(!ad || !sinif){ alert("Öğrenci adı ve sınıf boş bırakılamaz."); return; }
+      if(telefonGirisi && !veliTelefon){
+        alert("Veli telefonu geçerli bir Türkiye numarası olmalıdır. Örn: 0532 123 45 67");
+        return;
+      }
       getOgrenciler(ogrenciler=>{
-        const guncel = ogrenciler.map(o=> o.id===guncellenecekId ? ({...o, ad, sinif}) : o);
+        const guncel = ogrenciler.map(o=> o.id===guncellenecekId ? ({...o, ad, sinif, veliTelefon: veliTelefon || ''}) : o);
         setOgrenciler(guncel).then(()=>{
           bsModal('ogrenciGuncelleModal').hide();
           refreshStudents(); // önemli
@@ -1161,8 +1230,8 @@
           item.className = 'list-group-item';
           item.innerHTML = `
             <div>
-              <div class="fw-medium">${o.ad}</div>
-              <div class="small-muted">${o.sinif}</div>
+              <div class="fw-medium">${escapeHtml(o.ad || '')}</div>
+              <div class="small-muted">${escapeHtml(o.sinif || '')}${o.veliTelefon ? ` • Veli: ${escapeHtml(formatTurkeyPhoneForDisplay(o.veliTelefon))}` : ''}</div>
             </div>
             <div class="d-flex gap-2 flex-wrap">
               <button class="btn btn-sm btn-outline-primary" onclick="ogrenciGuncelleAc(${o.id})"><i class="bi bi-pencil-square"></i></button>
@@ -1869,6 +1938,7 @@ function haftalikFormYenile(){
           const opt = document.createElement('option');
           opt.value = o.id || o.ad;
           opt.textContent = o.ad;
+          opt.dataset.phone = o.veliTelefon || '';
           select.appendChild(opt);
         });
       });
@@ -1877,7 +1947,22 @@ function haftalikFormYenile(){
     function whatsappMesajGonder(){
       const mesaj = (document.getElementById('raporMesaj').value || '').trim();
       if(!mesaj) return alert('Gönderilecek mesaj boş.');
-      const url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
+
+      const select = document.getElementById('raporOgrenciSec');
+      const selectedOption = select?.options?.[select.selectedIndex];
+      const kayitliTelefon = selectedOption?.dataset?.phone || '';
+      const whatsappTelefon = normalizeTurkeyWhatsappPhone(kayitliTelefon);
+
+      if(kayitliTelefon && !whatsappTelefon){
+        alert('Seçilen öğrencinin veli telefonu geçersiz. Öğrenci Kaydı bölümünden numarayı güncelleyin.');
+        return;
+      }
+
+      // Veli telefonu kayıtlıysa doğrudan o numaranın sohbet ekranını açar.
+      // Telefon yoksa mevcut genel WhatsApp paylaşım davranışı korunur.
+      const url = whatsappTelefon
+        ? `https://wa.me/${whatsappTelefon}?text=${encodeURIComponent(mesaj)}`
+        : `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
       window.open(url, '_blank');
     }
 
@@ -1910,8 +1995,12 @@ function haftalikFormYenile(){
         const ogrenciAdi = ogrenci.ad;
 
         if(tip === 'haftalik'){
-          const ogrKay = kayitlar.filter(k=>k.ogrenci === ogrenciAdi);
+          const ogrKay = kayitlar
+            .filter(k=>k.ogrenci === ogrenciAdi)
+            .sort((a,b)=> getSavedRecordTime(a) - getSavedRecordTime(b));
           const sonKayit = ogrKay[ogrKay.length - 1];
+          const kayitTarihi = getSavedRecordDate(sonKayit);
+          const raporTarihi = kayitTarihi ? formatTarih(kayitTarihi) : 'Tarih Yok';
           // Motivasyon bilgilerini hazırla
           const mot = parseInt(sonKayit?.motivasyon) || 0;
           const motAcik = (sonKayit?.motivasyonAciklama || '').trim();
@@ -1920,7 +2009,7 @@ function haftalikFormYenile(){
           const motAcikMetni = motAcik || 'Bilgi Yok';
 
           const mesaj = `📘 Özel Ders Takip Sistemi
-📅 *Tarih:* ${formatTarih(bugun)}
+📅 *Tarih:* ${raporTarihi}
 👤 *Öğrenci:* ${ogrenciAdi}
 🎓 *Öğretmen:* Ferhat Karagöz
 
@@ -1941,25 +2030,31 @@ Saygılarımızla, bilginize.`;
           const tarihAraligindakiKayitlar = kayitlar
             .filter(k=>{
               const ogr = k.ogrenci === ogrenciAdi;
-              const tStr = toShortDateStr(k.zaman || k.tarih);
+              const savedDate = getSavedRecordDate(k);
+              if(!savedDate) return false;
+              const tStr = toShortDateStr(savedDate);
               return ogr && tStr >= birAyOnceStr && tStr <= bugunStr;
             })
-            .sort((a,b)=> new Date(b.zaman || b.tarih) - new Date(a.zaman || a.tarih));
+            .sort((a,b)=> getSavedRecordTime(b) - getSavedRecordTime(a));
+
+          const aylikRaporTarihi = tarihAraligindakiKayitlar.length
+            ? formatTarih(getSavedRecordDate(tarihAraligindakiKayitlar[0]))
+            : 'Tarih Yok';
 
           const konular = tarihAraligindakiKayitlar.map(k=>{
-            const t = new Date(k.zaman || k.tarih);
-            return `- ${formatTarih(t)} → ${k.konu || 'Konu girilmemiş'}`;
+            const t = getSavedRecordDate(k);
+            return `- ${t ? formatTarih(t) : 'Tarih Yok'} → ${k.konu || 'Konu girilmemiş'}`;
           });
           const odevSatirlari = tarihAraligindakiKayitlar.map(k=>{
-            const t = new Date(k.zaman || k.tarih);
-            return `- ${formatTarih(t)} → ${k.odev || 'Ödev Yok'} → ${durumIcon(k.durum)}`;
+            const t = getSavedRecordDate(k);
+            return `- ${t ? formatTarih(t) : 'Tarih Yok'} → ${k.odev || 'Ödev Yok'} → ${durumIcon(k.durum)}`;
           });
           const toplamOdev = tarihAraligindakiKayitlar.filter(k=>k.odev).length;
           const yapilanOdev = tarihAraligindakiKayitlar.filter(k=>(k.durum||'').toLowerCase()==='yapti').length;
           const oran = toplamOdev ? Math.round((yapilanOdev / toplamOdev) * 100) : 0;
 
           const mesaj = `📘 Özel Ders Takip Sistemi
-📅 *Tarih:* ${formatTarih(bugun)}
+📅 *Tarih:* ${aylikRaporTarihi}
 👤 *Öğrenci:* ${ogrenciAdi}
 🎓 *Öğretmen:* Ferhat Karagöz
 
